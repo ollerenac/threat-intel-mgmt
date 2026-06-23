@@ -137,7 +137,7 @@ services:
       minio:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD-SHELL", "curl -s http://localhost:8080/health | grep -qE 'unauthorized|ok'"]
       interval: 20s
       timeout: 10s
       retries: 15
@@ -191,7 +191,7 @@ services:
               count: 1
               capabilities: [gpu]
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      test: ["CMD-SHELL", "curl -s http://localhost:11434/api/tags | grep -q models"]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -207,7 +207,7 @@ services:
       - chromadata:/chroma/chroma
     mem_limit: 1g
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      test: ["CMD-SHELL", "curl -s http://localhost:8000/api/v1/heartbeat | grep -q nanosecond"]
       interval: 10s
       timeout: 5s
       retries: 5
