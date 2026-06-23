@@ -1,0 +1,311 @@
+networks:
+  tim-network:
+    driver: bridge
+
+volumes:
+  esdata:
+  redisdata:
+  rabbitmqdata:
+  miniodata:
+  ollamadata:
+  chromadata:
+
+# ─────────────────────────────────────────────
+# CAPA DE PLATAFORMA — OpenCTI + dependencias
+# ─────────────────────────────────────────────
+
+services:
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms2g -Xmx4g
+      - cluster.routing.allocation.disk.threshold_enabled=false
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    mem_limit: 4g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.2-alpine
+    volumes:
+      - redisdata:/data
+    mem_limit: 1g
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+    ports:
+      - "15672:15672"   # management UI
+    mem_limit: 1g
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+    volumes:
+      - miniodata:/data
+    ports:
+      - "9001:9001"     # consola web
+    mem_limit: 1g
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+  opencti:
+    image: opencti/platform:6.4.0
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=2048
+      - APP__PORT=8080
+      - APP__BASE_URL=${OPENCTI_BASE_URL}
+      - APP__ADMIN__EMAIL=${OPENCTI_ADMIN_EMAIL}
+      - APP__ADMIN__PASSWORD=${OPENCTI_ADMIN_PASSWORD}
+      - APP__ADMIN__TOKEN=${OPENCTI_ADMIN_TOKEN}
+      - APP__APP_LOGS__LOGS_LEVEL=error
+      - ELASTICSEARCH__URL=http://elasticsearch:9200
+      - REDIS__HOSTNAME=redis
+      - REDIS__PORT=6379
+      - RABBITMQ__HOSTNAME=rabbitmq
+      - RABBITMQ__PORT=5672
+      - RABBITMQ__USERNAME=${RABBITMQ_USER}
+      - RABBITMQ__PASSWORD=${RABBITMQ_PASSWORD}
+      - MINIO__ENDPOINT=minio
+      - MINIO__PORT=9000
+      - MINIO__USE_SSL=false
+      - MINIO__ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO__SECRET_KEY=${MINIO_SECRET_KEY}
+      - APP__TELEMETRY__METRICS__ENABLED=true
+    ports:
+      - "8080:8080"
+    mem_limit: 2g
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 15
+      start_period: 60s
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+  # Conector MITRE ATT&CK — carga el framework completo en OpenCTI al iniciar
+  connector-mitre:
+    image: opencti/connector-mitre:6.4.0
+    environment:
+      - OPENCTI_URL=http://opencti:8080
+      - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
+      - CONNECTOR_ID=${CONNECTOR_MITRE_ID}
+      - CONNECTOR_NAME=MITRE ATT&CK
+      - CONNECTOR_SCOPE=marking-definition,identity,attack-pattern,course-of-action,intrusion-set,campaign,malware,tool,report
+      - CONNECTOR_UPDATE_EXISTING_DATA=true
+      - CONNECTOR_RUN_AND_TERMINATE=false
+      - MITRE_REMOVE_STATEMENT_MARKING=true
+    mem_limit: 512m
+    depends_on:
+      opencti:
+        condition: service_healthy
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+# ─────────────────────────────────────────────
+# CAPA AI — Ollama + ChromaDB
+# ─────────────────────────────────────────────
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollamadata:/root/.ollama
+    mem_limit: 2g
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+  chromadb:
+    image: chromadb/chroma:latest
+    volumes:
+      - chromadata:/chroma/chroma
+    mem_limit: 1g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+# ─────────────────────────────────────────────
+# CAPA DE INGESTA — Feed Orchestrator (custom)
+# ─────────────────────────────────────────────
+
+  feed-orchestrator:
+    build: ./services/feed-orchestrator
+    environment:
+      - OPENCTI_URL=http://opencti:8080
+      - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
+      - REDIS_URL=redis://redis:6379
+    mem_limit: 1g
+    depends_on:
+      opencti:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+# ─────────────────────────────────────────────
+# CAPA AI — Servicios custom Python
+# ─────────────────────────────────────────────
+
+  intel-extractor:
+    build: ./services/intel-extractor
+    ports:
+      - "8001:8001"
+    environment:
+      - OPENCTI_URL=http://opencti:8080
+      - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_MODEL=llama3.2:3b
+    mem_limit: 1g
+    depends_on:
+      opencti:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+  semantic-engine:
+    build: ./services/semantic-engine
+    ports:
+      - "8002:8002"
+    environment:
+      - OPENCTI_URL=http://opencti:8080
+      - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_EMBED_MODEL=nomic-embed-text
+      - CHROMADB_URL=http://chromadb:8000
+      - POLL_INTERVAL_SECONDS=300
+    mem_limit: 1g
+    depends_on:
+      opencti:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+      chromadb:
+        condition: service_healthy
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+  briefing-generator:
+    build: ./services/briefing-generator
+    ports:
+      - "8003:8003"
+    environment:
+      - OPENCTI_URL=http://opencti:8080
+      - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_MODEL=llama3.2:3b
+    mem_limit: 1g
+    depends_on:
+      opencti:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+# ─────────────────────────────────────────────
+# CAPA DE PRESENTACIÓN — SOC Dashboard
+# ─────────────────────────────────────────────
+
+  soc-dashboard:
+    build: ./services/soc-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_OPENCTI_URL=http://localhost:8080
+      - VITE_OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
+      - VITE_INTEL_EXTRACTOR_URL=http://localhost:8001
+      - VITE_SEMANTIC_ENGINE_URL=http://localhost:8002
+      - VITE_BRIEFING_GENERATOR_URL=http://localhost:8003
+    mem_limit: 512m
+    depends_on:
+      - opencti
+      - intel-extractor
+      - semantic-engine
+      - briefing-generator
+    networks:
+      - tim-network
+    restart: unless-stopped
