@@ -65,7 +65,7 @@ services:
     volumes:
       - rabbitmqdata:/var/lib/rabbitmq
     ports:
-      - "15672:15672"   # management UI
+      - "127.0.0.1:15672:15672"   # management UI — localhost only
     mem_limit: 1g
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
@@ -85,7 +85,7 @@ services:
     volumes:
       - miniodata:/data
     ports:
-      - "9001:9001"     # consola web
+      - "127.0.0.1:9001:9001"     # consola web — localhost only
     mem_limit: 1g
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
@@ -296,7 +296,6 @@ services:
       - "3000:3000"
     environment:
       - VITE_OPENCTI_URL=http://localhost:8080
-      - VITE_OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
       - VITE_INTEL_EXTRACTOR_URL=http://localhost:8001
       - VITE_SEMANTIC_ENGINE_URL=http://localhost:8002
       - VITE_BRIEFING_GENERATOR_URL=http://localhost:8003
