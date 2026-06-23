@@ -31,17 +31,17 @@
   4. TAXII 2.1 endpoint returns a valid STIX bundle when queried (e.g. `GET /taxii2/root/collections/`)
   5. `.env.example` documents all required variables and `scripts/init-models.sh` successfully pulls Ollama models
 
-**Plans**: 4 plans
+**Plans**: 3/4 plans executed
 
 Plans:
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Pre-flight: .gitignore, .env.example permissions, nvidia-container-toolkit install
-- [ ] 01-02-PLAN.md — docker-compose.yml profile tags (all 13 services) + connector-mitre healthcheck
+- [x] 01-01-PLAN.md — Pre-flight: .gitignore, .env.example permissions, nvidia-container-toolkit install
+- [x] 01-02-PLAN.md — docker-compose.yml profile tags (all 13 services) + connector-mitre healthcheck
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-03-PLAN.md — scripts/setup-env.sh, scripts/verify-platform.sh, docs/SETUP.md
+- [x] 01-03-PLAN.md — scripts/setup-env.sh, scripts/verify-platform.sh, docs/SETUP.md
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -150,7 +150,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Platform Foundation | 0/? | Not started | - |
+| 1. Platform Foundation | 3/4 | In Progress|  |
 | 2. Feed Ingestion Pipeline | 0/? | Not started | - |
 | 3. AI IOC Extraction | 0/? | Not started | - |
 | 4. Semantic Search Engine | 0/? | Not started | - |

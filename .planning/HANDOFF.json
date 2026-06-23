@@ -1,41 +1,56 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-23T06:52:38.889Z",
-  "phase": null,
-  "phase_name": "pre-execution",
-  "phase_dir": null,
-  "plan": null,
-  "task": null,
-  "total_tasks": null,
+  "timestamp": "2026-06-23T09:33:51.974Z",
+  "phase": "01",
+  "phase_name": "platform-foundation",
+  "phase_dir": ".planning/phases/01-platform-foundation",
+  "plan": 4,
+  "task": 3,
+  "total_tasks": 3,
   "status": "paused",
   "completed_tasks": [
-    {"id": 1, "name": "Brainstorming + architecture design", "status": "done"},
-    {"id": 2, "name": "Design document (8 sections)", "status": "done", "artifact": "docs/plans/2026-06-23-tim-system-design.md"},
-    {"id": 3, "name": "docker-compose.yml (13 services)", "status": "done"},
-    {"id": 4, "name": "GSD project initialization (PROJECT.md, REQUIREMENTS.md, ROADMAP.md)", "status": "done"},
-    {"id": 5, "name": "Security fixes (VITE_OPENCTI_TOKEN, admin UIs restricted)", "status": "done"}
+    {"id": "01-01", "name": "Pre-flight setup (.gitignore, .env.example, nvidia-toolkit)", "status": "done", "commit": "d8d1b0a"},
+    {"id": "01-02", "name": "Docker Compose profile tags + connector-mitre healthcheck", "status": "done", "commit": "24640bc"},
+    {"id": "01-03", "name": "setup-env.sh, verify-platform.sh, docs/SETUP.md", "status": "done", "commit": "498dcc3"},
+    {"id": "01-04-task1", "name": "Generate .env and start platform stack", "status": "in_progress", "progress": ".env exists, docker compose up -d running, opencti health:starting after healthcheck fix 9f4936b"},
+    {"id": "01-04-task2", "name": "Pull Ollama models with init-models.sh", "status": "not_started"}
   ],
   "remaining_tasks": [
-    {"id": 6, "name": "Plan Phase 1: Platform Foundation", "status": "not_started"},
-    {"id": 7, "name": "Execute Phase 1: docker-compose stack operational", "status": "not_started"},
-    {"id": 8, "name": "Execute Phase 2: Feed Orchestrator service", "status": "not_started"},
-    {"id": 9, "name": "Execute Phase 3: intel-extractor AI service", "status": "not_started"},
-    {"id": 10, "name": "Execute Phase 4: semantic-engine service", "status": "not_started"},
-    {"id": 11, "name": "Execute Phase 5: briefing-generator service", "status": "not_started"},
-    {"id": 12, "name": "Execute Phase 6: SOC Dashboard (React)", "status": "not_started"}
+    {"id": "01-04-task2", "name": "Run ./scripts/init-models.sh (pulls nomic-embed-text + llama3.2:3b, ~2.3GB)", "status": "not_started"},
+    {"id": "01-04-task3", "name": "Run ./scripts/verify-platform.sh + browser verify + type phase-1-complete", "status": "not_started"},
+    {"id": "01-04-summary", "name": "Write 01-04-SUMMARY.md and commit", "status": "not_started"},
+    {"id": "verify-phase", "name": "Spawn gsd-verifier to verify Phase 1 goal achievement (VERIFICATION.md)", "status": "not_started"}
   ],
-  "blockers": [],
-  "async_jobs": [],
+  "blockers": [
+    {
+      "description": "Platform is in mid-startup state — containers running but opencti is 'health: starting', connector-mitre not yet started, ollama and chromadb unhealthy",
+      "type": "technical",
+      "workaround": "Re-run 'docker compose --profile platform up -d' after fresh session start; containers may have restarted or need re-check"
+    }
+  ],
   "human_actions_pending": [
-    {"action": "Copy .env.example to .env and fill real values (UUIDs for tokens, OTX API key)", "context": "Required before docker compose up", "blocking": true},
-    {"action": "Run scripts/init-models.sh after first stack start to pull Ollama models (~3GB)", "context": "llama3.2:3b + nomic-embed-text needed for AI layer", "blocking": true}
+    {
+      "action": "Confirm docker compose --profile platform ps shows all 8 services healthy (opencti was 'health: starting' at pause time)",
+      "context": "OpenCTI healthcheck was fixed (commit 9f4936b) — changed curl -f to grep-based check. Should become healthy within 60s of that fix being applied.",
+      "blocking": true
+    },
+    {
+      "action": "Run ./scripts/init-models.sh in a terminal to pull Ollama models (~2.3GB: nomic-embed-text + llama3.2:3b)",
+      "context": "Required for Plan 01-04 Task 2. Ollama container is running but models not yet pulled.",
+      "blocking": true
+    },
+    {
+      "action": "Run ./scripts/verify-platform.sh and type 'phase-1-complete' when it prints '[verify-platform] Phase 1 complete.'",
+      "context": "This is Plan 01-04 Task 3 checkpoint. Also check http://localhost:8080 browser for ATT&CK techniques.",
+      "blocking": true
+    }
   ],
   "decisions": [
-    {"decision": "OpenCTI over MISP as core platform", "rationale": "Graph visualization more demo-friendly; STIX 2.1 native", "phase": "design"},
-    {"decision": "Local LLM via Ollama (llama3.2:3b + nomic-embed-text)", "rationale": "Data sovereignty differentiator; RTX 3050 4GB VRAM sufficient", "phase": "design"},
-    {"decision": "Remove VITE_OPENCTI_TOKEN from browser env", "rationale": "Security fix — admin token must not be baked into Vite bundle", "phase": "security"}
+    {"decision": "Fixed OpenCTI healthcheck: curl -f -> grep -qE 'unauthorized|ok'", "rationale": "OpenCTI /health returns {status:unauthorized} (HTTP 401) on healthy startup — curl -f treats 401 as failure", "phase": "01"},
+    {"decision": "Fixed Ollama healthcheck: curl -f -> grep -q models", "rationale": "Same -f flag issue", "phase": "01"},
+    {"decision": "Fixed ChromaDB healthcheck: curl -f -> grep -q nanosecond", "rationale": "Same -f flag issue", "phase": "01"}
   ],
-  "uncommitted_files": [],
-  "next_action": "/gsd-plan-phase 1 in a fresh session after /clear",
-  "context_notes": "Full design complete. 6-phase roadmap created. 30 requirements 100% mapped. Stack: OpenCTI + feed-orchestrator + intel-extractor + semantic-engine + briefing-generator + SOC Dashboard. AI differentiator: local LLM for IOC extraction from unstructured docs + semantic search. No code written yet — all planning artifacts committed."
+  "uncommitted_files": [".planning/ROADMAP.md", ".planning/STATE.md", ".planning/config.json"],
+  "next_action": "Check 'docker compose --profile platform ps' — if opencti is healthy, run ./scripts/init-models.sh then ./scripts/verify-platform.sh. If platform stopped, run 'docker compose --profile platform up -d' first.",
+  "context_notes": "Phase 1 execution is 75% done. Plans 01-01 through 01-03 have committed SUMMARYs. Plan 01-04 is at the integration verification checkpoint — the platform is starting up. The only remaining work is: wait for healthy, pull models, verify, write SUMMARY, then gsd-verifier runs. On resume, run /gsd-execute-phase 1 after typing 'phase-1-complete' to trigger phase verification."
 }
