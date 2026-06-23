@@ -30,7 +30,13 @@
   4. TAXII 2.1 endpoint returns a valid STIX bundle when queried (e.g. `GET /taxii2/root/collections/`)
   5. `.env.example` documents all required variables and `scripts/init-models.sh` successfully pulls Ollama models
 
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Pre-flight: .gitignore, .env.example permissions, nvidia-container-toolkit install
+- [ ] 01-02-PLAN.md — docker-compose.yml profile tags (all 13 services) + connector-mitre healthcheck
+- [ ] 01-03-PLAN.md — scripts/setup-env.sh, scripts/verify-platform.sh, docs/SETUP.md
+- [ ] 01-04-PLAN.md — Integration: compose up, init-models.sh, verify-platform.sh end-to-end
 
 ---
 
