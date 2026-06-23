@@ -24,6 +24,7 @@
 **Requirements**: PLAT-01, PLAT-02, PLAT-03, PLAT-04, DEPL-01, DEPL-02, DEPL-03, DEPL-04
 
 **Success Criteria** (what must be TRUE):
+
   1. `docker compose up -d` from project root starts the full stack with no manual steps beyond `.env` configuration
   2. OpenCTI is reachable at `localhost:8080` and MITRE ATT&CK framework objects (attack-patterns with Txxxx IDs) are visible in the knowledge graph
   3. `docker compose ps` shows all services (ES, Redis, RabbitMQ, MinIO, OpenCTI, connector-mitre) as healthy
@@ -33,9 +34,17 @@
 **Plans**: 4 plans
 
 Plans:
+**Wave 1**
+
 - [ ] 01-01-PLAN.md — Pre-flight: .gitignore, .env.example permissions, nvidia-container-toolkit install
 - [ ] 01-02-PLAN.md — docker-compose.yml profile tags (all 13 services) + connector-mitre healthcheck
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 01-03-PLAN.md — scripts/setup-env.sh, scripts/verify-platform.sh, docs/SETUP.md
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
 - [ ] 01-04-PLAN.md — Integration: compose up, init-models.sh, verify-platform.sh end-to-end
 
 ---
@@ -49,6 +58,7 @@ Plans:
 **Requirements**: FEED-01, FEED-02, FEED-03, FEED-04, FEED-05, FEED-06
 
 **Success Criteria** (what must be TRUE):
+
   1. URLhaus, MalwareBazaar, ThreatFox, Feodo Tracker, and AlienVault OTX feeds all produce STIX `indicator` objects visible in OpenCTI after a single feed run
   2. Each indicator in OpenCTI carries a `confidence` field (0–100) computed from feed count, recency, and source quality
   3. Submitting the same IOC from two different feeds results in one deduplicated object in OpenCTI, not two
@@ -67,6 +77,7 @@ Plans:
 **Requirements**: AIEX-01, AIEX-02, AIEX-03, AIEX-04, AIEX-05
 
 **Success Criteria** (what must be TRUE):
+
   1. `POST /extract` with a multi-page PDF threat report returns extracted IOCs (IPs, domains, hashes) visible in OpenCTI within seconds of job completion
   2. `POST /extract` with a URL successfully scrapes and extracts IOCs from the page content
   3. IOCs extracted from documents that mention ATT&CK technique names appear in OpenCTI linked to the corresponding `attack-pattern` objects (e.g. T1566 for phishing references)
@@ -85,6 +96,7 @@ Plans:
 **Requirements**: AISEM-01, AISEM-02, AISEM-03, AISEM-04
 
 **Success Criteria** (what must be TRUE):
+
   1. All indicators present in OpenCTI are indexed as 768-dimensional embedding vectors in ChromaDB (confirmed via `GET /health` and index count)
   2. A natural-language query such as "malware with DNS tunneling toward Russian infrastructure" returns relevant IOC results ranked by similarity
   3. Each result includes a similarity score between 0.0 and 1.0
@@ -103,6 +115,7 @@ Plans:
 **Requirements**: AIBR-01, AIBR-02, AIBR-03, AIBR-04
 
 **Success Criteria** (what must be TRUE):
+
   1. `POST /generate` with `period_hours=24` returns a 200–300 word professional executive summary covering new IOCs, active actors, campaigns, top ATT&CK techniques, and affected sectors
   2. The same endpoint accepts `period_hours=72` and returns a summary scoped to that window
   3. `GET /briefings/{id}/pdf` returns a downloadable PDF containing the briefing text
@@ -121,6 +134,7 @@ Plans:
 **Requirements**: DASH-01, DASH-02, DASH-03, DASH-04, DASH-05, DASH-06
 
 **Success Criteria** (what must be TRUE):
+
   1. Overview view displays feed health (last update time, IOC count, and status) for each configured feed and total IOC count for the last 24h
   2. Overview view displays the top 5 MITRE ATT&CK techniques observed across current intelligence
   3. Threat Hunt view accepts a natural-language query, calls semantic-engine, and displays ranked results with similarity scores — clicking a result opens the object in OpenCTI
