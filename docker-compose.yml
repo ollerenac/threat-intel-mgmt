@@ -18,6 +18,7 @@ services:
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    profiles: [platform]
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -45,6 +46,7 @@ services:
 
   redis:
     image: redis:7.2-alpine
+    profiles: [platform]
     volumes:
       - redisdata:/data
     mem_limit: 1g
@@ -59,6 +61,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
+    profiles: [platform]
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
@@ -78,6 +81,7 @@ services:
 
   minio:
     image: minio/minio:latest
+    profiles: [platform]
     command: server /data --console-address ":9001"
     environment:
       - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
@@ -98,6 +102,7 @@ services:
 
   opencti:
     image: opencti/platform:6.4.0
+    profiles: [platform]
     environment:
       - NODE_OPTIONS=--max-old-space-size=2048
       - APP__PORT=8080
@@ -144,6 +149,7 @@ services:
   # Conector MITRE ATT&CK — carga el framework completo en OpenCTI al iniciar
   connector-mitre:
     image: opencti/connector-mitre:6.4.0
+    profiles: [platform]
     environment:
       - OPENCTI_URL=http://opencti:8080
       - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
@@ -167,6 +173,7 @@ services:
 
   ollama:
     image: ollama/ollama:latest
+    profiles: [platform]
     volumes:
       - ollamadata:/root/.ollama
     mem_limit: 2g
@@ -189,6 +196,7 @@ services:
 
   chromadb:
     image: chromadb/chroma:latest
+    profiles: [platform]
     volumes:
       - chromadata:/chroma/chroma
     mem_limit: 1g
@@ -207,6 +215,7 @@ services:
 
   feed-orchestrator:
     build: ./services/feed-orchestrator
+    profiles: [feeds]
     environment:
       - OPENCTI_URL=http://opencti:8080
       - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
@@ -227,6 +236,7 @@ services:
 
   intel-extractor:
     build: ./services/intel-extractor
+    profiles: [extract]
     ports:
       - "8001:8001"
     environment:
@@ -246,6 +256,7 @@ services:
 
   semantic-engine:
     build: ./services/semantic-engine
+    profiles: [semantic]
     ports:
       - "8002:8002"
     environment:
@@ -269,6 +280,7 @@ services:
 
   briefing-generator:
     build: ./services/briefing-generator
+    profiles: [briefings]
     ports:
       - "8003:8003"
     environment:
@@ -292,6 +304,7 @@ services:
 
   soc-dashboard:
     build: ./services/soc-dashboard
+    profiles: [dashboard]
     ports:
       - "3000:3000"
     environment:
