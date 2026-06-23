@@ -160,6 +160,12 @@ services:
       - CONNECTOR_RUN_AND_TERMINATE=false
       - MITRE_REMOVE_STATEMENT_MARKING=true
     mem_limit: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'python.*mitre' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
     depends_on:
       opencti:
         condition: service_healthy
