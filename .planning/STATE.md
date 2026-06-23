@@ -1,3 +1,18 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: Not started
+stopped_at: Phase 1 context gathered
+last_updated: "2026-06-23T07:37:07.188Z"
+progress:
+  total_phases: 6
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
+---
+
 # STATE: TIM — Threat Intelligence Management System
 
 **Last updated:** 2026-06-23
@@ -23,6 +38,7 @@
 | Phase progress | 0% |
 
 **Progress bar:**
+
 ```
 Phase 1 [          ] 0%
 Phase 2 [          ] 0%
@@ -86,7 +102,13 @@ None.
 
 ## Session Continuity
 
+**Resume file:** .planning/phases/01-platform-foundation/01-CONTEXT.md
+
+**Last session:** 2026-06-23T07:37:07.184Z
+**Stopped at:** Phase 1 context gathered
+
 **To resume work:**
+
 1. Read `.planning/ROADMAP.md` for phase structure and success criteria
 2. Read `.planning/REQUIREMENTS.md` for full requirement list and traceability
 3. Read `docs/plans/2026-06-23-tim-system-design.md` for architecture details
