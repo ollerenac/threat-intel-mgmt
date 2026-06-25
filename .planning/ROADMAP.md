@@ -6,7 +6,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Platform Foundation** - OpenCTI stack deployed and operational with all backing services healthy
+- [x] **Phase 1: Platform Foundation** - OpenCTI stack deployed and operational with all backing services healthy
 - [ ] **Phase 2: Feed Ingestion Pipeline** - feed-orchestrator service ingesting, normalizing, and scoring IOCs from all 5+ sources
 - [ ] **Phase 3: AI IOC Extraction** - intel-extractor service processing PDFs and URLs via local LLM into OpenCTI STIX objects
 - [ ] **Phase 4: Semantic Search Engine** - semantic-engine indexing all IOCs as vectors and serving natural-language queries
@@ -31,7 +31,9 @@
   4. TAXII 2.1 endpoint returns a valid STIX bundle when queried (e.g. `GET /taxii2/root/collections/`)
   5. `.env.example` documents all required variables and `scripts/init-models.sh` successfully pulls Ollama models
 
-**Plans**: 3/4 plans executed
+**Status**: ✓ COMPLETE — verified 2026-06-25 (5/5 criteria, VERIFICATION.md passed)
+
+**Plans**: 4/4 plans executed
 
 Plans:
 **Wave 1**
@@ -45,7 +47,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-04-PLAN.md — Integration: compose up, init-models.sh, verify-platform.sh end-to-end
+- [x] 01-04-PLAN.md — Integration: compose up, init-models.sh, verify-platform.sh end-to-end
 
 ---
 
