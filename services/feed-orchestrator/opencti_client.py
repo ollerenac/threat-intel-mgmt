@@ -86,7 +86,6 @@ def create_indicator(
                 confidence=confidence,
                 x_opencti_score=confidence,  # A4: same value as confidence
                 objectLabel=labels,           # A2: verify param name in pycti source
-                externalReferences=[{"source_name": source_name}],
                 indicator_types=["malicious-activity"],
                 update=True,                 # idempotent upsert — safety net beyond Redis dedup
             )
