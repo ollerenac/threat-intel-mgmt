@@ -130,10 +130,13 @@ class BaseFeed(ABC):
 
         Loops over normalized indicator dicts. For each:
           - If is_duplicate() returns True: skip (already inserted this cycle)
-          - Else: call create_indicator() with D-05 retry (3x, 30/60/120s)
+          - Else: compute D-09 confidence, call create_indicator() with D-05 retry
 
         Returns count of indicators actually submitted to pycti (not skipped).
         """
+        # Lazy import avoids circular-import risk at module load time
+        from normalizer import compute_confidence, parse_first_seen
+
         count = 0
         for ind in indicators:
             pattern = ind.get("pattern", "")
@@ -141,12 +144,15 @@ class BaseFeed(ABC):
                 continue
             if is_duplicate(redis_client, pattern):
                 continue
+            first_seen_dt = parse_first_seen(ind.get("valid_from", ""))
+            confidence = compute_confidence(self.name, first_seen_dt)
+            ind["confidence"] = confidence
             result = create_indicator(
                 client=pycti_client,
                 name=ind.get("name", f"{self.name} indicator"),
                 pattern=pattern,
                 observable_type=ind.get("observable_type", ""),
-                confidence=ind.get("confidence", self.quality_weight),
+                confidence=confidence,
                 labels=ind.get("labels", []),
                 source_name=ind.get("source_name", self.name),
                 valid_from=ind.get("valid_from"),
