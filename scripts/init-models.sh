@@ -6,7 +6,7 @@
 set -e
 
 echo "[init-models] Esperando que Ollama esté listo..."
-until curl -sf http://localhost:11434/api/tags > /dev/null; do
+until docker compose exec ollama ollama list > /dev/null 2>&1; do
   sleep 3
 done
 

@@ -29,7 +29,7 @@ POLL_N=0
 
 # ── Step 1: Wait for OpenCTI /health (5s retry, respect timeout) ─────────────
 echo "[verify-platform] Waiting for OpenCTI at ${OPENCTI_URL}/health ..."
-until curl -sf "${OPENCTI_URL}/health" > /dev/null 2>&1; do
+until curl -s "${OPENCTI_URL}/health" 2>/dev/null | grep -qE 'unauthorized|ok'; do
   ELAPSED=$(( $(date +%s) - START_TIME ))
   if [ $ELAPSED -ge $TIMEOUT ]; then
     echo "ERROR: Timeout waiting for OpenCTI health after ${TIMEOUT}s."

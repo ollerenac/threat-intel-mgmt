@@ -137,11 +137,26 @@ services:
       minio:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:8080/health | grep -qE 'unauthorized|ok'"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8080/health',r=>{process.exit(r.statusCode<500?0:1)}).on('error',()=>process.exit(1))"]
       interval: 20s
       timeout: 10s
       retries: 15
       start_period: 60s
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+  worker:
+    image: opencti/worker:6.4.0
+    profiles: [platform]
+    environment:
+      - OPENCTI_URL=http://opencti:8080
+      - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
+      - WORKER_LOG_LEVEL=error
+    mem_limit: 512m
+    depends_on:
+      opencti:
+        condition: service_healthy
     networks:
       - tim-network
     restart: unless-stopped
@@ -159,6 +174,7 @@ services:
       - CONNECTOR_UPDATE_EXISTING_DATA=true
       - CONNECTOR_RUN_AND_TERMINATE=false
       - MITRE_REMOVE_STATEMENT_MARKING=true
+      - MITRE_INTERVAL=7
     mem_limit: 512m
     healthcheck:
       test: ["CMD-SHELL", "pgrep -f 'python.*mitre' || exit 1"]
@@ -191,7 +207,7 @@ services:
               count: 1
               capabilities: [gpu]
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:11434/api/tags | grep -q models"]
+      test: ["CMD", "ollama", "list"]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -207,7 +223,7 @@ services:
       - chromadata:/chroma/chroma
     mem_limit: 1g
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:8000/api/v1/heartbeat | grep -q nanosecond"]
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/8000'"]
       interval: 10s
       timeout: 5s
       retries: 5
