@@ -1,0 +1,40 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-06-25T05:38:23.570Z",
+  "phase": "02",
+  "phase_name": "feed-ingestion-pipeline",
+  "phase_dir": ".planning/phases/02-feed-ingestion-pipeline",
+  "plan": 0,
+  "task": 0,
+  "total_tasks": 0,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": "01-all-plans", "name": "Phase 1: Platform Foundation — all 4 plans complete", "status": "done", "commit": "fb57c6b"},
+    {"id": "01-verification", "name": "Phase 1 VERIFICATION.md — 5/5 criteria passed", "status": "done", "commit": "fb57c6b"},
+    {"id": "worker-healthcheck", "name": "opencti/worker pgrep healthcheck added", "status": "done", "commit": "38d1400"},
+    {"id": "taxii-collection", "name": "TAXII collection 'MITRE ATT&CK' created in OpenCTI UI", "status": "done", "commit": "UI config (no commit)"}
+  ],
+  "remaining_tasks": [
+    {"id": "plan-phase-2", "name": "Plan Phase 2: Feed Ingestion Pipeline", "status": "not_started"},
+    {"id": "plan-phase-3", "name": "Plan Phase 3: AI IOC Extraction (parallel with Phase 2)", "status": "not_started"},
+    {"id": "otx-api-key", "name": "Obtain AlienVault OTX free API key (needed before Phase 2 execution)", "status": "not_started"}
+  ],
+  "blockers": [],
+  "async_jobs": [],
+  "human_actions_pending": [
+    {
+      "action": "Obtain AlienVault OTX free API key from otx.alienvault.com (free account)",
+      "context": "Required for FEED-03 in Phase 2. Free tier covers the IOC feed needed for demo. Can plan Phase 2 without it but cannot execute the OTX feed task until key is in hand.",
+      "blocking": false
+    }
+  ],
+  "decisions": [
+    {"decision": "opencti/worker healthcheck: pgrep -f 'python.*worker'", "rationale": "Only Python + pgrep available in opencti/worker:6.4.0 image; process-presence check is sufficient for DEPL-04", "phase": "01"},
+    {"decision": "TAXII collection filter: Entity type = Attack Pattern (not 'Pattern')", "rationale": "'Pattern' in OpenCTI refers to STIX Indicator detection patterns (Sigma/YARA); 'Attack Pattern' entity type targets MITRE ATT&CK techniques", "phase": "01"},
+    {"decision": "TAXII raw JSON is correct behavior", "rationale": "TAXII 2.1 is a machine-to-machine protocol; raw JSON response is the STIX 2.1 bundle format consumed by threat intel tools", "phase": "01"},
+    {"decision": "Phase 2 + Phase 3 planned in parallel", "rationale": "Phase 3 (AI Extraction) depends only on Phase 1; no dependency on Phase 2. Parallel planning saves time.", "phase": "02"}
+  ],
+  "uncommitted_files": [".planning/research/"],
+  "next_action": "Run /gsd-plan-phase 2 to plan Feed Ingestion Pipeline, then /gsd-plan-phase 3 to plan AI IOC Extraction (both can be planned in the same session in parallel).",
+  "context_notes": "Phase 1 is fully closed and verified. Platform is healthy and running (9/9 services). 709 ATT&CK patterns in OpenCTI. TAXII endpoint live with MITRE ATT&CK collection. Ollama models ready (llama3.2:3b + nomic-embed-text). The platform is stable enough to leave running between sessions. Phase 2 and Phase 3 are both unblocked by Phase 1 completion. The only soft pre-req for Phase 2 execution is the OTX API key."
+}
