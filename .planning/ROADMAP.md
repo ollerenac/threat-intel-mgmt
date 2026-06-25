@@ -107,7 +107,30 @@ Plans:
   3. IOCs extracted from documents that mention ATT&CK technique names appear in OpenCTI linked to the corresponding `attack-pattern` objects (e.g. T1566 for phishing references)
   4. A document longer than 8K tokens (LLM context limit) is processed completely — no IOCs are silently dropped at chunk boundaries
 
-**Plans**: TBD
+**Plans**: 6 plans
+
+Plans:
+
+**Wave 0**
+
+- [ ] 03-01-PLAN.md — Test scaffold: pytest.ini, conftest, 5 RED test files (AIEX-01 through AIEX-05)
+
+**Wave 1** *(parallel — no file conflicts)*
+
+- [ ] 03-02-PLAN.md — config.py (env vars) + parser.py (PDF + URL extraction)
+- [ ] 03-03-PLAN.md — opencti_client.py: copy Phase 2 base + add lookup_attack_pattern, create_report, create_relationship
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [ ] 03-04-PLAN.md — extractor.py: chunk_text, call_llm (D-03 fallback), build_stix_pattern, run_extraction pipeline
+
+**Wave 3** *(blocked on Wave 2)*
+
+- [ ] 03-05-PLAN.md — main.py (FastAPI endpoints) + requirements.txt + Dockerfile + docker-compose healthcheck
+
+**Wave 4** *(blocked on Wave 3)*
+
+- [ ] 03-06-PLAN.md — Integration checkpoint: docker build, live IOC + ATT&CK verification in OpenCTI
 
 ---
 
