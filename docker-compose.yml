@@ -248,12 +248,21 @@ services:
       - OPENCTI_URL=http://opencti:8080
       - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
       - REDIS_URL=redis://redis:6379
+      - OTX_API_KEY=${OTX_API_KEY}
+      - MALWAREBAZAAR_AUTH_KEY=${MALWAREBAZAAR_AUTH_KEY}
+      - THREATFOX_AUTH_KEY=${THREATFOX_AUTH_KEY}
     mem_limit: 1g
     depends_on:
       opencti:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import redis; r=redis.from_url('redis://redis:6379'); r.ping()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     networks:
       - tim-network
     restart: unless-stopped
