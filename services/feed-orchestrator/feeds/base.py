@@ -155,7 +155,7 @@ class BaseFeed(ABC):
                 confidence=confidence,
                 labels=ind.get("labels", []),
                 source_name=ind.get("source_name", self.name),
-                valid_from=ind.get("valid_from"),
+                valid_from=first_seen_dt.isoformat(),  # ISO 8601 required by OpenCTI GraphQL
             )
             if result is not None:
                 count += 1

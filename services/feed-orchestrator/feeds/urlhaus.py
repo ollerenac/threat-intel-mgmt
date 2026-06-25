@@ -16,6 +16,8 @@ from feeds.base import BaseFeed
 logger = logging.getLogger(__name__)
 
 URLHAUS_URL = "https://urlhaus.abuse.ch/downloads/csv_recent/"
+# URLhaus CSV has no non-comment header row; field order is fixed per their docs
+_URLHAUS_FIELDS = ["id", "dateadded", "url", "url_status", "last_online", "threat", "tags", "urlhaus_link", "reporter"]
 
 
 class URLhausFeed(BaseFeed):
@@ -26,9 +28,8 @@ class URLhausFeed(BaseFeed):
     def fetch(self) -> list[dict]:
         resp = requests.get(URLHAUS_URL, timeout=30)
         resp.raise_for_status()
-        # ponytail: filter before DictReader — skips comment header block (Pitfall 4)
         lines = [l for l in resp.text.splitlines() if not l.startswith("#")]
-        return list(csv.DictReader(lines))
+        return list(csv.DictReader(lines, fieldnames=_URLHAUS_FIELDS))
 
     def normalize(self, raw: list[dict]) -> list[dict]:
         result = []
