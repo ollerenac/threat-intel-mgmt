@@ -3,20 +3,20 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 3 context gathered — 9 decisions locked, CONTEXT.md committed
-last_updated: "2026-06-25T19:41:34.187Z"
+stopped_at: Phase 3 complete — intel-extractor integration checkpoint approved
+last_updated: "2026-06-25T23:12:00.000Z"
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 18
-  completed_plans: 17
-  percent: 33
+  completed_plans: 18
+  percent: 50
 ---
 
 # STATE: TIM — Threat Intelligence Management System
 
 **Last updated:** 2026-06-25
-**Session:** Phase 2 Plan 07 complete — normalizer, scheduler, main entry point wired
+**Session:** Phase 3 Plan 06 complete — integration checkpoint approved, Phase 3 COMPLETE
 
 ---
 
@@ -24,7 +24,7 @@ progress:
 
 **Core value:** An analyst can ingest any threat intelligence source — structured feed or unstructured PDF — and immediately search, correlate, and brief stakeholders on active threats, without a single IOC leaving the local network.
 
-**Current focus:** Phase 03 — ai-ioc-extraction
+**Current focus:** Phase 04 — semantic-search (next)
 
 ---
 
@@ -32,17 +32,16 @@ progress:
 
 | Field | Value |
 |-------|-------|
-| Active phase | Phase 2: Feed Ingestion Pipeline (ready to plan) |
-| Parallel phase | Phase 3: AI IOC Extraction (ready to plan — depends only on Phase 1) |
-| Status | Executing Phase 03 |
-| Phase progress | 1/6 phases complete |
+| Active phase | Phase 4: Semantic Search (ready to execute) |
+| Status | Phase 3 complete |
+| Phase progress | 3/6 phases complete (Phase 1 ✓, Phase 3 ✓, Phase 2 in progress) |
 
 **Progress bar:**
 
 ```
 Phase 1 [██████████] 100% ✓ COMPLETE
-Phase 2 [          ] 0%
-Phase 3 [          ] 0%
+Phase 2 [██████████] 100% ✓ COMPLETE
+Phase 3 [██████████] 100% ✓ COMPLETE
 Phase 4 [          ] 0%
 Phase 5 [          ] 0%
 Phase 6 [          ] 0%
@@ -122,7 +121,7 @@ None.
 
 **Resume file:** .planning/phases/03-ai-ioc-extraction/03-CONTEXT.md
 
-**Last session:** 2026-06-25T19:41:34.182Z
+**Last session:** 2026-06-25T23:11:04.442Z
 **Stopped at:** Phase 3 context gathered — 9 decisions locked, CONTEXT.md committed
 
 **To resume work:**
@@ -149,3 +148,5 @@ None.
 - [Phase 02-07]: D-06 enforced — all 5 feeds run synchronously before scheduler.start()
 - [Phase ?]: [Phase 03-03]: report_types=[threat-report] used — report_class= is deprecated in pycti 6.4.11
 - [Phase ?]: [Phase 03-03]: lookup_attack_pattern returns internal UUID not x_mitre_id (D-08)
+- [Phase 03-06]: libmagic1 apt package required in python:3.12-slim for pycti (python-magic wraps C library libmagic.so)
+- [Phase 03-06]: Python urllib.request healthcheck probe is the correct pattern for python:3.12-slim images (no curl available)

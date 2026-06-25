@@ -8,7 +8,7 @@
 
 - [x] **Phase 1: Platform Foundation** - OpenCTI stack deployed and operational with all backing services healthy
 - [x] **Phase 2: Feed Ingestion Pipeline** - feed-orchestrator service ingesting, normalizing, and scoring IOCs from all 5+ sources (completed 2026-06-25)
-- [ ] **Phase 3: AI IOC Extraction** - intel-extractor service processing PDFs and URLs via local LLM into OpenCTI STIX objects
+- [x] **Phase 3: AI IOC Extraction** - intel-extractor service processing PDFs and URLs via local LLM into OpenCTI STIX objects (completed 2026-06-25)
 - [ ] **Phase 4: Semantic Search Engine** - semantic-engine indexing all IOCs as vectors and serving natural-language queries
 - [ ] **Phase 5: Briefing Generator** - briefing-generator producing and exporting executive summaries from live OpenCTI data
 - [ ] **Phase 6: SOC Dashboard** - React frontend unifying all services into a demo-ready three-view interface
@@ -107,7 +107,7 @@ Plans:
   3. IOCs extracted from documents that mention ATT&CK technique names appear in OpenCTI linked to the corresponding `attack-pattern` objects (e.g. T1566 for phishing references)
   4. A document longer than 8K tokens (LLM context limit) is processed completely — no IOCs are silently dropped at chunk boundaries
 
-**Plans**: 5/6 plans executed
+**Plans**: 6/6 plans complete
 
 Plans:
 
@@ -130,7 +130,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3)*
 
-- [ ] 03-06-PLAN.md — Integration checkpoint: docker build, live IOC + ATT&CK verification in OpenCTI
+- [x] 03-06-PLAN.md — Integration checkpoint: docker build, live IOC + ATT&CK verification in OpenCTI
 
 ---
 
@@ -199,7 +199,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation | 3/4 | In Progress|  |
 | 2. Feed Ingestion Pipeline | 8/8 | Complete   | 2026-06-25 |
-| 3. AI IOC Extraction | 5/6 | In Progress|  |
+| 3. AI IOC Extraction | 6/6 | Complete   | 2026-06-25 |
 | 4. Semantic Search Engine | 0/? | Not started | - |
 | 5. Briefing Generator | 0/? | Not started | - |
 | 6. SOC Dashboard | 0/? | Not started | - |
