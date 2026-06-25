@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: paused
-stopped_at: planning interrupted at /gsd-plan-phase 3 start (2026-06-25)
-last_updated: "2026-06-25T14:50:00Z"
+stopped_at: Phase 3 context gathered — 9 decisions locked, CONTEXT.md committed
+last_updated: "2026-06-25T15:11:03.035Z"
 progress:
   total_phases: 6
   completed_phases: 2
@@ -117,10 +117,10 @@ None.
 
 ## Session Continuity
 
-**Resume file:** .planning/phases/02-feed-ingestion-pipeline/02-CONTEXT.md
+**Resume file:** .planning/phases/03-ai-ioc-extraction/03-CONTEXT.md
 
-**Last session:** 2026-06-25T13:22:46.530Z
-**Stopped at:** context exhaustion at 75% (2026-06-25)
+**Last session:** 2026-06-25T15:11:03.030Z
+**Stopped at:** Phase 3 context gathered — 9 decisions locked, CONTEXT.md committed
 
 **To resume work:**
 
