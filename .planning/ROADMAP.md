@@ -66,15 +66,15 @@ Plans:
   3. Submitting the same IOC from two different feeds results in one deduplicated object in OpenCTI, not two
   4. Feeds run automatically on their configured cadences (no manual trigger required) — confirmed by checking OpenCTI for new IOCs after waiting one cycle
 
-**Plans**: 1/8 plans executed
+**Plans**: 3/8 plans executed
 
 Plans:
 
 **Wave 1** *(all parallel — no dependencies between 01, 02, 03)*
 
 - [x] 02-01-PLAN.md — Test scaffold: pytest.ini, conftest.py, 7 RED-phase test files (FEED-01 through FEED-05)
-- [ ] 02-02-PLAN.md — Core service infrastructure: Dockerfile, requirements.txt, config.py, status.py, deduplicator.py, opencti_client.py, feeds/base.py
-- [ ] 02-03-PLAN.md — Docker/env config: docker-compose.yml healthcheck + env vars, .env.example MALWAREBAZAAR_AUTH_KEY + THREATFOX_AUTH_KEY
+- [x] 02-02-PLAN.md — Core service infrastructure: Dockerfile, requirements.txt, config.py, status.py, deduplicator.py, opencti_client.py, feeds/base.py
+- [x] 02-03-PLAN.md — Docker/env config: docker-compose.yml healthcheck + env vars, .env.example MALWAREBAZAAR_AUTH_KEY + THREATFOX_AUTH_KEY
 
 **Wave 2** *(blocked on Wave 1 02-01 + 02-02; 04/05/06 parallel with each other)*
 
@@ -175,7 +175,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation | 3/4 | In Progress|  |
-| 2. Feed Ingestion Pipeline | 1/8 | In Progress|  |
+| 2. Feed Ingestion Pipeline | 3/8 | In Progress|  |
 | 3. AI IOC Extraction | 0/? | Not started | - |
 | 4. Semantic Search Engine | 0/? | Not started | - |
 | 5. Briefing Generator | 0/? | Not started | - |
