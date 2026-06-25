@@ -885,23 +885,27 @@ CMD ["python", "main.py"]
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **MalwareBazaar and ThreatFox API keys — are they in .env?**
    - STATE.md only confirms `OTX_API_KEY` stored. MB and TF also require Auth-Keys (free at abuse.ch).
    - Recommendation: Add both as optional vars in `.env.example`; implement D-07-style disabled handling for each.
+   - **DISPOSITION (RESOLVED):** Plans treat MB and TF keys as optional with empty-string defaults — same pattern as OTX (D-07). If absent, feed logs warning and sets `status=disabled`. No blocker.
 
 2. **pycti `objectLabel` vs `labels` parameter name**
    - The pycti source inspection showed `objectLabel` (list) as the parameter. Training data shows `labels`. These may differ.
    - Recommendation: Verify in `pycti/entities/opencti_indicator.py` line by line in Wave 0 before writing the normalizer.
+   - **DISPOSITION (RESOLVED):** Plan 02 Task 2 now includes a required verify step: executor must grep the installed pycti source (`opencti_indicator.py`) to confirm the exact parameter name before finalizing `opencti_client.py`. If the name differs from `objectLabel`, the call is updated in place. This is load-bearing — wrong parameter means all indicators are submitted with no labels silently.
 
 3. **Redis dedup TTL strategy for cross-feed dedup**
    - The design assigns feed_count bonuses for IOCs seen in multiple feeds. If Redis TTL is 24h, an IOC from Feed A at hour 0 blocks Feed B at hour 2 from inserting (Redis SETNX returns false) — so the second-feed confidence boost is never applied.
    - Recommendation: Store dedup key as `{pattern_hash}:{feed_name}` to allow cross-feed confidence merging, OR accept that cross-feed dedup uses pycti's `update=True` merge and the confidence is set per-feed-run independently. The simplest approach: use pycti update=True as the sole dedup and drop the Redis seen-set for cross-feed tracking.
+   - **DISPOSITION (RESOLVED — accepted limitation):** `seen_in_feeds` will always equal 1 in live system. Each IOC is seen once per run window per feed; Redis SETNX blocks the second-feed insert before it reaches pycti. The cross-feed confidence bonus (seen_in_feeds > 1) is a known non-delivery for demo scope. `compute_confidence()` still produces valid scores in the range [15, 65] for single-feed IOCs. Unit tests may exercise `seen_in_feeds > 1` by calling `compute_confidence()` directly. Documented in Plan 07 must_haves. No code change required.
 
 4. **`x_opencti_main_observable_type` valid values**
    - Confirmed: `"IPv4-Addr"`, `"Domain-Name"`, `"Url"`, `"StixFile"`. Need to verify exact casing for OpenCTI 6.4.
    - Recommendation: Check OpenCTI enum in pycti source or OpenCTI GraphQL schema.
+   - **DISPOSITION (RESOLVED):** Observable types are passed directly from each feed's `normalize()` output using the `OBSERVABLE_TYPE_MAP` defined in `normalizer.py`. The four values (`Url`, `Domain-Name`, `IPv4-Addr`, `StixFile`) are taken verbatim from the RESEARCH.md code example (Pattern 3) which was sourced from pycti documentation. If a value is wrong, pycti will raise or return None — surfaced immediately in Wave 3 integration testing.
 
 ---
 
