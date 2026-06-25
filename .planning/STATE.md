@@ -4,19 +4,19 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 2 context gathered — ready to plan
-last_updated: "2026-06-25T09:15:32.455Z"
+last_updated: "2026-06-25T09:20:04.009Z"
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 12
-  completed_plans: 10
+  completed_plans: 11
   percent: 17
 ---
 
 # STATE: TIM — Threat Intelligence Management System
 
 **Last updated:** 2026-06-25
-**Session:** Phase 1 complete — all 4 plans executed, VERIFICATION.md passed 5/5
+**Session:** Phase 2 Plan 07 complete — normalizer, scheduler, main entry point wired
 
 ---
 
@@ -64,6 +64,7 @@ Phase 6 [          ] 0%
 | Phase 02 P01 | 3m | 2 tasks | 9 files |
 | Phase 02 P03 | 7m | 2 tasks | 2 files |
 | Phase 02-feed-ingestion-pipeline P04 | 5 | 2 tasks | 2 files |
+| Phase 02-feed-ingestion-pipeline P07 | 8m | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -118,7 +119,7 @@ None.
 
 **Resume file:** .planning/phases/02-feed-ingestion-pipeline/02-CONTEXT.md
 
-**Last session:** 2026-06-25T09:15:32.450Z
+**Last session:** 2026-06-25T09:20:04.004Z
 **Stopped at:** Phase 02 Plan 03 complete — docker-compose.yml feed-orchestrator updated, .env.example updated
 
 **To resume work:**
@@ -140,3 +141,6 @@ None.
 - [Phase ?]: D-09 formula values embedded as comments in test_normalizer.py (feodo-new=65, otx-7d=53, cap=100) so Wave 3 executor can verify formula without re-reading RESEARCH.md
 - [Phase ?]: CSV comment-skip filter applied before DictReader — ensures first non-comment line becomes header row
 - [Phase ?]: Feodo c2 label hardcoded unconditionally — all entries are confirmed botnet C2 servers
+- [Phase 02-07]: D-09 confidence formula: min(100, seen_in_feeds*25 + max(0,10-days_old) + quality_weight)
+- [Phase 02-07]: Lazy import from normalizer in _insert_deduplicated avoids circular dependency at module load
+- [Phase 02-07]: D-06 enforced — all 5 feeds run synchronously before scheduler.start()

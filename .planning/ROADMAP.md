@@ -66,7 +66,7 @@ Plans:
   3. Submitting the same IOC from two different feeds results in one deduplicated object in OpenCTI, not two
   4. Feeds run automatically on their configured cadences (no manual trigger required) — confirmed by checking OpenCTI for new IOCs after waiting one cycle
 
-**Plans**: 6/8 plans executed
+**Plans**: 7/8 plans executed
 
 Plans:
 
@@ -84,7 +84,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 02-07-PLAN.md — Wiring: normalizer.py (D-09 confidence formula), scheduler.py, main.py entry point (FEED-05, FEED-06)
+- [x] 02-07-PLAN.md — Wiring: normalizer.py (D-09 confidence formula), scheduler.py, main.py entry point (FEED-05, FEED-06)
 
 **Wave 4** *(blocked on Wave 3 + 02-03)*
 
@@ -175,7 +175,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation | 3/4 | In Progress|  |
-| 2. Feed Ingestion Pipeline | 6/8 | In Progress|  |
+| 2. Feed Ingestion Pipeline | 7/8 | In Progress|  |
 | 3. AI IOC Extraction | 0/? | Not started | - |
 | 4. Semantic Search Engine | 0/? | Not started | - |
 | 5. Briefing Generator | 0/? | Not started | - |
