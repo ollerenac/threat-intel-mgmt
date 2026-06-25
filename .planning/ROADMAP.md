@@ -66,7 +66,7 @@ Plans:
   3. Submitting the same IOC from two different feeds results in one deduplicated object in OpenCTI, not two
   4. Feeds run automatically on their configured cadences (no manual trigger required) — confirmed by checking OpenCTI for new IOCs after waiting one cycle
 
-**Plans**: 3/8 plans executed
+**Plans**: 4/8 plans executed
 
 Plans:
 
@@ -78,7 +78,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 02-01 + 02-02; 04/05/06 parallel with each other)*
 
-- [ ] 02-04-PLAN.md — CSV feeds: URLhausFeed + FeodoFeed (FEED-01, FEED-02)
+- [x] 02-04-PLAN.md — CSV feeds: URLhausFeed + FeodoFeed (FEED-01, FEED-02)
 - [ ] 02-05-PLAN.md — JSON POST feeds: MalwareBazaarFeed + ThreatFoxFeed (FEED-02)
 - [ ] 02-06-PLAN.md — SDK feed: OTXFeed with modified_since time window (FEED-03)
 
@@ -175,7 +175,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation | 3/4 | In Progress|  |
-| 2. Feed Ingestion Pipeline | 3/8 | In Progress|  |
+| 2. Feed Ingestion Pipeline | 4/8 | In Progress|  |
 | 3. AI IOC Extraction | 0/? | Not started | - |
 | 4. Semantic Search Engine | 0/? | Not started | - |
 | 5. Briefing Generator | 0/? | Not started | - |
