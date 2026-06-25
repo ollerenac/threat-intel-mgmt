@@ -1,0 +1,44 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-06-25T05:55:20.107Z",
+  "phase": "02",
+  "phase_name": "feed-ingestion-pipeline",
+  "phase_dir": ".planning/phases/02-feed-ingestion-pipeline",
+  "plan": 0,
+  "task": 0,
+  "total_tasks": 0,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": "resume-work", "name": "gsd-resume-work — loaded prior session state, consumed HANDOFF.json and .continue-here.md", "status": "done", "commit": "0ea66e4"},
+    {"id": "discuss-phase-2", "name": "gsd-discuss-phase 2 — gathered Phase 2 implementation decisions (feed health, failure behavior, startup, STIX scope)", "status": "done", "commit": "0c6b7a4"},
+    {"id": "state-update", "name": "STATE.md updated to reflect Phase 2 context gathered", "status": "done", "commit": "0a52fca"}
+  ],
+  "remaining_tasks": [
+    {"id": "plan-phase-2", "name": "Plan Phase 2: Feed Ingestion Pipeline — /gsd-plan-phase 2", "status": "not_started"},
+    {"id": "discuss-phase-3", "name": "Optional: Discuss Phase 3 context first — /gsd-discuss-phase 3", "status": "not_started"},
+    {"id": "plan-phase-3", "name": "Plan Phase 3: AI IOC Extraction — /gsd-plan-phase 3 (parallel track, depends on Phase 1 only)", "status": "not_started"},
+    {"id": "otx-api-key", "name": "Obtain AlienVault OTX free API key (needed before Phase 2 execution)", "status": "not_started"}
+  ],
+  "blockers": [],
+  "async_jobs": [],
+  "human_actions_pending": [
+    {
+      "action": "Obtain AlienVault OTX free API key from otx.alienvault.com (free account)",
+      "context": "Required for FEED-03 in Phase 2 execution. Planning can proceed without it. Key goes in .env as OTX_API_KEY. The feed-orchestrator will skip OTX gracefully if key is absent (advisory behavior locked in CONTEXT.md D-07).",
+      "blocking": false
+    }
+  ],
+  "decisions": [
+    {"decision": "Feed health stored in Redis hash keys: tim:feed_status:{feed_name}", "rationale": "Redis already deployed; pure background worker pattern; no FastAPI/port needed on feed-orchestrator; dashboard reads Redis directly in Phase 6", "phase": "02"},
+    {"decision": "Feed status fields: last_run, ioc_count, status (ok/error/running/never_run/disabled), error_msg", "rationale": "Minimal set sufficient for Phase 6 feed health panel", "phase": "02"},
+    {"decision": "Feed download failure: retry 3x exponential backoff (30s→60s→120s), then skip with status=error", "rationale": "Handles transient network blips; APScheduler native retry; other feeds unaffected", "phase": "02"},
+    {"decision": "pycti insertion failure: same 3x backoff, then skip. Lost IOCs acceptable for demo scope.", "rationale": "Next scheduled run re-downloads; no persistent buffer needed", "phase": "02"},
+    {"decision": "Run all feeds immediately on container startup, then schedule on cadences", "rationale": "Demo requires IOCs in OpenCTI within minutes; otherwise wait up to 6h for OTX first tick", "phase": "02"},
+    {"decision": "OTX_API_KEY absent: log warning, mark Redis status=disabled, skip OTX, run other 4 feeds", "rationale": "Graceful degradation; service starts cleanly before key is obtained", "phase": "02"},
+    {"decision": "STIX scope: indicator SDOs only. Malware family names in labels field.", "rationale": "FEED-01 through FEED-06 do not require malware SDOs; intel-extractor Phase 3 owns enrichment", "phase": "02"},
+    {"decision": "Confidence weights: Feodo=30, OTX=25, ThreatFox=20, URLhaus=15, MalwareBazaar=15", "rationale": "Tiered by source curation quality; higher signal feeds get higher weight", "phase": "02"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "Run /gsd-plan-phase 2 to plan Feed Ingestion Pipeline. Optionally run /gsd-discuss-phase 3 first to gather context for Phase 3 before planning it in parallel.",
+  "context_notes": "Session closed at a clean boundary. Phase 2 context is fully gathered and committed (02-CONTEXT.md + 02-DISCUSSION-LOG.md). All 8 key decisions are locked in CONTEXT.md. No uncommitted work. Phase 3 (AI IOC Extraction) is also unblocked and can be discussed/planned in the same next session. The OTX API key is the only pending human action — non-blocking for planning, needed before execution of the OTX feed task."
+}
