@@ -32,7 +32,6 @@ Build `feed-orchestrator` — a Python background service that downloads IOCs fr
 ### Feed Health State Storage
 - **D-01:** Feed status is written to Redis hash keys: `tim:feed_status:{feed_name}` (e.g., `tim:feed_status:urlhaus`). No HTTP endpoint on the orchestrator — pure background worker.
 - **D-02:** Each feed status hash contains exactly 4 fields: `last_run` (ISO-8601 timestamp), `ioc_count` (integer count for that run), `status` (one of: `ok` / `error` / `running` / `never_run` / `disabled`), `error_msg` (string or empty).
-- **D-03:** Dashboard (Phase 6) reads feed health directly from Redis using these keys — no intermediate API needed.
 
 ### Feed Failure Handling
 - **D-04:** On feed download failure: retry 3× with exponential backoff (30s → 60s → 120s). If all 3 retries fail, mark `status=error` in Redis and continue with remaining feeds. Other feeds are never blocked by one failing source.
@@ -58,6 +57,7 @@ Build `feed-orchestrator` — a Python background service that downloads IOCs fr
   `recency_bonus` and `feed_count` logic: Claude's discretion (suggest recency_bonus = max(0, 10 - days_old) capped at 10; feed_count = number of independent sources reporting the same IOC value).
 
 ### Claude's Discretion
+- Phase 6 reads `tim:feed_status:{name}` keys directly from Redis — no intermediate HTTP API on feed-orchestrator. (D-03 upstream constraint for dashboard.)
 - Recency bonus formula: `max(0, 10 - days_since_first_seen)` — linear decay over 10 days, floor at 0.
 - Feed-level scheduling jitter: small random offset (±60s) per feed to avoid thundering-herd on startup.
 - Redis key TTL: feed status keys have no TTL (persist indefinitely — always shows last known state).
