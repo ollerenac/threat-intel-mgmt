@@ -23,11 +23,11 @@
 
 ### AI — IOC Extraction
 
-- [ ] **AIEX-01**: intel-extractor accepts a PDF file and extracts IOCs via local LLM
-- [ ] **AIEX-02**: intel-extractor accepts a URL and extracts IOCs from scraped content
-- [ ] **AIEX-03**: Extracted IOCs are mapped to MITRE ATT&CK techniques where mentioned
-- [ ] **AIEX-04**: Extraction result is inserted into OpenCTI as STIX objects
-- [ ] **AIEX-05**: Long documents are chunked and processed without losing IOCs at boundaries
+- [x] **AIEX-01**: intel-extractor accepts a PDF file and extracts IOCs via local LLM
+- [x] **AIEX-02**: intel-extractor accepts a URL and extracts IOCs from scraped content
+- [x] **AIEX-03**: Extracted IOCs are mapped to MITRE ATT&CK techniques where mentioned
+- [x] **AIEX-04**: Extraction result is inserted into OpenCTI as STIX objects
+- [x] **AIEX-05**: Long documents are chunked and processed without losing IOCs at boundaries
 
 ### AI — Semantic Search
 
@@ -102,11 +102,11 @@
 | FEED-04 | Phase 2 | Complete |
 | FEED-05 | Phase 2 | Complete |
 | FEED-06 | Phase 2 | Complete |
-| AIEX-01 | Phase 3 | Pending |
-| AIEX-02 | Phase 3 | Pending |
-| AIEX-03 | Phase 3 | Pending |
-| AIEX-04 | Phase 3 | Pending |
-| AIEX-05 | Phase 3 | Pending |
+| AIEX-01 | Phase 3 | Complete |
+| AIEX-02 | Phase 3 | Complete |
+| AIEX-03 | Phase 3 | Complete |
+| AIEX-04 | Phase 3 | Complete |
+| AIEX-05 | Phase 3 | Complete |
 | AISEM-01 | Phase 4 | Pending |
 | AISEM-02 | Phase 4 | Pending |
 | AISEM-03 | Phase 4 | Pending |

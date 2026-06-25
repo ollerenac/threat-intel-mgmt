@@ -107,13 +107,13 @@ Plans:
   3. IOCs extracted from documents that mention ATT&CK technique names appear in OpenCTI linked to the corresponding `attack-pattern` objects (e.g. T1566 for phishing references)
   4. A document longer than 8K tokens (LLM context limit) is processed completely — no IOCs are silently dropped at chunk boundaries
 
-**Plans**: 6 plans
+**Plans**: 1/6 plans executed
 
 Plans:
 
 **Wave 0**
 
-- [ ] 03-01-PLAN.md — Test scaffold: pytest.ini, conftest, 5 RED test files (AIEX-01 through AIEX-05)
+- [x] 03-01-PLAN.md — Test scaffold: pytest.ini, conftest, 5 RED test files (AIEX-01 through AIEX-05)
 
 **Wave 1** *(parallel — no file conflicts)*
 
@@ -199,7 +199,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation | 3/4 | In Progress|  |
 | 2. Feed Ingestion Pipeline | 8/8 | Complete   | 2026-06-25 |
-| 3. AI IOC Extraction | 0/? | Not started | - |
+| 3. AI IOC Extraction | 1/6 | In Progress|  |
 | 4. Semantic Search Engine | 0/? | Not started | - |
 | 5. Briefing Generator | 0/? | Not started | - |
 | 6. SOC Dashboard | 0/? | Not started | - |
