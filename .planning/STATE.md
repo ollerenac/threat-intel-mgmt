@@ -4,12 +4,12 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 2 context gathered — ready to plan
-last_updated: "2026-06-25T05:54:16.411Z"
+last_updated: "2026-06-25T06:51:44.620Z"
 progress:
   total_phases: 6
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 12
+  completed_plans: 5
   percent: 17
 ---
 
@@ -24,7 +24,7 @@ progress:
 
 **Core value:** An analyst can ingest any threat intelligence source — structured feed or unstructured PDF — and immediately search, correlate, and brief stakeholders on active threats, without a single IOC leaving the local network.
 
-**Current focus:** Phase 02 — feed-ingestion-pipeline (+ Phase 03 in parallel)
+**Current focus:** Phase 02 — feed-ingestion-pipeline
 
 ---
 
@@ -34,7 +34,7 @@ progress:
 |-------|-------|
 | Active phase | Phase 2: Feed Ingestion Pipeline (ready to plan) |
 | Parallel phase | Phase 3: AI IOC Extraction (ready to plan — depends only on Phase 1) |
-| Status | Phase 1 verified complete; ready to plan Phase 2 + 3 in parallel |
+| Status | Executing Phase 02 |
 | Phase progress | 1/6 phases complete |
 
 **Progress bar:**
@@ -61,6 +61,7 @@ Phase 6 [          ] 0%
 | Phases complete | 1/6 |
 
 ---
+| Phase 02 P01 | 3m | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -115,7 +116,7 @@ None.
 
 **Resume file:** .planning/phases/02-feed-ingestion-pipeline/02-CONTEXT.md
 
-**Last session:** 2026-06-25T06:03:00.000Z
+**Last session:** 2026-06-25T06:51:28.633Z
 **Stopped at:** Session resumed — OTX key stored, ready to plan Phase 2
 
 **To resume work:**
@@ -130,3 +131,8 @@ None.
 
 ---
 *State initialized: 2026-06-23 | Phase 1 closed: 2026-06-25*
+
+## Decisions
+
+- [Phase ?]: RED-phase TDD: test files define STIX contracts before production code exists
+- [Phase ?]: D-09 formula values embedded as comments in test_normalizer.py (feodo-new=65, otx-7d=53, cap=100) so Wave 3 executor can verify formula without re-reading RESEARCH.md

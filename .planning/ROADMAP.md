@@ -66,13 +66,13 @@ Plans:
   3. Submitting the same IOC from two different feeds results in one deduplicated object in OpenCTI, not two
   4. Feeds run automatically on their configured cadences (no manual trigger required) — confirmed by checking OpenCTI for new IOCs after waiting one cycle
 
-**Plans**: 8 plans
+**Plans**: 1/8 plans executed
 
 Plans:
 
 **Wave 1** *(all parallel — no dependencies between 01, 02, 03)*
 
-- [ ] 02-01-PLAN.md — Test scaffold: pytest.ini, conftest.py, 7 RED-phase test files (FEED-01 through FEED-05)
+- [x] 02-01-PLAN.md — Test scaffold: pytest.ini, conftest.py, 7 RED-phase test files (FEED-01 through FEED-05)
 - [ ] 02-02-PLAN.md — Core service infrastructure: Dockerfile, requirements.txt, config.py, status.py, deduplicator.py, opencti_client.py, feeds/base.py
 - [ ] 02-03-PLAN.md — Docker/env config: docker-compose.yml healthcheck + env vars, .env.example MALWAREBAZAAR_AUTH_KEY + THREATFOX_AUTH_KEY
 
@@ -175,7 +175,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation | 3/4 | In Progress|  |
-| 2. Feed Ingestion Pipeline | 0/? | Not started | - |
+| 2. Feed Ingestion Pipeline | 1/8 | In Progress|  |
 | 3. AI IOC Extraction | 0/? | Not started | - |
 | 4. Semantic Search Engine | 0/? | Not started | - |
 | 5. Briefing Generator | 0/? | Not started | - |

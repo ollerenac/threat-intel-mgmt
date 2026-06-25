@@ -14,11 +14,11 @@
 
 ### Feed Ingestion
 
-- [ ] **FEED-01**: Feed orchestrator downloads URLhaus feed and normalizes IOCs to STIX 2.1
-- [ ] **FEED-02**: Feed orchestrator downloads MalwareBazaar, ThreatFox, Feodo Tracker feeds
-- [ ] **FEED-03**: Feed orchestrator downloads AlienVault OTX feed (with API key)
-- [ ] **FEED-04**: IOCs from all feeds are deduplicated before insertion into OpenCTI
-- [ ] **FEED-05**: Each IOC has a confidence score (0-100) based on feed count, recency, and quality
+- [x] **FEED-01**: Feed orchestrator downloads URLhaus feed and normalizes IOCs to STIX 2.1
+- [x] **FEED-02**: Feed orchestrator downloads MalwareBazaar, ThreatFox, Feodo Tracker feeds
+- [x] **FEED-03**: Feed orchestrator downloads AlienVault OTX feed (with API key)
+- [x] **FEED-04**: IOCs from all feeds are deduplicated before insertion into OpenCTI
+- [x] **FEED-05**: Each IOC has a confidence score (0-100) based on feed count, recency, and quality
 - [ ] **FEED-06**: Feeds run on schedule automatically (no manual trigger required)
 
 ### AI — IOC Extraction
@@ -96,11 +96,11 @@
 | PLAT-02 | Phase 1 | Pending |
 | PLAT-03 | Phase 1 | Pending |
 | PLAT-04 | Phase 1 | Pending |
-| FEED-01 | Phase 2 | Pending |
-| FEED-02 | Phase 2 | Pending |
-| FEED-03 | Phase 2 | Pending |
-| FEED-04 | Phase 2 | Pending |
-| FEED-05 | Phase 2 | Pending |
+| FEED-01 | Phase 2 | Complete |
+| FEED-02 | Phase 2 | Complete |
+| FEED-03 | Phase 2 | Complete |
+| FEED-04 | Phase 2 | Complete |
+| FEED-05 | Phase 2 | Complete |
 | FEED-06 | Phase 2 | Pending |
 | AIEX-01 | Phase 3 | Pending |
 | AIEX-02 | Phase 3 | Pending |
@@ -127,6 +127,7 @@
 | DEPL-04 | Phase 1 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 30 total
 - Mapped to phases: 30
 - Unmapped: 0 ✓
