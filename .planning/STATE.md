@@ -4,12 +4,12 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 3 context gathered — 9 decisions locked, CONTEXT.md committed
-last_updated: "2026-06-25T16:08:26.861Z"
+last_updated: "2026-06-25T16:11:50.080Z"
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 18
-  completed_plans: 14
+  completed_plans: 15
   percent: 33
 ---
 
@@ -66,6 +66,7 @@ Phase 6 [          ] 0%
 | Phase 02-feed-ingestion-pipeline P04 | 5 | 2 tasks | 2 files |
 | Phase 02-feed-ingestion-pipeline P07 | 8m | 2 tasks | 4 files |
 | Phase 03 P02 | 2m | 2 tasks | 3 files |
+| Phase 03-ai-ioc-extraction P03 | 5m | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -120,7 +121,7 @@ None.
 
 **Resume file:** .planning/phases/03-ai-ioc-extraction/03-CONTEXT.md
 
-**Last session:** 2026-06-25T16:08:22.959Z
+**Last session:** 2026-06-25T16:11:39.965Z
 **Stopped at:** Phase 3 context gathered — 9 decisions locked, CONTEXT.md committed
 
 **To resume work:**
@@ -145,3 +146,5 @@ None.
 - [Phase 02-07]: D-09 confidence formula: min(100, seen_in_feeds*25 + max(0,10-days_old) + quality_weight)
 - [Phase 02-07]: Lazy import from normalizer in _insert_deduplicated avoids circular dependency at module load
 - [Phase 02-07]: D-06 enforced — all 5 feeds run synchronously before scheduler.start()
+- [Phase ?]: [Phase 03-03]: report_types=[threat-report] used — report_class= is deprecated in pycti 6.4.11
+- [Phase ?]: [Phase 03-03]: lookup_attack_pattern returns internal UUID not x_mitre_id (D-08)
