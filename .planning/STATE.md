@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 2 context gathered — ready to plan
-last_updated: "2026-06-25T09:20:04.009Z"
+status: paused
+stopped_at: context exhaustion at 75% (2026-06-25)
+last_updated: "2026-06-25T13:26:56.044Z"
 progress:
   total_phases: 6
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 12
-  completed_plans: 11
-  percent: 17
+  completed_plans: 12
+  percent: 33
 ---
 
 # STATE: TIM — Threat Intelligence Management System
@@ -34,7 +34,7 @@ progress:
 |-------|-------|
 | Active phase | Phase 2: Feed Ingestion Pipeline (ready to plan) |
 | Parallel phase | Phase 3: AI IOC Extraction (ready to plan — depends only on Phase 1) |
-| Status | Executing Phase 02 |
+| Status | paused |
 | Phase progress | 1/6 phases complete |
 
 **Progress bar:**
@@ -119,8 +119,8 @@ None.
 
 **Resume file:** .planning/phases/02-feed-ingestion-pipeline/02-CONTEXT.md
 
-**Last session:** 2026-06-25T09:20:04.004Z
-**Stopped at:** Phase 02 Plan 03 complete — docker-compose.yml feed-orchestrator updated, .env.example updated
+**Last session:** 2026-06-25T13:22:46.530Z
+**Stopped at:** context exhaustion at 75% (2026-06-25)
 
 **To resume work:**
 

@@ -19,7 +19,7 @@
 - [x] **FEED-03**: Feed orchestrator downloads AlienVault OTX feed (with API key)
 - [x] **FEED-04**: IOCs from all feeds are deduplicated before insertion into OpenCTI
 - [x] **FEED-05**: Each IOC has a confidence score (0-100) based on feed count, recency, and quality
-- [ ] **FEED-06**: Feeds run on schedule automatically (no manual trigger required)
+- [x] **FEED-06**: Feeds run on schedule automatically (no manual trigger required)
 
 ### AI — IOC Extraction
 
@@ -101,7 +101,7 @@
 | FEED-03 | Phase 2 | Complete |
 | FEED-04 | Phase 2 | Complete |
 | FEED-05 | Phase 2 | Complete |
-| FEED-06 | Phase 2 | Pending |
+| FEED-06 | Phase 2 | Complete |
 | AIEX-01 | Phase 3 | Pending |
 | AIEX-02 | Phase 3 | Pending |
 | AIEX-03 | Phase 3 | Pending |

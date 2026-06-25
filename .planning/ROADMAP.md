@@ -7,7 +7,7 @@
 ## Phases
 
 - [x] **Phase 1: Platform Foundation** - OpenCTI stack deployed and operational with all backing services healthy
-- [ ] **Phase 2: Feed Ingestion Pipeline** - feed-orchestrator service ingesting, normalizing, and scoring IOCs from all 5+ sources
+- [x] **Phase 2: Feed Ingestion Pipeline** - feed-orchestrator service ingesting, normalizing, and scoring IOCs from all 5+ sources (completed 2026-06-25)
 - [ ] **Phase 3: AI IOC Extraction** - intel-extractor service processing PDFs and URLs via local LLM into OpenCTI STIX objects
 - [ ] **Phase 4: Semantic Search Engine** - semantic-engine indexing all IOCs as vectors and serving natural-language queries
 - [ ] **Phase 5: Briefing Generator** - briefing-generator producing and exporting executive summaries from live OpenCTI data
@@ -66,7 +66,7 @@ Plans:
   3. Submitting the same IOC from two different feeds results in one deduplicated object in OpenCTI, not two
   4. Feeds run automatically on their configured cadences (no manual trigger required) — confirmed by checking OpenCTI for new IOCs after waiting one cycle
 
-**Plans**: 7/8 plans executed
+**Plans**: 8/8 plans complete
 
 Plans:
 
@@ -88,7 +88,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 + 02-03)*
 
-- [ ] 02-08-PLAN.md — Integration checkpoint: docker build, live IOC verification in OpenCTI, dedup + schedule confirmation
+- [x] 02-08-PLAN.md — Integration checkpoint: docker build, live IOC verification in OpenCTI, dedup + schedule confirmation
 
 ---
 
@@ -175,7 +175,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation | 3/4 | In Progress|  |
-| 2. Feed Ingestion Pipeline | 7/8 | In Progress|  |
+| 2. Feed Ingestion Pipeline | 8/8 | Complete   | 2026-06-25 |
 | 3. AI IOC Extraction | 0/? | Not started | - |
 | 4. Semantic Search Engine | 0/? | Not started | - |
 | 5. Briefing Generator | 0/? | Not started | - |
