@@ -74,16 +74,11 @@ def extract_url_text(url: str) -> str:
         raise ValueError("URL has no hostname")
     _check_ssrf(hostname)
 
-    # ponytail: trafilatura follows redirects internally; redirect-to-private-IP bypass
-    # is accepted as out-of-scope for this local analyst tool.
-    downloaded = trafilatura.fetch_url(url)  # returns None on failure, does NOT raise
-    if downloaded:
-        result = trafilatura.extract(downloaded)
-        if result:
-            return result
-
-    logger.info("[parser] trafilatura failed for %s — falling back to requests+BeautifulSoup", hostname)
     resp = requests.get(url, timeout=15, allow_redirects=False, headers={"User-Agent": "Mozilla/5.0"})
     resp.raise_for_status()
+    result = trafilatura.extract(resp.text)
+    if result:
+        return result
+    logger.info("[parser] trafilatura extract failed for %s — falling back to BeautifulSoup", hostname)
     soup = BeautifulSoup(resp.text, "html.parser")
     return soup.get_text(separator="\n", strip=True)

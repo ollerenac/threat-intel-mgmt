@@ -48,8 +48,8 @@ def test_extract_url_text():
 
 @_skip
 def test_extract_url_text_trafilatura_fallback(monkeypatch):
-    # GREEN: trafilatura.fetch_url returns None → fallback to requests+BS4
+    # GREEN: trafilatura.extract returns None → fallback to BeautifulSoup
     import trafilatura
-    monkeypatch.setattr(trafilatura, "fetch_url", lambda url: None)
+    monkeypatch.setattr(trafilatura, "extract", lambda *a, **kw: None)
     result = extract_url_text("https://example.com")
     assert isinstance(result, str) and len(result) > 0
