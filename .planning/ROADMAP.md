@@ -66,7 +66,29 @@ Plans:
   3. Submitting the same IOC from two different feeds results in one deduplicated object in OpenCTI, not two
   4. Feeds run automatically on their configured cadences (no manual trigger required) — confirmed by checking OpenCTI for new IOCs after waiting one cycle
 
-**Plans**: TBD
+**Plans**: 8 plans
+
+Plans:
+
+**Wave 1** *(all parallel — no dependencies between 01, 02, 03)*
+
+- [ ] 02-01-PLAN.md — Test scaffold: pytest.ini, conftest.py, 7 RED-phase test files (FEED-01 through FEED-05)
+- [ ] 02-02-PLAN.md — Core service infrastructure: Dockerfile, requirements.txt, config.py, status.py, deduplicator.py, opencti_client.py, feeds/base.py
+- [ ] 02-03-PLAN.md — Docker/env config: docker-compose.yml healthcheck + env vars, .env.example MALWAREBAZAAR_AUTH_KEY + THREATFOX_AUTH_KEY
+
+**Wave 2** *(blocked on Wave 1 02-01 + 02-02; 04/05/06 parallel with each other)*
+
+- [ ] 02-04-PLAN.md — CSV feeds: URLhausFeed + FeodoFeed (FEED-01, FEED-02)
+- [ ] 02-05-PLAN.md — JSON POST feeds: MalwareBazaarFeed + ThreatFoxFeed (FEED-02)
+- [ ] 02-06-PLAN.md — SDK feed: OTXFeed with modified_since time window (FEED-03)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 02-07-PLAN.md — Wiring: normalizer.py (D-09 confidence formula), scheduler.py, main.py entry point (FEED-05, FEED-06)
+
+**Wave 4** *(blocked on Wave 3 + 02-03)*
+
+- [ ] 02-08-PLAN.md — Integration checkpoint: docker build, live IOC verification in OpenCTI, dedup + schedule confirmation
 
 ---
 
