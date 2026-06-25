@@ -107,7 +107,7 @@ Plans:
   3. IOCs extracted from documents that mention ATT&CK technique names appear in OpenCTI linked to the corresponding `attack-pattern` objects (e.g. T1566 for phishing references)
   4. A document longer than 8K tokens (LLM context limit) is processed completely — no IOCs are silently dropped at chunk boundaries
 
-**Plans**: 3/6 plans executed
+**Plans**: 5/6 plans executed
 
 Plans:
 
@@ -122,11 +122,11 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1)*
 
-- [ ] 03-04-PLAN.md — extractor.py: chunk_text, call_llm (D-03 fallback), build_stix_pattern, run_extraction pipeline
+- [x] 03-04-PLAN.md — extractor.py: chunk_text, call_llm (D-03 fallback), build_stix_pattern, run_extraction pipeline
 
 **Wave 3** *(blocked on Wave 2)*
 
-- [ ] 03-05-PLAN.md — main.py (FastAPI endpoints) + requirements.txt + Dockerfile + docker-compose healthcheck
+- [x] 03-05-PLAN.md — main.py (FastAPI endpoints) + requirements.txt + Dockerfile + docker-compose healthcheck
 
 **Wave 4** *(blocked on Wave 3)*
 
@@ -199,7 +199,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation | 3/4 | In Progress|  |
 | 2. Feed Ingestion Pipeline | 8/8 | Complete   | 2026-06-25 |
-| 3. AI IOC Extraction | 3/6 | In Progress|  |
+| 3. AI IOC Extraction | 5/6 | In Progress|  |
 | 4. Semantic Search Engine | 0/? | Not started | - |
 | 5. Briefing Generator | 0/? | Not started | - |
 | 6. SOC Dashboard | 0/? | Not started | - |
