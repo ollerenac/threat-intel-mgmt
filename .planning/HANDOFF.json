@@ -1,15 +1,15 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-25T13:26:51.273Z",
-  "phase": "02",
-  "phase_name": "feed-ingestion-pipeline",
-  "phase_dir": ".planning/phases/02-feed-ingestion-pipeline",
-  "status": "phase_complete",
-  "stopped_at": "Phase 02 complete — all 8 plans executed, integration verified, feed-orchestrator live",
-  "completed_plans": ["02-01","02-02","02-03","02-04","02-05","02-06","02-07","02-08"],
-  "remaining_plans": [],
-  "next_action": "gsd-verify-work 2",
-  "next_phase": "03",
+  "timestamp": "2026-06-25T14:50:00Z",
+  "phase": "03",
+  "phase_name": "AI IOC Extraction",
+  "phase_dir": ".planning/phases/03-ai-ioc-extraction",
+  "status": "planning_not_started",
+  "stopped_at": "Phase 3 directory created, /gsd-plan-phase 3 interrupted before researcher or planner ran",
+  "next_action": "/gsd-plan-phase 3",
+  "next_phase": "04",
+  "completed_plans": [],
+  "remaining_plans": ["03-01 through 03-N (TBD by planner)"],
   "blocking_constraints": [
     {
       "id": "BC-01",
@@ -27,7 +27,7 @@
       "id": "BC-03",
       "severity": "advisory",
       "title": "URLhaus CSV has no non-comment header row",
-      "detail": "csv_recent/ response has all header info in # comment lines. DictReader must be given explicit fieldnames=['id','dateadded','url','url_status','last_online','threat','tags','urlhaus_link','reporter'] or it uses the first data row as header and returns 0 indicators."
+      "detail": "csv_recent/ response has all header info in # comment lines. DictReader must be given explicit fieldnames or it uses the first data row as header and returns 0 indicators."
     }
   ],
   "human_actions_pending": [],
@@ -39,8 +39,23 @@
       "note": "URLhaus scheduled to re-run every 1h; Feodo every 4h; OTX every 6h"
     }
   ],
+  "session_summary": {
+    "phase_2_uat": "COMPLETE — 14/14 tests passed (commit 5308547). Cold start, URLhaus+Feodo IOCs in OpenCTI, confidence Score=45 verified, dedup key prefix correct, pytest 25/25, BaseFeed importable.",
+    "phase_2_status": "Phase 2 fully complete — all 8 plans executed + UAT passed",
+    "phase_3_status": "Directory created (.planning/phases/03-ai-ioc-extraction/), no research or plans yet"
+  },
+  "phase_3_context": {
+    "requirements": ["AIEX-01","AIEX-02","AIEX-03","AIEX-04","AIEX-05"],
+    "goal": "An analyst can submit a PDF file or a URL to the intel-extractor service and receive extracted IOCs — mapped to MITRE ATT&CK techniques where mentioned — inserted into OpenCTI as STIX objects, processed entirely by the local LLM.",
+    "depends_on": "Phase 1 only (NOT Phase 2)",
+    "key_constraints": [
+      "GPU VRAM: 4GB — only one large model active at a time",
+      "No external API calls — all LLM processing must remain local via Ollama",
+      "Local LLM: llama3.2:3b (already pulled via init-models.sh in Phase 1)"
+    ]
+  },
   "integration_notes": {
-    "ioc_count_in_redis": "22656 tim:ioc_seen: dedup keys from initial URLhaus run",
+    "ioc_count_in_redis": "22656+ tim:ioc_seen: dedup keys",
     "feeds_enabled": ["urlhaus", "feodo", "otx"],
     "feeds_disabled": ["malwarebazaar", "threatfox"],
     "disabled_reason": "MALWAREBAZAAR_AUTH_KEY and THREATFOX_AUTH_KEY not set in .env"
