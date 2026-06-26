@@ -10,7 +10,7 @@
 - [x] **Phase 2: Feed Ingestion Pipeline** - feed-orchestrator service ingesting, normalizing, and scoring IOCs from all 5+ sources (completed 2026-06-25)
 - [x] **Phase 3: AI IOC Extraction** - intel-extractor service processing PDFs and URLs via local LLM into OpenCTI STIX objects (completed 2026-06-25)
 - [x] **Phase 4: Semantic Search Engine** - semantic-engine indexing all IOCs as vectors and serving natural-language queries (completed 2026-06-26)
-- [ ] **Phase 5: Briefing Generator** - briefing-generator producing and exporting executive summaries from live OpenCTI data
+- [x] **Phase 5: Briefing Generator** - briefing-generator producing and exporting executive summaries from live OpenCTI data (completed 2026-06-26)
 - [ ] **Phase 6: SOC Dashboard** - React frontend unifying all services into a demo-ready three-view interface
 
 ## Phase Details
@@ -190,7 +190,7 @@ Plans:
   3. `GET /briefings/{id}/pdf` returns a downloadable PDF containing the briefing text
   4. A briefing can be triggered and retrieved without any command-line interaction (API call only)
 
-**Plans**: 3/4 plans executed
+**Plans**: 4/4 plans complete
 
 Plans:
 
@@ -208,7 +208,7 @@ Plans:
 
 **Wave 3** *(blocked on Waves 1 + 2)*
 
-- [ ] 05-04-PLAN.md — FastAPI entrypoint + Docker Compose integration: main.py, all endpoints, live verification
+- [x] 05-04-PLAN.md — FastAPI entrypoint + Docker Compose integration: main.py, all endpoints, live verification
 
 ---
 
@@ -241,7 +241,7 @@ Plans:
 | 2. Feed Ingestion Pipeline | 8/8 | Complete   | 2026-06-25 |
 | 3. AI IOC Extraction | 6/6 | Complete    | 2026-06-25 |
 | 4. Semantic Search Engine | 5/5 | Complete    | 2026-06-26 |
-| 5. Briefing Generator | 3/4 | In Progress|  |
+| 5. Briefing Generator | 4/4 | Complete   | 2026-06-26 |
 | 6. SOC Dashboard | 0/? | Not started | - |
 
 ---
