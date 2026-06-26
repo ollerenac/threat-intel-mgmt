@@ -1,63 +1,31 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-25T14:50:00Z",
-  "phase": "03",
-  "phase_name": "AI IOC Extraction",
-  "phase_dir": ".planning/phases/03-ai-ioc-extraction",
-  "status": "planning_not_started",
-  "stopped_at": "Phase 3 directory created, /gsd-plan-phase 3 interrupted before researcher or planner ran",
-  "next_action": "/gsd-plan-phase 3",
-  "next_phase": "04",
-  "completed_plans": [],
-  "remaining_plans": ["03-01 through 03-N (TBD by planner)"],
-  "blocking_constraints": [
-    {
-      "id": "BC-01",
-      "severity": "advisory",
-      "title": "feed-orchestrator requires both --profile platform and --profile feeds",
-      "detail": "feed-orchestrator depends_on opencti which has profiles:[platform]. Any docker compose command for feed-orchestrator must use: docker compose --profile platform --profile feeds <cmd>. Using only --profile feeds gives 'no such service: opencti' error."
-    },
-    {
-      "id": "BC-02",
-      "severity": "advisory",
-      "title": "pycti 6.4.x externalReferences expects ID strings not dicts",
-      "detail": "client.indicator.create(externalReferences=[{'source_name':'X'}]) fails with VALIDATION_ERROR. pycti expects a list of pre-created external reference IDs. Removed from opencti_client.py for Phase 2 scope."
-    },
-    {
-      "id": "BC-03",
-      "severity": "advisory",
-      "title": "URLhaus CSV has no non-comment header row",
-      "detail": "csv_recent/ response has all header info in # comment lines. DictReader must be given explicit fieldnames or it uses the first data row as header and returns 0 indicators."
-    }
+  "timestamp": "2026-06-26T06:05:19.371Z",
+  "phase": "05",
+  "phase_name": "briefing-generator",
+  "phase_dir": ".planning/phases/05-briefing-generator",
+  "plan": null,
+  "task": null,
+  "total_tasks": null,
+  "status": "phase-boundary",
+  "completed_tasks": [
+    {"id": "04-01", "name": "RED-phase test scaffold", "status": "done", "commit": "ff5670f"},
+    {"id": "04-02", "name": "Service foundation (Dockerfile, config, opencti_client)", "status": "done", "commit": "a4fb3ab"},
+    {"id": "04-03", "name": "indexer.py — embed, watermark, run_index_loop", "status": "done", "commit": "8ee4230"},
+    {"id": "04-04", "name": "searcher.py + FastAPI main.py", "status": "done", "commit": "e135bf3"},
+    {"id": "04-05", "name": "Integration checkpoint — AISEM-01-04 verified live", "status": "done", "commit": "55f80a5"}
   ],
+  "remaining_tasks": [],
+  "blockers": [],
+  "async_jobs": [],
   "human_actions_pending": [],
-  "background_processes": [
-    {
-      "name": "feed-orchestrator",
-      "command": "docker compose --profile platform --profile feeds ps feed-orchestrator",
-      "status": "running (healthy)",
-      "note": "URLhaus scheduled to re-run every 1h; Feodo every 4h; OTX every 6h"
-    }
+  "decisions": [
+    {"decision": "asyncio.to_thread for index cycle", "rationale": "sync Ollama/ChromaDB clients inside async def blocked event loop — /health returned nothing until fix", "phase": "04"},
+    {"decision": "n_results clamped [1,100]", "rationale": "uncapped int param passed directly to ChromaDB — DoS vector caught by background security review", "phase": "04"},
+    {"decision": "libmagic1 stays in Dockerfile", "rationale": "pycti imports python-magic at module level regardless of use — required C lib", "phase": "04"},
+    {"decision": "_run_index_cycle sync helper pattern", "rationale": "extract blocking work to sync function, await with asyncio.to_thread — cleaner than per-call wrapping", "phase": "04"}
   ],
-  "session_summary": {
-    "phase_2_uat": "COMPLETE — 14/14 tests passed (commit 5308547). Cold start, URLhaus+Feodo IOCs in OpenCTI, confidence Score=45 verified, dedup key prefix correct, pytest 25/25, BaseFeed importable.",
-    "phase_2_status": "Phase 2 fully complete — all 8 plans executed + UAT passed",
-    "phase_3_status": "Directory created (.planning/phases/03-ai-ioc-extraction/), no research or plans yet"
-  },
-  "phase_3_context": {
-    "requirements": ["AIEX-01","AIEX-02","AIEX-03","AIEX-04","AIEX-05"],
-    "goal": "An analyst can submit a PDF file or a URL to the intel-extractor service and receive extracted IOCs — mapped to MITRE ATT&CK techniques where mentioned — inserted into OpenCTI as STIX objects, processed entirely by the local LLM.",
-    "depends_on": "Phase 1 only (NOT Phase 2)",
-    "key_constraints": [
-      "GPU VRAM: 4GB — only one large model active at a time",
-      "No external API calls — all LLM processing must remain local via Ollama",
-      "Local LLM: llama3.2:3b (already pulled via init-models.sh in Phase 1)"
-    ]
-  },
-  "integration_notes": {
-    "ioc_count_in_redis": "22656+ tim:ioc_seen: dedup keys",
-    "feeds_enabled": ["urlhaus", "feodo", "otx"],
-    "feeds_disabled": ["malwarebazaar", "threatfox"],
-    "disabled_reason": "MALWAREBAZAAR_AUTH_KEY and THREATFOX_AUTH_KEY not set in .env"
-  }
+  "uncommitted_files": [],
+  "next_action": "Run /gsd-discuss-phase 5 to capture decisions before planning the briefing-generator service",
+  "context_notes": "Phase 4 fully complete — 5/5 plans, 7/7 verification passed, 23k+ IOCs indexed and searchable live. Two integration bugs caught during live checkpoint (event-loop starvation, DoS clamp). Stack is running healthy. Phase 5 needs: POST /generate endpoint, LLM summarization via Ollama llama3.2:3b, PDF export, no external deps."
 }
