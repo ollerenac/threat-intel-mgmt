@@ -40,7 +40,7 @@ def _make_updated_at_filter(period_hours: int) -> dict:
     since = (datetime.now(timezone.utc) - timedelta(hours=period_hours)).isoformat()
     return {
         "mode": "and",
-        "filters": [{"key": "updated_at", "values": [since]}],
+        "filters": [{"key": "updated_at", "values": [since], "operator": "gt"}],
         "filterGroups": [],
     }
 
