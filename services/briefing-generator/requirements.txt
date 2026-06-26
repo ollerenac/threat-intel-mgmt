@@ -1,0 +1,7 @@
+fastapi==0.115.14
+uvicorn
+pycti==6.4.11
+ollama==0.6.2
+fpdf2==2.8.7
+pytest
+pytest-mock
