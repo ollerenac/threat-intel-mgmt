@@ -199,7 +199,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation | 3/4 | In Progress|  |
 | 2. Feed Ingestion Pipeline | 8/8 | Complete   | 2026-06-25 |
-| 3. AI IOC Extraction | 6/6 | Complete   | 2026-06-25 |
+| 3. AI IOC Extraction | 6/6 | Complete    | 2026-06-25 |
 | 4. Semantic Search Engine | 0/? | Not started | - |
 | 5. Briefing Generator | 0/? | Not started | - |
 | 6. SOC Dashboard | 0/? | Not started | - |
