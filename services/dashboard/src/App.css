@@ -1,0 +1,127 @@
+/* Design system tokens — UI-SPEC color palette */
+:root {
+  --color-bg: #0f1117;
+  --color-surface: #1a1d27;
+  --color-accent: #3b82f6;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-destructive: #ef4444;
+  --color-text: #f1f5f9;
+  --color-muted: #64748b;
+  --color-border: #2d3141;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+}
+
+/* Nav */
+nav {
+  background: var(--color-surface);
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  min-height: 44px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  color: var(--color-muted);
+  padding: var(--space-md) var(--space-lg);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  min-height: 44px;
+  border-bottom: 3px solid transparent;
+}
+
+.tab.active {
+  color: var(--color-text);
+  font-weight: 600;
+  border-bottom: 3px solid var(--color-accent);
+}
+
+/* Main content */
+main {
+  padding: var(--space-lg);
+}
+
+/* Score badge */
+.score-badge {
+  background: var(--color-accent);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Status dot */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-ok { background-color: var(--color-success); }
+.status-error { background-color: var(--color-destructive); }
+.status-stale { background-color: var(--color-warning); }
+.status-never_run { background-color: var(--color-muted); }
+
+/* Card */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: var(--color-md);
+}
+
+/* Input */
+input,
+select {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+}
+
+/* Button primary */
+.btn-primary {
+  background: var(--color-accent);
+  color: white;
+  border: none;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Muted text */
+.muted {
+  color: var(--color-muted);
+}
