@@ -149,7 +149,29 @@ Plans:
   3. Each result includes a similarity score between 0.0 and 1.0
   4. Each result includes a direct URL to the corresponding object in OpenCTI
 
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+
+**Wave 0**
+
+- [ ] 04-01-PLAN.md — Test scaffold: pytest.ini, conftest.py, test_indexer.py, test_searcher.py (RED stubs)
+
+**Wave 1** *(blocked on Wave 0)*
+
+- [ ] 04-02-PLAN.md — Service infrastructure: Dockerfile, requirements.txt, config.py, opencti_client.py + docker-compose.yml env/healthcheck
+
+**Wave 2** *(blocked on Wave 1)*
+
+- [ ] 04-03-PLAN.md — indexer.py: build_embed_text (D-01/D-03), ChromaDB cosine collection, watermark, run_index_loop
+
+**Wave 3** *(blocked on Wave 2)*
+
+- [ ] 04-04-PLAN.md — searcher.py (distance→similarity, threshold filter) + main.py (lifespan, /health, /search)
+
+**Wave 4** *(blocked on Wave 3)*
+
+- [ ] 04-05-PLAN.md — Integration checkpoint: docker build, live indexing + natural-language search verification
 
 ---
 
