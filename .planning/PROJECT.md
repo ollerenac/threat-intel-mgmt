@@ -23,10 +23,9 @@ An analyst can ingest any threat intelligence source — structured feed or unst
 - [x] Structured feed ingestion from 3 active sources (URLhaus, Feodo Tracker, OTX); MalwareBazaar/ThreatFox pending auth keys — Validated in Phase 2
 - [x] IOCs normalized to STIX 2.1 with confidence scoring (D-09 formula) — Validated in Phase 2
 - [x] IOC extraction from unstructured documents (PDF, URL) via local LLM (llama3.2:3b) — Validated in Phase 3
+- [x] Semantic similarity search over IOCs via local embeddings (nomic-embed-text, ChromaDB, 23k+ indicators) — Validated in Phase 4
 
 ### Active
-
-- [ ] Semantic similarity search over IOCs via local embeddings
 - [ ] Automated executive briefing generation from live OpenCTI data
 - [ ] SOC Dashboard with Overview, Threat Hunt, and Briefings views
 - [ ] Full Docker Compose deployment on single node
@@ -62,8 +61,8 @@ An analyst can ingest any threat intelligence source — structured feed or unst
 |----------|-----------|---------|
 | OpenCTI over MISP | Better graph visualization for demo; STIX 2.1 native; more impressive to SOC decision-makers | Validated in Phase 1 |
 | Local LLM (Ollama) over cloud APIs | Data sovereignty + competitive differentiation | Validated in Phase 3 — llama3.2:3b extracts IOCs end-to-end |
-| ChromaDB for vector store | Lightweight, Docker-native, no external deps | — Pending (Phase 4) |
-| Pull-based semantic indexing (5 min poll) | Simpler than OpenCTI webhooks for demo scope | — Pending (Phase 4) |
+| ChromaDB for vector store | Lightweight, Docker-native, no external deps | Validated in Phase 4 — cosine HNSW collection, 23k+ IOCs indexed |
+| Pull-based semantic indexing (5 min poll) | Simpler than OpenCTI webhooks for demo scope | Validated in Phase 4 — asyncio.to_thread keeps /health non-blocking during index |
 | React + Vite for dashboard | Fast dev, TanStack Query handles dual API sources cleanly | — Pending (Phase 6) |
 
 ## Evolution
@@ -78,4 +77,4 @@ This document evolves at phase transitions and milestone boundaries.
 5. "What This Is" still accurate? → Update if drifted
 
 ---
-*Last updated: 2026-06-25 after Phase 3 (ai-ioc-extraction) completion*
+*Last updated: 2026-06-26 after Phase 4 (semantic-search-engine) completion*
