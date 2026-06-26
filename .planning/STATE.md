@@ -5,12 +5,12 @@ milestone_name: milestone
 current_plan: 1
 status: executing
 stopped_at: Phase 5 context gathered
-last_updated: "2026-06-26T07:23:07.234Z"
+last_updated: "2026-06-26T07:28:12.238Z"
 progress:
   total_phases: 6
   completed_phases: 4
   total_plans: 27
-  completed_plans: 24
+  completed_plans: 25
   percent: 67
 ---
 
@@ -73,6 +73,7 @@ Phase 6 [          ] 0%
 | Phase 04 P02 | 5m | 2 tasks | 5 files |
 | Phase 04-semantic-search-engine P03 | 4m | 1 tasks | 1 files |
 | Phase 05-briefing-generator P01 | 2m | 2 tasks | 7 files |
+| Phase 05-briefing-generator P02 | 2m | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -127,7 +128,7 @@ None.
 
 **Resume file:** .planning/phases/05-briefing-generator/05-CONTEXT.md
 
-**Last session:** 2026-06-26T07:22:27.397Z
+**Last session:** 2026-06-26T07:27:39.226Z
 **Stopped at:** Phase 5 context gathered
 
 **To resume work:**
@@ -167,3 +168,6 @@ None.
 - [Phase 05-01]: DejaVuSans.ttf committed to repo from official dejavu-fonts 2.37 release — avoids wget at Docker build time
 - [Phase 05-01]: import-guard+skipif pattern inherited from Phase 4 — tests SKIP not FAIL when production modules absent
 - [Phase 05-01]: ollama==0.6.2 pinned (not floating) — version-locks response.message.content attribute path
+- [Phase ?]: OLLAMA_TIMEOUT=60 default — prose generation 30-45s on 4GB VRAM
+- [Phase ?]: briefings dict is module-level — exported for Plan 04 main.py; acceptable for demo (D-10)
+- [Phase ?]: No format=json on ollama chat call — prose output mode distinct from intel-extractor JSON extraction
