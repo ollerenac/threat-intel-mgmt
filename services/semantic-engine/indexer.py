@@ -177,49 +177,51 @@ def _index_batch(collection, indicators: list[dict]) -> int:
     return count
 
 
+def _run_index_cycle(watermark: Optional[str]) -> tuple:
+    """Sync helper — one full index cycle. Runs in a thread via asyncio.to_thread.
+
+    All blocking I/O (pycti, ollama, chromadb) is safe to do here because the
+    caller awaits this in a threadpool — the event loop stays free to serve /health
+    and /search while indexing is in progress (fixes event-loop starvation on startup).
+    """
+    client = build_pycti_client()
+    collection = get_collection()
+
+    if watermark is None:
+        watermark = read_watermark(collection)
+
+    if watermark is None:
+        logger.info("[indexer] No watermark found — running full index")
+        indicators = list_all_indicators(client)
+    else:
+        logger.info("[indexer] Watermark %s — running incremental index", watermark)
+        indicators = list_indicators_since(client, watermark)
+
+    index_state["status"] = "indexing"
+    index_state["total"] = len(indicators)
+    index_state["indexed"] = 0
+
+    indexed = _index_batch(collection, indicators)
+    index_state["indexed"] = indexed
+
+    new_watermark = datetime.utcnow().isoformat() + "Z"
+    write_watermark(collection, new_watermark)
+    index_state["status"] = "ready"
+    logger.info("[indexer] Cycle complete: %d/%d indexed", indexed, len(indicators))
+    return indexed, new_watermark
+
+
 async def run_index_loop() -> None:
-    """
-    Async coroutine that indexes IOCs on startup then polls every POLL_INTERVAL_SECONDS.
+    """Async coroutine — offloads each blocking index cycle to a thread (D-05).
 
-    Launched as a fire-and-forget asyncio.create_task from main.py lifespan so
-    /health never blocks (D-05). A single cycle exception is caught and logged;
-    the loop continues to retry after sleeping.
-
-    Watermark pattern (D-04):
-      - No watermark → full index (first startup or ChromaDB wiped on restart)
-      - Watermark present → incremental fetch of updated_at > watermark
+    asyncio.to_thread releases the event loop during sync I/O so /health responds
+    immediately even while indexing is in progress.
     """
-    watermark: Optional[str] = None  # track across cycles; None forces full fetch on first
+    watermark: Optional[str] = None
 
     while True:
         try:
-            client = build_pycti_client()
-            collection = get_collection()
-
-            if watermark is None:
-                # First pass of this loop run: read from ChromaDB
-                watermark = read_watermark(collection)
-
-            if watermark is None:
-                logger.info("[indexer] No watermark found — running full index")
-                indicators = list_all_indicators(client)
-            else:
-                logger.info("[indexer] Watermark %s — running incremental index", watermark)
-                indicators = list_indicators_since(client, watermark)
-
-            index_state["status"] = "indexing"
-            index_state["total"] = len(indicators)
-            index_state["indexed"] = 0
-
-            indexed = _index_batch(collection, indicators)
-            index_state["indexed"] = indexed
-
-            watermark = datetime.utcnow().isoformat() + "Z"
-            write_watermark(collection, watermark)
-
-            index_state["status"] = "ready"
-            logger.info("[indexer] Cycle complete: %d/%d indexed", indexed, len(indicators))
-
+            _, watermark = await asyncio.to_thread(_run_index_cycle, watermark)
         except Exception as exc:
             logger.error("[indexer] Cycle failed: %s", exc)
             index_state["status"] = "error"
