@@ -19,14 +19,13 @@ An analyst can ingest any threat intelligence source — structured feed or unst
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] OpenCTI platform deployed and operational with MITRE ATT&CK pre-loaded — Validated in Phase 1
+- [x] Structured feed ingestion from 3 active sources (URLhaus, Feodo Tracker, OTX); MalwareBazaar/ThreatFox pending auth keys — Validated in Phase 2
+- [x] IOCs normalized to STIX 2.1 with confidence scoring (D-09 formula) — Validated in Phase 2
+- [x] IOC extraction from unstructured documents (PDF, URL) via local LLM (llama3.2:3b) — Validated in Phase 3
 
 ### Active
 
-- [ ] OpenCTI platform deployed and operational with MITRE ATT&CK pre-loaded
-- [ ] Structured feed ingestion from 5+ free sources (URLhaus, MalwareBazaar, ThreatFox, Feodo Tracker, OTX)
-- [ ] IOCs normalized to STIX 2.1 with confidence scoring
-- [ ] IOC extraction from unstructured documents (PDF, URL, text) via local LLM
 - [ ] Semantic similarity search over IOCs via local embeddings
 - [ ] Automated executive briefing generation from live OpenCTI data
 - [ ] SOC Dashboard with Overview, Threat Hunt, and Briefings views
@@ -61,11 +60,11 @@ An analyst can ingest any threat intelligence source — structured feed or unst
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| OpenCTI over MISP | Better graph visualization for demo; STIX 2.1 native; more impressive to SOC decision-makers | — Pending |
-| Local LLM (Ollama) over cloud APIs | Data sovereignty + competitive differentiation | — Pending |
-| ChromaDB for vector store | Lightweight, Docker-native, no external deps | — Pending |
-| Pull-based semantic indexing (5 min poll) | Simpler than OpenCTI webhooks for demo scope | — Pending |
-| React + Vite for dashboard | Fast dev, TanStack Query handles dual API sources cleanly | — Pending |
+| OpenCTI over MISP | Better graph visualization for demo; STIX 2.1 native; more impressive to SOC decision-makers | Validated in Phase 1 |
+| Local LLM (Ollama) over cloud APIs | Data sovereignty + competitive differentiation | Validated in Phase 3 — llama3.2:3b extracts IOCs end-to-end |
+| ChromaDB for vector store | Lightweight, Docker-native, no external deps | — Pending (Phase 4) |
+| Pull-based semantic indexing (5 min poll) | Simpler than OpenCTI webhooks for demo scope | — Pending (Phase 4) |
+| React + Vite for dashboard | Fast dev, TanStack Query handles dual API sources cleanly | — Pending (Phase 6) |
 
 ## Evolution
 
@@ -79,4 +78,4 @@ This document evolves at phase transitions and milestone boundaries.
 5. "What This Is" still accurate? → Update if drifted
 
 ---
-*Last updated: 2026-06-23 after initialization*
+*Last updated: 2026-06-25 after Phase 3 (ai-ioc-extraction) completion*
