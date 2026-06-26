@@ -1,0 +1,7 @@
+fastapi==0.115.14
+uvicorn
+chromadb==1.5.9
+ollama==0.6.2
+pycti==6.4.11
+pytest
+pytest-mock
