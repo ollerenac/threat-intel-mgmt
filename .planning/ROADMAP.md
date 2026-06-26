@@ -11,7 +11,7 @@
 - [x] **Phase 3: AI IOC Extraction** - intel-extractor service processing PDFs and URLs via local LLM into OpenCTI STIX objects (completed 2026-06-25)
 - [x] **Phase 4: Semantic Search Engine** - semantic-engine indexing all IOCs as vectors and serving natural-language queries (completed 2026-06-26)
 - [x] **Phase 5: Briefing Generator** - briefing-generator producing and exporting executive summaries from live OpenCTI data (completed 2026-06-26)
-- [ ] **Phase 6: SOC Dashboard** - React frontend unifying all services into a demo-ready three-view interface
+- [x] **Phase 6: SOC Dashboard** - React frontend unifying all services into a demo-ready three-view interface (completed 2026-06-26)
 
 ## Phase Details
 
@@ -228,7 +228,7 @@ Plans:
   4. Briefings view lists all generated briefings and provides a working PDF download for each
   5. The dashboard is accessible at `localhost:3000` with no additional setup after `docker compose up -d`
 
-**Plans**: 3/4 plans executed
+**Plans**: 4/4 plans complete
 
 Plans:
 
@@ -240,7 +240,7 @@ Plans:
 **Wave 2** *(blocked on Wave 1)*
 
 - [x] 06-03-PLAN.md — Dashboard views: api.js, Overview.jsx, ThreatHunt.jsx, Briefings.jsx, App.jsx wired
-- [ ] 06-04-PLAN.md — Integration checkpoint: full stack smoke tests + human visual verification (DASH-01..06)
+- [x] 06-04-PLAN.md — Integration checkpoint: full stack smoke tests + human visual verification (DASH-01..06)
 
 ---
 
@@ -253,7 +253,7 @@ Plans:
 | 3. AI IOC Extraction | 6/6 | Complete    | 2026-06-25 |
 | 4. Semantic Search Engine | 5/5 | Complete    | 2026-06-26 |
 | 5. Briefing Generator | 4/4 | Complete   | 2026-06-26 |
-| 6. SOC Dashboard | 3/4 | In Progress|  |
+| 6. SOC Dashboard | 4/4 | Complete   | 2026-06-26 |
 
 ---
 *Roadmap created: 2026-06-23*
