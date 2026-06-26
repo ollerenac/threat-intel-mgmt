@@ -85,12 +85,19 @@ main {
 .status-stale { background-color: var(--color-warning); }
 .status-never_run { background-color: var(--color-muted); }
 
+/* Feed grid */
+.feed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-xl);
+}
+
 /* Card */
 .card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 6px;
-  padding: var(--color-md);
+  padding: var(--space-md);
 }
 
 /* Input */

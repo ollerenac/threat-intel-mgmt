@@ -1,10 +1,15 @@
 import { useState } from 'react';
 import './App.css';
+import Overview from './views/Overview';
+import ThreatHunt from './views/ThreatHunt';
+import Briefings from './views/Briefings';
 
 const TABS = ['Overview', 'Threat Hunt', 'Briefings'];
+const VIEWS = { Overview, 'Threat Hunt': ThreatHunt, Briefings };
 
 export default function App() {
   const [tab, setTab] = useState('Overview');
+  const View = VIEWS[tab];
   return (
     <>
       <nav role="navigation">
@@ -18,8 +23,8 @@ export default function App() {
           </button>
         ))}
       </nav>
-      <main>
-        <div className="tab-content">{tab}</div>
+      <main className="main-content">
+        <View />
       </main>
     </>
   );
