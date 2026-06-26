@@ -244,6 +244,8 @@ services:
   feed-orchestrator:
     build: ./services/feed-orchestrator
     profiles: [feeds]
+    ports:
+      - "127.0.0.1:8001:8001"
     environment:
       - OPENCTI_URL=http://opencti:8080
       - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
@@ -258,7 +260,8 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import redis; r=redis.from_url('redis://redis:6379'); r.ping()"]
+      # ponytail: python stdlib probe — curl not available in python:3.12-slim
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -356,21 +359,18 @@ services:
 # ─────────────────────────────────────────────
 
   soc-dashboard:
-    build: ./services/soc-dashboard
+    build: ./services/dashboard
     profiles: [dashboard]
     ports:
-      - "3000:3000"
-    environment:
-      - VITE_OPENCTI_URL=http://localhost:8080
-      - VITE_INTEL_EXTRACTOR_URL=http://localhost:8001
-      - VITE_SEMANTIC_ENGINE_URL=http://localhost:8002
-      - VITE_BRIEFING_GENERATOR_URL=http://localhost:8003
+      - "3000:80"
     mem_limit: 512m
     depends_on:
-      - opencti
-      - intel-extractor
-      - semantic-engine
-      - briefing-generator
+      feed-orchestrator:
+        condition: service_healthy
+      semantic-engine:
+        condition: service_healthy
+      briefing-generator:
+        condition: service_healthy
     networks:
       - tim-network
     restart: unless-stopped
