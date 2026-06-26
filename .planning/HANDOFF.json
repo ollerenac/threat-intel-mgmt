@@ -1,31 +1,41 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-26T06:05:19.371Z",
-  "phase": "05",
-  "phase_name": "briefing-generator",
-  "phase_dir": ".planning/phases/05-briefing-generator",
-  "plan": null,
-  "task": null,
-  "total_tasks": null,
-  "status": "phase-boundary",
+  "timestamp": "2026-06-26T23:18:31.785Z",
+  "phase": "06",
+  "phase_name": "soc-dashboard",
+  "phase_dir": ".planning/phases/06-soc-dashboard",
+  "plan": 4,
+  "task": "complete",
+  "status": "paused",
   "completed_tasks": [
-    {"id": "04-01", "name": "RED-phase test scaffold", "status": "done", "commit": "ff5670f"},
-    {"id": "04-02", "name": "Service foundation (Dockerfile, config, opencti_client)", "status": "done", "commit": "a4fb3ab"},
-    {"id": "04-03", "name": "indexer.py — embed, watermark, run_index_loop", "status": "done", "commit": "8ee4230"},
-    {"id": "04-04", "name": "searcher.py + FastAPI main.py", "status": "done", "commit": "e135bf3"},
-    {"id": "04-05", "name": "Integration checkpoint — AISEM-01-04 verified live", "status": "done", "commit": "55f80a5"}
+    {"id": "06-01", "name": "Backend HTTP additions + CORS", "status": "done", "commit": "e83f21a"},
+    {"id": "06-02", "name": "Vite+React scaffold + Docker", "status": "done", "commit": "32c526b"},
+    {"id": "06-03", "name": "Dashboard views + API client", "status": "done", "commit": "9187d8c"},
+    {"id": "06-04", "name": "Smoke tests + human checkpoint", "status": "done", "commit": "9f5d999"},
+    {"id": "fix-xss", "name": "opencti_url scheme guard XSS fix", "status": "done", "commit": "2b1b444"},
+    {"id": "fix-filter", "name": "operator:gt briefing filter fix", "status": "done", "commit": "8eb35d7"},
+    {"id": "chore-diag", "name": "tim-check.sh diagnostic script", "status": "done", "commit": "ae7b455"}
   ],
-  "remaining_tasks": [],
-  "blockers": [],
+  "remaining_tasks": [
+    {"id": "improve-01", "name": "Briefing persistence (SQLite)", "status": "not_started", "priority": "high"},
+    {"id": "improve-02", "name": "More feeds (10-15 additional)", "status": "not_started", "priority": "high"},
+    {"id": "improve-03", "name": "Alerting on high-confidence IOC", "status": "not_started", "priority": "high"},
+    {"id": "improve-04", "name": "IOC enrichment (VirusTotal/Shodan)", "status": "not_started", "priority": "medium"},
+    {"id": "improve-05", "name": "SIEM export (CEF/STIX)", "status": "not_started", "priority": "medium"},
+    {"id": "debug-01", "name": "connector-mitre not populating ATT&CK patterns", "status": "not_started", "priority": "medium"}
+  ],
+  "blockers": [
+    {"description": "top_techniques always empty — connector-mitre has not populated OpenCTI ATT&CK data", "type": "technical", "workaround": "check docker logs connector-mitre"},
+    {"description": "docker compose build requires --profile platform due to opencti dependency", "type": "operational", "workaround": "docker compose --profile platform --profile briefings build <svc>"}
+  ],
   "async_jobs": [],
   "human_actions_pending": [],
   "decisions": [
-    {"decision": "asyncio.to_thread for index cycle", "rationale": "sync Ollama/ChromaDB clients inside async def blocked event loop — /health returned nothing until fix", "phase": "04"},
-    {"decision": "n_results clamped [1,100]", "rationale": "uncapped int param passed directly to ChromaDB — DoS vector caught by background security review", "phase": "04"},
-    {"decision": "libmagic1 stays in Dockerfile", "rationale": "pycti imports python-magic at module level regardless of use — required C lib", "phase": "04"},
-    {"decision": "_run_index_cycle sync helper pattern", "rationale": "extract blocking work to sync function, await with asyncio.to_thread — cleaner than per-call wrapping", "phase": "04"}
+    {"decision": "TIM not ready to offer to clients", "rationale": "missing persistence, alerting, enrichment, SOAR, RBAC", "phase": "06"},
+    {"decision": "Target buyer: mid-market SOC with existing OpenCTI, cant send data to cloud", "rationale": "local LLM + semantic search is real differentiator for air-gap clients", "phase": "06"},
+    {"decision": "Improvement priority: persistence then alerting then feeds then enrichment", "rationale": "persistence is lowest effort / highest impact for demo stability", "phase": "06"}
   ],
-  "uncommitted_files": [],
-  "next_action": "Run /gsd-discuss-phase 5 to capture decisions before planning the briefing-generator service",
-  "context_notes": "Phase 4 fully complete — 5/5 plans, 7/7 verification passed, 23k+ IOCs indexed and searchable live. Two integration bugs caught during live checkpoint (event-loop starvation, DoS clamp). Stack is running healthy. Phase 5 needs: POST /generate endpoint, LLM summarization via Ollama llama3.2:3b, PDF export, no external deps."
+  "uncommitted_files": ["docker-compose.yml", "services/feed-orchestrator/main.py"],
+  "next_action": "Run ./scripts/tim-check.sh to confirm state, then start briefing persistence (SQLite)",
+  "context_notes": "Phase 6 complete. Two post-execution bugs found and fixed. User evaluating TIM as client offering, assessed not ready, improvement backlog defined. User noted frustration with agent spinning on docker operations that should be handed off immediately."
 }
