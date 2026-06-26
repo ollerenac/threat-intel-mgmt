@@ -5,12 +5,12 @@ milestone_name: milestone
 current_plan: 1
 status: executing
 stopped_at: Phase 6 UI-SPEC approved
-last_updated: "2026-06-26T15:52:16.773Z"
+last_updated: "2026-06-26T15:58:17.833Z"
 progress:
   total_phases: 6
   completed_phases: 5
   total_plans: 31
-  completed_plans: 28
+  completed_plans: 29
   percent: 83
 ---
 
@@ -77,6 +77,7 @@ Phase 6 [          ] 0%
 | Phase 05-briefing-generator P03 | 2m | 1 tasks | 1 files |
 | Phase 05 P04 | 7m | 2 tasks | 1 files |
 | Phase 06 P01 | 12m | 2 tasks | 5 files |
+| Phase 06 P02 | 8m | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -131,7 +132,7 @@ None.
 
 **Resume file:** .planning/phases/06-soc-dashboard/06-UI-SPEC.md
 
-**Last session:** 2026-06-26T15:51:59.352Z
+**Last session:** 2026-06-26T15:58:17.828Z
 **Stopped at:** Phase 6 UI-SPEC approved
 
 **To resume work:**
@@ -176,3 +177,6 @@ None.
 - [Phase ?]: D-10 race guard: briefings[briefing_id] pre-initialized before background_tasks.add_task()
 - [Phase ?]: uvicorn.run() replaces signal.pause() as main-thread blocker in feed-orchestrator
 - [Phase ?]: asyncio.to_thread wraps _collect_threat_data in /stats — prevents blocking uvicorn event loop on pycti I/O
+- [Phase ?]: feed-orchestrator healthcheck upgraded from Redis ping to urllib HTTP probe
+- [Phase ?]: VITE_* env vars removed from soc-dashboard compose — Vite bakes env at build time; no runtime effect on static nginx
+- [Phase ?]: Template devDeps (@types/react, oxlint) removed from dashboard package.json — plain JSX needs no TS types

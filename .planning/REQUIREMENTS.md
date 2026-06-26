@@ -50,7 +50,7 @@
 - [x] **DASH-03**: Threat Hunt view accepts natural language query and displays semantic results
 - [ ] **DASH-04**: Threat Hunt results link to OpenCTI object on click
 - [ ] **DASH-05**: Briefings view lists generated briefings and allows PDF download
-- [ ] **DASH-06**: Dashboard is accessible at localhost:3000
+- [x] **DASH-06**: Dashboard is accessible at localhost:3000
 
 ### Deployment
 
@@ -120,7 +120,7 @@
 | DASH-03 | Phase 6 | Complete |
 | DASH-04 | Phase 6 | Pending |
 | DASH-05 | Phase 6 | Pending |
-| DASH-06 | Phase 6 | Pending |
+| DASH-06 | Phase 6 | Complete |
 | DEPL-01 | Phase 1 | Pending |
 | DEPL-02 | Phase 1 | Pending |
 | DEPL-03 | Phase 1 | Pending |
