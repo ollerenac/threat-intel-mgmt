@@ -163,7 +163,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1)*
 
-- [ ] 04-03-PLAN.md — indexer.py: build_embed_text (D-01/D-03), ChromaDB cosine collection, watermark, run_index_loop
+- [x] 04-03-PLAN.md — indexer.py: build_embed_text (D-01/D-03), ChromaDB cosine collection, watermark, run_index_loop
 
 **Wave 3** *(blocked on Wave 2)*
 

@@ -4,19 +4,19 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 4 context gathered
-last_updated: "2026-06-26T05:17:43.009Z"
+last_updated: "2026-06-26T05:21:56.743Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 23
-  completed_plans: 20
+  completed_plans: 21
   percent: 50
 ---
 
 # STATE: TIM — Threat Intelligence Management System
 
 **Last updated:** 2026-06-26
-**Session:** Phase 4 Plan 01 complete — RED-phase test scaffold for semantic-engine (8 tests, all skipped)
+**Session:** Phase 4 Plan 03 complete — indexer.py implemented (4 tests passing, lazy ChromaDB init)
 
 ---
 
@@ -32,8 +32,9 @@ progress:
 
 | Field | Value |
 |-------|-------|
-| Active phase | Phase 4: Semantic Search (Plan 01 complete) |
-| Status | Executing Phase 04 — Plan 01/5 done |
+| Active phase | Phase 4: Semantic Search (Plan 03 complete) |
+| Current Plan | 3 / 5 |
+| Status | Executing Phase 04 — Plan 03/5 done |
 | Phase progress | 3/6 phases complete (Phase 1 ✓, Phase 2 ✓, Phase 3 ✓) |
 
 **Progress bar:**
@@ -42,7 +43,7 @@ progress:
 Phase 1 [██████████] 100% ✓ COMPLETE
 Phase 2 [██████████] 100% ✓ COMPLETE
 Phase 3 [██████████] 100% ✓ COMPLETE
-Phase 4 [██        ] 20% (1/5 plans)
+Phase 4 [██████    ] 60% (3/5 plans)
 Phase 5 [          ] 0%
 Phase 6 [          ] 0%
 ```
@@ -69,6 +70,7 @@ Phase 6 [          ] 0%
 | Phase 03 P05 | 2m | 2 tasks | 4 files |
 | Phase 04-semantic-search-engine P01 | 2m | 2 tasks | 5 files |
 | Phase 04 P02 | 5m | 2 tasks | 5 files |
+| Phase 04-semantic-search-engine P03 | 4m | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -123,7 +125,7 @@ None.
 
 **Resume file:** .planning/phases/04-semantic-search-engine/04-CONTEXT.md
 
-**Last session:** 2026-06-26T05:17:34.402Z
+**Last session:** 2026-06-26T05:21:56.738Z
 **Stopped at:** Phase 4 context gathered
 
 **To resume work:**
@@ -156,3 +158,5 @@ None.
 - [Phase 04-01]: monkeypatch _ollama singleton in test_searcher.py — search() takes no ollama arg (module-level client); injection via monkeypatch.setattr
 - [Phase ?]: libmagic1 required in semantic-engine Dockerfile — pycti==6.4.11 imports python-magic which needs libmagic.so
 - [Phase ?]: OPENCTI_BASE_URL default http://localhost:8080 — external browser URL distinct from internal Docker network http://opencti:8080
+- [Phase 04-03]: Lazy ChromaDB HttpClient deferred to get_collection() — import-safe for test guard pattern (chromadb.HttpClient connects at construction, breaks import guard)
+- [Phase 04-03]: response.embeddings[0] confirmed (plural) — not deprecated .embedding singular (ollama 0.6.2)
