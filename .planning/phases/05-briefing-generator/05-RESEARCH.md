@@ -558,17 +558,17 @@ class GenerateRequest(BaseModel):
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Does `client.threat_actor.list()` support the `filters` dict?**
    - What we know: `client.indicator.list()` with `filters` dict works (Phase 4 production). `attack_pattern.list(search=keyword)` works (Phase 3 production).
    - What's unclear: Whether all entity types expose the same `filters` kwarg in pycti 6.4.11.
-   - Recommendation: Wrap each entity list call in its own try/except; fall back to `first=10` without `filters` on exception. Log the fallback.
+   - RESOLVED: Plan 02 implements `_safe_list()` — each entity list call wrapped in try/except; falls back to `first=10` without `filters` on exception with logged warning.
 
 2. **`OLLAMA_TIMEOUT` env var — is it wired in docker-compose.yml?**
    - What we know: The docker-compose.yml briefing-generator env block does NOT include `OLLAMA_TIMEOUT`. The CONTEXT.md suggests adding it as a config default (60s).
    - What's unclear: Whether the `ollama.Client` constructor accepts a `timeout` kwarg.
-   - Recommendation: Add `OLLAMA_TIMEOUT=60` to `config.py` with default 60. Use `httpx.Timeout` or the ollama SDK timeout param at construction time. If ollama SDK doesn't accept it, wrap the chat call in a `threading.Timer` or just accept the default.
+   - RESOLVED: Plan 02 adds `OLLAMA_TIMEOUT=60` default in `config.py`; passed to `ollama.Client(timeout=OLLAMA_TIMEOUT)`. If SDK rejects it, fallback is accepted default timeout.
 
 ---
 
