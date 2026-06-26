@@ -6,14 +6,17 @@ Startup sequence (D-06):
   2. Instantiate all 5 feed objects
   3. Run all feeds immediately (synchronously, before scheduler starts)
   4. Build and start the APScheduler background scheduler
-  5. Block the main thread (signal.pause or threading.Event)
+  5. Block the main thread via uvicorn.run() (serves HTTP on port 8001)
+
+APScheduler threads are daemon threads and continue running while uvicorn
+blocks the main thread.
 """
 import logging
-import signal
-import threading
 
+import uvicorn
 from redis import from_url as redis_from_url
 
+from api import app
 from config import REDIS_URL
 from feeds.feodo import FeodoFeed
 from feeds.malwarebazaar import MalwareBazaarFeed
@@ -68,12 +71,9 @@ def main() -> None:
     scheduler.start()
     logger.info("Scheduler started — %d feed jobs registered", len(feeds))
 
-    # Block main thread; scheduler runs in background threads
-    try:
-        signal.pause()
-    except AttributeError:
-        # signal.pause() not available on Windows
-        threading.Event().wait()
+    # Block main thread via uvicorn; APScheduler threads are daemon threads
+    # and continue running while uvicorn serves HTTP on port 8001.
+    uvicorn.run(app, host="0.0.0.0", port=8001)
 
 
 if __name__ == "__main__":
