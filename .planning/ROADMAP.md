@@ -167,7 +167,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2)*
 
-- [ ] 04-04-PLAN.md — searcher.py (distance→similarity, threshold filter) + main.py (lifespan, /health, /search)
+- [x] 04-04-PLAN.md — searcher.py (distance→similarity, threshold filter) + main.py (lifespan, /health, /search)
 
 **Wave 4** *(blocked on Wave 3)*
 

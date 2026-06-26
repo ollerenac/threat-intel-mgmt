@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 4 context gathered
-last_updated: "2026-06-26T05:21:56.743Z"
+last_updated: "2026-06-26T05:26:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 3
@@ -16,7 +16,7 @@ progress:
 # STATE: TIM — Threat Intelligence Management System
 
 **Last updated:** 2026-06-26
-**Session:** Phase 4 Plan 03 complete — indexer.py implemented (4 tests passing, lazy ChromaDB init)
+**Session:** Phase 4 Plan 04 complete — searcher.py + main.py implemented (8 tests passing, lifespan indexing)
 
 ---
 
@@ -32,9 +32,9 @@ progress:
 
 | Field | Value |
 |-------|-------|
-| Active phase | Phase 4: Semantic Search (Plan 03 complete) |
-| Current Plan | 3 / 5 |
-| Status | Executing Phase 04 — Plan 03/5 done |
+| Active phase | Phase 4: Semantic Search (Plan 04 complete) |
+| Current Plan | 4 / 5 |
+| Status | Executing Phase 04 — Plan 04/5 done |
 | Phase progress | 3/6 phases complete (Phase 1 ✓, Phase 2 ✓, Phase 3 ✓) |
 
 **Progress bar:**
@@ -43,7 +43,7 @@ progress:
 Phase 1 [██████████] 100% ✓ COMPLETE
 Phase 2 [██████████] 100% ✓ COMPLETE
 Phase 3 [██████████] 100% ✓ COMPLETE
-Phase 4 [██████    ] 60% (3/5 plans)
+Phase 4 [████████  ] 80% (4/5 plans)
 Phase 5 [          ] 0%
 Phase 6 [          ] 0%
 ```
@@ -160,3 +160,5 @@ None.
 - [Phase ?]: OPENCTI_BASE_URL default http://localhost:8080 — external browser URL distinct from internal Docker network http://opencti:8080
 - [Phase 04-03]: Lazy ChromaDB HttpClient deferred to get_collection() — import-safe for test guard pattern (chromadb.HttpClient connects at construction, breaks import guard)
 - [Phase 04-03]: response.embeddings[0] confirmed (plural) — not deprecated .embedding singular (ollama 0.6.2)
+- [Phase 04-04]: score = round(1.0 - dist, 4) — cosine distance to similarity; threshold applied to score not raw distance (RESEARCH Pitfall 1)
+- [Phase 04-04]: asynccontextmanager lifespan + asyncio.create_task is the correct FastAPI 0.115 startup pattern (not @app.on_event, not BackgroundTasks)
