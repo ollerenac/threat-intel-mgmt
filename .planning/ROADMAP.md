@@ -228,7 +228,7 @@ Plans:
   4. Briefings view lists all generated briefings and provides a working PDF download for each
   5. The dashboard is accessible at `localhost:3000` with no additional setup after `docker compose up -d`
 
-**Plans**: 2/4 plans executed
+**Plans**: 3/4 plans executed
 
 Plans:
 
@@ -239,7 +239,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1)*
 
-- [ ] 06-03-PLAN.md — Dashboard views: api.js, Overview.jsx, ThreatHunt.jsx, Briefings.jsx, App.jsx wired
+- [x] 06-03-PLAN.md — Dashboard views: api.js, Overview.jsx, ThreatHunt.jsx, Briefings.jsx, App.jsx wired
 - [ ] 06-04-PLAN.md — Integration checkpoint: full stack smoke tests + human visual verification (DASH-01..06)
 
 ---
@@ -253,7 +253,7 @@ Plans:
 | 3. AI IOC Extraction | 6/6 | Complete    | 2026-06-25 |
 | 4. Semantic Search Engine | 5/5 | Complete    | 2026-06-26 |
 | 5. Briefing Generator | 4/4 | Complete   | 2026-06-26 |
-| 6. SOC Dashboard | 2/4 | In Progress|  |
+| 6. SOC Dashboard | 3/4 | In Progress|  |
 
 ---
 *Roadmap created: 2026-06-23*

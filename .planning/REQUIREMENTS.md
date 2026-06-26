@@ -48,8 +48,8 @@
 - [x] **DASH-01**: Overview view shows feed health (last update, IOC count, status per feed)
 - [x] **DASH-02**: Overview shows IOC count for last 24h and top 5 ATT&CK techniques
 - [x] **DASH-03**: Threat Hunt view accepts natural language query and displays semantic results
-- [ ] **DASH-04**: Threat Hunt results link to OpenCTI object on click
-- [ ] **DASH-05**: Briefings view lists generated briefings and allows PDF download
+- [x] **DASH-04**: Threat Hunt results link to OpenCTI object on click
+- [x] **DASH-05**: Briefings view lists generated briefings and allows PDF download
 - [x] **DASH-06**: Dashboard is accessible at localhost:3000
 
 ### Deployment
@@ -118,8 +118,8 @@
 | DASH-01 | Phase 6 | Complete |
 | DASH-02 | Phase 6 | Complete |
 | DASH-03 | Phase 6 | Complete |
-| DASH-04 | Phase 6 | Pending |
-| DASH-05 | Phase 6 | Pending |
+| DASH-04 | Phase 6 | Complete |
+| DASH-05 | Phase 6 | Complete |
 | DASH-06 | Phase 6 | Complete |
 | DEPL-01 | Phase 1 | Pending |
 | DEPL-02 | Phase 1 | Pending |
