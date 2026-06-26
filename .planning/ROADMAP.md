@@ -190,7 +190,25 @@ Plans:
   3. `GET /briefings/{id}/pdf` returns a downloadable PDF containing the briefing text
   4. A briefing can be triggered and retrieved without any command-line interaction (API call only)
 
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+
+**Wave 0**
+
+- [ ] 05-01-PLAN.md — Service scaffold: fonts/DejaVuSans.ttf, Dockerfile, requirements.txt, Wave 0 test stubs
+
+**Wave 1** *(blocked on Wave 0)*
+
+- [ ] 05-02-PLAN.md — Data collector + LLM generator: config.py, opencti_client.py, generator.py (all blocking I/O)
+
+**Wave 2** *(blocked on Wave 0)*
+
+- [ ] 05-03-PLAN.md — PDF renderer: pdf_renderer.py (fpdf2, DejaVu font, render_pdf → bytes)
+
+**Wave 3** *(blocked on Waves 1 + 2)*
+
+- [ ] 05-04-PLAN.md — FastAPI entrypoint + Docker Compose integration: main.py, all endpoints, live verification
 
 ---
 
