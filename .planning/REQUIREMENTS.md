@@ -38,10 +38,10 @@
 
 ### AI — Briefings
 
-- [ ] **AIBR-01**: briefing-generator produces a 200-300 word executive summary from OpenCTI data
-- [ ] **AIBR-02**: Briefing covers last 24h or 72h period (configurable)
-- [ ] **AIBR-03**: Briefing is available in the dashboard and exportable as PDF
-- [ ] **AIBR-04**: Briefing can be triggered manually from the dashboard
+- [x] **AIBR-01**: briefing-generator produces a 200-300 word executive summary from OpenCTI data
+- [x] **AIBR-02**: Briefing covers last 24h or 72h period (configurable)
+- [x] **AIBR-03**: Briefing is available in the dashboard and exportable as PDF
+- [x] **AIBR-04**: Briefing can be triggered manually from the dashboard
 
 ### SOC Dashboard
 
@@ -111,10 +111,10 @@
 | AISEM-02 | Phase 4 | Complete |
 | AISEM-03 | Phase 4 | Complete |
 | AISEM-04 | Phase 4 | Complete |
-| AIBR-01 | Phase 5 | Pending |
-| AIBR-02 | Phase 5 | Pending |
-| AIBR-03 | Phase 5 | Pending |
-| AIBR-04 | Phase 5 | Pending |
+| AIBR-01 | Phase 5 | Complete |
+| AIBR-02 | Phase 5 | Complete |
+| AIBR-03 | Phase 5 | Complete |
+| AIBR-04 | Phase 5 | Complete |
 | DASH-01 | Phase 6 | Pending |
 | DASH-02 | Phase 6 | Pending |
 | DASH-03 | Phase 6 | Pending |

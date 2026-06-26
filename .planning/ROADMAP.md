@@ -190,13 +190,13 @@ Plans:
   3. `GET /briefings/{id}/pdf` returns a downloadable PDF containing the briefing text
   4. A briefing can be triggered and retrieved without any command-line interaction (API call only)
 
-**Plans**: 4 plans
+**Plans**: 1/4 plans executed
 
 Plans:
 
 **Wave 0**
 
-- [ ] 05-01-PLAN.md — Service scaffold: fonts/DejaVuSans.ttf, Dockerfile, requirements.txt, Wave 0 test stubs
+- [x] 05-01-PLAN.md — Service scaffold: fonts/DejaVuSans.ttf, Dockerfile, requirements.txt, Wave 0 test stubs
 
 **Wave 1** *(blocked on Wave 0)*
 
@@ -241,7 +241,7 @@ Plans:
 | 2. Feed Ingestion Pipeline | 8/8 | Complete   | 2026-06-25 |
 | 3. AI IOC Extraction | 6/6 | Complete    | 2026-06-25 |
 | 4. Semantic Search Engine | 5/5 | Complete    | 2026-06-26 |
-| 5. Briefing Generator | 0/? | Not started | - |
+| 5. Briefing Generator | 1/4 | In Progress|  |
 | 6. SOC Dashboard | 0/? | Not started | - |
 
 ---
