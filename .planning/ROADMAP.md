@@ -149,7 +149,7 @@ Plans:
   3. Each result includes a similarity score between 0.0 and 1.0
   4. Each result includes a direct URL to the corresponding object in OpenCTI
 
-**Plans**: 1/5 plans executed
+**Plans**: 2/5 plans executed
 
 Plans:
 
@@ -159,7 +159,7 @@ Plans:
 
 **Wave 1** *(blocked on Wave 0)*
 
-- [ ] 04-02-PLAN.md — Service infrastructure: Dockerfile, requirements.txt, config.py, opencti_client.py + docker-compose.yml env/healthcheck
+- [x] 04-02-PLAN.md — Service infrastructure: Dockerfile, requirements.txt, config.py, opencti_client.py + docker-compose.yml env/healthcheck
 
 **Wave 2** *(blocked on Wave 1)*
 
@@ -222,7 +222,7 @@ Plans:
 | 1. Platform Foundation | 3/4 | In Progress|  |
 | 2. Feed Ingestion Pipeline | 8/8 | Complete   | 2026-06-25 |
 | 3. AI IOC Extraction | 6/6 | Complete    | 2026-06-25 |
-| 4. Semantic Search Engine | 1/5 | In Progress|  |
+| 4. Semantic Search Engine | 2/5 | In Progress|  |
 | 5. Briefing Generator | 0/? | Not started | - |
 | 6. SOC Dashboard | 0/? | Not started | - |
 

@@ -4,12 +4,12 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 4 context gathered
-last_updated: "2026-06-26T05:11:59.711Z"
+last_updated: "2026-06-26T05:17:43.009Z"
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 23
-  completed_plans: 19
+  completed_plans: 20
   percent: 50
 ---
 
@@ -68,6 +68,7 @@ Phase 6 [          ] 0%
 | Phase 03-ai-ioc-extraction P03 | 5m | 1 tasks | 2 files |
 | Phase 03 P05 | 2m | 2 tasks | 4 files |
 | Phase 04-semantic-search-engine P01 | 2m | 2 tasks | 5 files |
+| Phase 04 P02 | 5m | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -122,7 +123,7 @@ None.
 
 **Resume file:** .planning/phases/04-semantic-search-engine/04-CONTEXT.md
 
-**Last session:** 2026-06-26T05:11:59.705Z
+**Last session:** 2026-06-26T05:17:34.402Z
 **Stopped at:** Phase 4 context gathered
 
 **To resume work:**
@@ -153,3 +154,5 @@ None.
 - [Phase 03-06]: Python urllib.request healthcheck probe is the correct pattern for python:3.12-slim images (no curl available)
 - [Phase 04-01]: RED-phase TDD scaffold: import-guard+skipif in test files so tests SKIP (not FAIL) when production modules absent
 - [Phase 04-01]: monkeypatch _ollama singleton in test_searcher.py — search() takes no ollama arg (module-level client); injection via monkeypatch.setattr
+- [Phase ?]: libmagic1 required in semantic-engine Dockerfile — pycti==6.4.11 imports python-magic which needs libmagic.so
+- [Phase ?]: OPENCTI_BASE_URL default http://localhost:8080 — external browser URL distinct from internal Docker network http://opencti:8080
