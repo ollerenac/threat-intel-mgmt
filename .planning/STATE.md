@@ -5,12 +5,12 @@ milestone_name: milestone
 current_plan: 1
 status: executing
 stopped_at: Phase 6 UI-SPEC approved
-last_updated: "2026-06-26T14:42:56.648Z"
+last_updated: "2026-06-26T15:52:16.773Z"
 progress:
   total_phases: 6
   completed_phases: 5
-  total_plans: 27
-  completed_plans: 27
+  total_plans: 31
+  completed_plans: 28
   percent: 83
 ---
 
@@ -25,7 +25,7 @@ progress:
 
 **Core value:** An analyst can ingest any threat intelligence source — structured feed or unstructured PDF — and immediately search, correlate, and brief stakeholders on active threats, without a single IOC leaving the local network.
 
-**Current focus:** Phase 06 — SOC Dashboard
+**Current focus:** Phase 06 — soc-dashboard
 
 ---
 
@@ -35,7 +35,7 @@ progress:
 |-------|-------|
 | Active phase | Phase 6: SOC Dashboard |
 | Current Plan | 1 |
-| Status | Ready to plan Phase 06 |
+| Status | Executing Phase 06 |
 | Phase progress | 5/6 phases complete (Phase 1 ✓, Phase 2 ✓, Phase 3 ✓, Phase 4 ✓, Phase 5 ✓) |
 
 **Progress bar:**
@@ -76,6 +76,7 @@ Phase 6 [          ] 0%
 | Phase 05-briefing-generator P02 | 2m | 2 tasks | 3 files |
 | Phase 05-briefing-generator P03 | 2m | 1 tasks | 1 files |
 | Phase 05 P04 | 7m | 2 tasks | 1 files |
+| Phase 06 P01 | 12m | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -130,7 +131,7 @@ None.
 
 **Resume file:** .planning/phases/06-soc-dashboard/06-UI-SPEC.md
 
-**Last session:** 2026-06-26T14:42:56.642Z
+**Last session:** 2026-06-26T15:51:59.352Z
 **Stopped at:** Phase 6 UI-SPEC approved
 
 **To resume work:**
@@ -173,3 +174,5 @@ None.
 - [Phase ?]: No format=json on ollama chat call — prose output mode distinct from intel-extractor JSON extraction
 - [Phase ?]: FONT_PATH at module level in pdf_renderer.py — monkeypatchable by tests without Docker font path
 - [Phase ?]: D-10 race guard: briefings[briefing_id] pre-initialized before background_tasks.add_task()
+- [Phase ?]: uvicorn.run() replaces signal.pause() as main-thread blocker in feed-orchestrator
+- [Phase ?]: asyncio.to_thread wraps _collect_threat_data in /stats — prevents blocking uvicorn event loop on pycti I/O

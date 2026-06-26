@@ -228,13 +228,13 @@ Plans:
   4. Briefings view lists all generated briefings and provides a working PDF download for each
   5. The dashboard is accessible at `localhost:3000` with no additional setup after `docker compose up -d`
 
-**Plans**: 4 plans
+**Plans**: 1/4 plans executed
 
 Plans:
 
 **Wave 1** *(parallel — no file conflicts)*
 
-- [ ] 06-01-PLAN.md — Backend additions: feed-orchestrator HTTP API (/feeds/status), briefing-generator /stats, CORSMiddleware on all 3 services
+- [x] 06-01-PLAN.md — Backend additions: feed-orchestrator HTTP API (/feeds/status), briefing-generator /stats, CORSMiddleware on all 3 services
 - [ ] 06-02-PLAN.md — Dashboard scaffold: Vite+React project, Dockerfile, nginx.conf, docker-compose.yml fixes
 
 **Wave 2** *(blocked on Wave 1)*
@@ -253,7 +253,7 @@ Plans:
 | 3. AI IOC Extraction | 6/6 | Complete    | 2026-06-25 |
 | 4. Semantic Search Engine | 5/5 | Complete    | 2026-06-26 |
 | 5. Briefing Generator | 4/4 | Complete   | 2026-06-26 |
-| 6. SOC Dashboard | 0/4 | Not started | - |
+| 6. SOC Dashboard | 1/4 | In Progress|  |
 
 ---
 *Roadmap created: 2026-06-23*
