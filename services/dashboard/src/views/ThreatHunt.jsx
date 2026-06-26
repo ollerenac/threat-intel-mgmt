@@ -62,9 +62,9 @@ export default function ThreatHunt() {
         <ol style={{ listStyle: 'none', padding: 0, margin: 0 }}>
           {results.map((result, i) => (
             <li key={i}>
-              {/* opencti_url is already a full URL from semantic-engine — use directly (RESEARCH.md Critical Finding) */}
+              {/* ponytail: scheme guard at trust boundary — API response → href */}
               <a
-                href={result.opencti_url}
+                href={/^https?:\/\//.test(result.opencti_url) ? result.opencti_url : undefined}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 0', cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}
