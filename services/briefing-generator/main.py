@@ -11,11 +11,13 @@ Endpoints:
 D-10: briefing state stored in generator.briefings (module-level dict, lost on restart).
 T-05-04-01: period_hours validated by Pydantic Field(ge=1, le=720) before any I/O.
 """
+import asyncio
 import logging
 import uuid
 from datetime import datetime, timezone
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
@@ -25,6 +27,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="briefing-generator", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class GenerateRequest(BaseModel):
@@ -77,6 +86,28 @@ async def list_briefings():
         }
         for bid, v in briefings.items()
     ]
+
+
+@app.get("/stats")
+async def stats():
+    """
+    Return IOC count (last 24h) and top 5 ATT&CK techniques (DASH-02, D-05, D-06).
+
+    Uses asyncio.to_thread to keep pycti I/O off the event loop (T-06-01-03).
+    count=1 per technique — attack_patterns already ordered by pycti default.
+    """
+    from opencti_client import build_pycti_client
+    from generator import _collect_threat_data
+    client = build_pycti_client()
+    data = await asyncio.to_thread(_collect_threat_data, client, 24)
+    techniques = [
+        {"id": p.get("x_mitre_id", ""), "name": p.get("name", ""), "count": 1}
+        for p in data.get("attack_patterns", [])[:5]
+    ]
+    return {
+        "ioc_count_24h": len(data.get("indicators", [])),
+        "top_techniques": techniques,
+    }
 
 
 @app.get("/health")
