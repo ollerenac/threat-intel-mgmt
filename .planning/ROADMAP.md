@@ -149,13 +149,13 @@ Plans:
   3. Each result includes a similarity score between 0.0 and 1.0
   4. Each result includes a direct URL to the corresponding object in OpenCTI
 
-**Plans**: 5 plans
+**Plans**: 1/5 plans executed
 
 Plans:
 
 **Wave 0**
 
-- [ ] 04-01-PLAN.md — Test scaffold: pytest.ini, conftest.py, test_indexer.py, test_searcher.py (RED stubs)
+- [x] 04-01-PLAN.md — Test scaffold: pytest.ini, conftest.py, test_indexer.py, test_searcher.py (RED stubs)
 
 **Wave 1** *(blocked on Wave 0)*
 
@@ -222,7 +222,7 @@ Plans:
 | 1. Platform Foundation | 3/4 | In Progress|  |
 | 2. Feed Ingestion Pipeline | 8/8 | Complete   | 2026-06-25 |
 | 3. AI IOC Extraction | 6/6 | Complete    | 2026-06-25 |
-| 4. Semantic Search Engine | 0/? | Not started | - |
+| 4. Semantic Search Engine | 1/5 | In Progress|  |
 | 5. Briefing Generator | 0/? | Not started | - |
 | 6. SOC Dashboard | 0/? | Not started | - |
 

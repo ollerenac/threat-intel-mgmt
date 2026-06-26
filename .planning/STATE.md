@@ -4,19 +4,19 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 4 context gathered
-last_updated: "2026-06-26T05:07:48.648Z"
+last_updated: "2026-06-26T05:11:59.711Z"
 progress:
   total_phases: 6
   completed_phases: 3
-  total_plans: 18
-  completed_plans: 18
+  total_plans: 23
+  completed_plans: 19
   percent: 50
 ---
 
 # STATE: TIM — Threat Intelligence Management System
 
-**Last updated:** 2026-06-25
-**Session:** Phase 3 Plan 06 complete — integration checkpoint approved, Phase 3 COMPLETE
+**Last updated:** 2026-06-26
+**Session:** Phase 4 Plan 01 complete — RED-phase test scaffold for semantic-engine (8 tests, all skipped)
 
 ---
 
@@ -24,7 +24,7 @@ progress:
 
 **Core value:** An analyst can ingest any threat intelligence source — structured feed or unstructured PDF — and immediately search, correlate, and brief stakeholders on active threats, without a single IOC leaving the local network.
 
-**Current focus:** Phase 03 — ai-ioc-extraction
+**Current focus:** Phase 04 — semantic-search-engine
 
 ---
 
@@ -32,9 +32,9 @@ progress:
 
 | Field | Value |
 |-------|-------|
-| Active phase | Phase 4: Semantic Search (ready to execute) |
-| Status | Ready to execute |
-| Phase progress | 3/6 phases complete (Phase 1 ✓, Phase 3 ✓, Phase 2 in progress) |
+| Active phase | Phase 4: Semantic Search (Plan 01 complete) |
+| Status | Executing Phase 04 — Plan 01/5 done |
+| Phase progress | 3/6 phases complete (Phase 1 ✓, Phase 2 ✓, Phase 3 ✓) |
 
 **Progress bar:**
 
@@ -42,7 +42,7 @@ progress:
 Phase 1 [██████████] 100% ✓ COMPLETE
 Phase 2 [██████████] 100% ✓ COMPLETE
 Phase 3 [██████████] 100% ✓ COMPLETE
-Phase 4 [          ] 0%
+Phase 4 [██        ] 20% (1/5 plans)
 Phase 5 [          ] 0%
 Phase 6 [          ] 0%
 ```
@@ -67,6 +67,7 @@ Phase 6 [          ] 0%
 | Phase 03 P02 | 2m | 2 tasks | 3 files |
 | Phase 03-ai-ioc-extraction P03 | 5m | 1 tasks | 2 files |
 | Phase 03 P05 | 2m | 2 tasks | 4 files |
+| Phase 04-semantic-search-engine P01 | 2m | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -121,7 +122,7 @@ None.
 
 **Resume file:** .planning/phases/04-semantic-search-engine/04-CONTEXT.md
 
-**Last session:** 2026-06-26T04:28:39.421Z
+**Last session:** 2026-06-26T05:11:59.705Z
 **Stopped at:** Phase 4 context gathered
 
 **To resume work:**
@@ -150,3 +151,5 @@ None.
 - [Phase ?]: [Phase 03-03]: lookup_attack_pattern returns internal UUID not x_mitre_id (D-08)
 - [Phase 03-06]: libmagic1 apt package required in python:3.12-slim for pycti (python-magic wraps C library libmagic.so)
 - [Phase 03-06]: Python urllib.request healthcheck probe is the correct pattern for python:3.12-slim images (no curl available)
+- [Phase 04-01]: RED-phase TDD scaffold: import-guard+skipif in test files so tests SKIP (not FAIL) when production modules absent
+- [Phase 04-01]: monkeypatch _ollama singleton in test_searcher.py — search() takes no ollama arg (module-level client); injection via monkeypatch.setattr
