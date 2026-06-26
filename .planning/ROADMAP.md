@@ -9,7 +9,7 @@
 - [x] **Phase 1: Platform Foundation** - OpenCTI stack deployed and operational with all backing services healthy
 - [x] **Phase 2: Feed Ingestion Pipeline** - feed-orchestrator service ingesting, normalizing, and scoring IOCs from all 5+ sources (completed 2026-06-25)
 - [x] **Phase 3: AI IOC Extraction** - intel-extractor service processing PDFs and URLs via local LLM into OpenCTI STIX objects (completed 2026-06-25)
-- [ ] **Phase 4: Semantic Search Engine** - semantic-engine indexing all IOCs as vectors and serving natural-language queries
+- [x] **Phase 4: Semantic Search Engine** - semantic-engine indexing all IOCs as vectors and serving natural-language queries (completed 2026-06-26)
 - [ ] **Phase 5: Briefing Generator** - briefing-generator producing and exporting executive summaries from live OpenCTI data
 - [ ] **Phase 6: SOC Dashboard** - React frontend unifying all services into a demo-ready three-view interface
 
@@ -149,7 +149,7 @@ Plans:
   3. Each result includes a similarity score between 0.0 and 1.0
   4. Each result includes a direct URL to the corresponding object in OpenCTI
 
-**Plans**: 2/5 plans executed
+**Plans**: 5/5 plans executed
 
 Plans:
 
@@ -171,7 +171,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3)*
 
-- [ ] 04-05-PLAN.md — Integration checkpoint: docker build, live indexing + natural-language search verification
+- [x] 04-05-PLAN.md — Integration checkpoint: docker build, live indexing + natural-language search verification
 
 ---
 
@@ -219,10 +219,10 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Platform Foundation | 3/4 | In Progress|  |
+| 1. Platform Foundation | 4/4 | Complete   | 2026-06-25 |
 | 2. Feed Ingestion Pipeline | 8/8 | Complete   | 2026-06-25 |
 | 3. AI IOC Extraction | 6/6 | Complete    | 2026-06-25 |
-| 4. Semantic Search Engine | 2/5 | In Progress|  |
+| 4. Semantic Search Engine | 5/5 | Complete    | 2026-06-26 |
 | 5. Briefing Generator | 0/? | Not started | - |
 | 6. SOC Dashboard | 0/? | Not started | - |
 

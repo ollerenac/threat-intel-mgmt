@@ -31,10 +31,10 @@
 
 ### AI — Semantic Search
 
-- [ ] **AISEM-01**: semantic-engine indexes all indicators from OpenCTI as embedding vectors
-- [ ] **AISEM-02**: Analyst can search with natural language query and receive ranked IOC results
-- [ ] **AISEM-03**: Each result includes a similarity score (0.0–1.0)
-- [ ] **AISEM-04**: Result links back to the corresponding object in OpenCTI
+- [x] **AISEM-01**: semantic-engine indexes all indicators from OpenCTI as embedding vectors
+- [x] **AISEM-02**: Analyst can search with natural language query and receive ranked IOC results
+- [x] **AISEM-03**: Each result includes a similarity score (0.0–1.0)
+- [x] **AISEM-04**: Result links back to the corresponding object in OpenCTI
 
 ### AI — Briefings
 
@@ -107,10 +107,10 @@
 | AIEX-03 | Phase 3 | Complete |
 | AIEX-04 | Phase 3 | Complete |
 | AIEX-05 | Phase 3 | Complete |
-| AISEM-01 | Phase 4 | Pending |
-| AISEM-02 | Phase 4 | Pending |
-| AISEM-03 | Phase 4 | Pending |
-| AISEM-04 | Phase 4 | Pending |
+| AISEM-01 | Phase 4 | Complete |
+| AISEM-02 | Phase 4 | Complete |
+| AISEM-03 | Phase 4 | Complete |
+| AISEM-04 | Phase 4 | Complete |
 | AIBR-01 | Phase 5 | Pending |
 | AIBR-02 | Phase 5 | Pending |
 | AIBR-03 | Phase 5 | Pending |
