@@ -190,7 +190,7 @@ Plans:
   3. `GET /briefings/{id}/pdf` returns a downloadable PDF containing the briefing text
   4. A briefing can be triggered and retrieved without any command-line interaction (API call only)
 
-**Plans**: 2/4 plans executed
+**Plans**: 3/4 plans executed
 
 Plans:
 
@@ -204,7 +204,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 0)*
 
-- [ ] 05-03-PLAN.md — PDF renderer: pdf_renderer.py (fpdf2, DejaVu font, render_pdf → bytes)
+- [x] 05-03-PLAN.md — PDF renderer: pdf_renderer.py (fpdf2, DejaVu font, render_pdf → bytes)
 
 **Wave 3** *(blocked on Waves 1 + 2)*
 
@@ -241,7 +241,7 @@ Plans:
 | 2. Feed Ingestion Pipeline | 8/8 | Complete   | 2026-06-25 |
 | 3. AI IOC Extraction | 6/6 | Complete    | 2026-06-25 |
 | 4. Semantic Search Engine | 5/5 | Complete    | 2026-06-26 |
-| 5. Briefing Generator | 2/4 | In Progress|  |
+| 5. Briefing Generator | 3/4 | In Progress|  |
 | 6. SOC Dashboard | 0/? | Not started | - |
 
 ---
