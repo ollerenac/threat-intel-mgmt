@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: 1
 status: executing
-stopped_at: Phase 6 context gathered
-last_updated: "2026-06-26T14:33:52.016Z"
+stopped_at: Phase 6 UI-SPEC approved
+last_updated: "2026-06-26T14:42:56.648Z"
 progress:
   total_phases: 6
   completed_phases: 5
@@ -128,10 +128,10 @@ None.
 
 ## Session Continuity
 
-**Resume file:** .planning/phases/06-soc-dashboard/06-CONTEXT.md
+**Resume file:** .planning/phases/06-soc-dashboard/06-UI-SPEC.md
 
-**Last session:** 2026-06-26T14:33:52.010Z
-**Stopped at:** Phase 6 context gathered
+**Last session:** 2026-06-26T14:42:56.642Z
+**Stopped at:** Phase 6 UI-SPEC approved
 
 **To resume work:**
 
