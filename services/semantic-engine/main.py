@@ -50,6 +50,7 @@ def search_iocs(q: str = "", n_results: int = 10):
         raise HTTPException(status_code=400, detail="q parameter required")
     if len(q) > 500:
         raise HTTPException(status_code=400, detail="q too long (max 500 chars)")
+    n_results = max(1, min(n_results, 100))
 
     results = searcher.search(
         indexer.get_collection(),
