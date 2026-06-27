@@ -1,7 +1,7 @@
-// ponytail: URLs hardcoded — Vite bakes env vars at build time; runtime compose env has no effect (RESEARCH.md Pitfall 5)
-const FEED_URL = 'http://localhost:8001';
-const SEARCH_URL = 'http://localhost:8002';
-const BRIEFING_URL = 'http://localhost:8003';
+// ponytail: relative paths — nginx proxies /api/* to backends over Docker internal network
+const FEED_URL     = '/api/feeds';
+const SEARCH_URL   = '/api/semantic';
+const BRIEFING_URL = '/api/briefings';
 
 export const getFeedsStatus = () =>
   fetch(`${FEED_URL}/feeds/status`).then(r => r.json());
