@@ -228,14 +228,14 @@ services:
       - CONNECTOR_NAME=Common Vulnerabilities and Exposures
       - CONNECTOR_SCOPE=vulnerability
       - CONNECTOR_RUN_AND_TERMINATE=false
-      - CONNECTOR_LOG_LEVEL=error
+      - CONNECTOR_LOG_LEVEL=info
       - CVE_BASE_URL=https://services.nvd.nist.gov/rest/json/cves
       - CVE_API_KEY=${CVE_NVD_API_KEY}
       - CVE_INTERVAL=2
       - CVE_MAX_DATE_RANGE=2
       - CVE_MAINTAIN_DATA=true
       - CVE_PULL_HISTORY=true
-      - CVE_HISTORY_START_YEAR=2026
+      - CVE_HISTORY_START_YEAR=2025
     mem_limit: 512m
     depends_on:
       opencti:
