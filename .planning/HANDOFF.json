@@ -1,0 +1,74 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-06-27T11:23:46.885Z",
+  "phase": "post-v1.0",
+  "phase_name": "documentation-and-research",
+  "plan": null,
+  "task": "complete",
+  "status": "paused",
+  "completed_tasks": [
+    {
+      "id": "resume-context",
+      "name": "Resumed from HANDOFF.json — confirmed all post-v1.0 backlog cleared, CVE connector active",
+      "status": "done"
+    },
+    {
+      "id": "filigran-research",
+      "name": "Fetched OpenCTI AI import doc, compared Filigran Import Document AI vs our intel-extractor (llama3.2:3b)",
+      "status": "done"
+    },
+    {
+      "id": "model-upgrade-roadmap",
+      "name": "Produced 3-tier GPU/model upgrade roadmap for intel-extractor and briefing-generator",
+      "status": "done"
+    },
+    {
+      "id": "readme-rewrite",
+      "name": "Rewrote README.md in Spanish: architecture, TIM functions, competitive differentiation, hardware, scalability, quick start",
+      "status": "done",
+      "commit": "51620e0"
+    },
+    {
+      "id": "system-design-section10",
+      "name": "Added Section 10 (AI Model Upgrade Roadmap) to system design doc; renumbered Open Questions to Section 11",
+      "status": "done",
+      "commit": "51620e0"
+    },
+    {
+      "id": "filigran-readme",
+      "name": "Added Filigran on-prem note + data sovereignty constraint to README scalability section",
+      "status": "done",
+      "commit": "9c2633c"
+    }
+  ],
+  "remaining_tasks": [],
+  "blockers": [],
+  "async_jobs": [],
+  "human_actions_pending": [
+    {
+      "action": "Decide on SIEM push automation milestone scope",
+      "context": "User confirmed direction (SIEM push automation) but planning not initiated. Target SIEM not decided — options: Elasticsearch remote, Splunk HEC, generic webhook, syslog/CEF.",
+      "blocking": false
+    }
+  ],
+  "decisions": [
+    {
+      "decision": "Filigran hosted Import Document AI ruled out permanently",
+      "rationale": "Sends documents to importdoc.ariane.filigran.io — violates data sovereignty constraint. On-prem version requires private Filigran credentials + 8GB VRAM min.",
+      "phase": "post-v1.0"
+    },
+    {
+      "decision": "qwen2.5:72b recommended over llama3.3:70b for production extraction",
+      "rationale": "Qwen 2.5 family benchmarks higher on structured JSON extraction tasks specifically; both require ~40GB VRAM Q4.",
+      "phase": "post-v1.0"
+    },
+    {
+      "decision": "README.md is now the primary project document (Spanish)",
+      "rationale": "System design doc demoted to technical reference; README covers architecture, functions, competitive differentiation, hardware, scalability.",
+      "phase": "post-v1.0"
+    }
+  ],
+  "uncommitted_files": [],
+  "next_action": "Start SIEM push automation milestone: /gsd-new-milestone. First clarify target SIEM (Elasticsearch remote vs Splunk HEC vs generic webhook) before planning.",
+  "context_notes": "Stack fully running. Working tree clean at 9c2633c. Documentation now comprehensive in Spanish. Next natural step is the SIEM push automation milestone — user confirmed interest but target SIEM endpoint not yet chosen. CVE connector still ingesting 2026 data (non-blocking, background)."
+}
