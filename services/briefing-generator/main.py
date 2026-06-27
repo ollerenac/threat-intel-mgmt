@@ -120,6 +120,30 @@ async def stats():
     }
 
 
+@app.get("/cve/stats")
+async def cve_stats():
+    """
+    Return total CVE count from OpenCTI and last-seen timestamp (STATS-03).
+    Wrapped in asyncio.to_thread — pycti I/O is blocking (D-04).
+    last_run derived from max updated_at across vulnerability objects.
+    """
+    def _get_cve_stats():
+        from opencti_client import build_pycti_client
+        client = build_pycti_client()
+        vulns = client.vulnerability.list(first=500, getAll=True) or []
+        last_run = None
+        if vulns:
+            dates = [v.get("updated_at") for v in vulns if v.get("updated_at")]
+            last_run = max(dates) if dates else None
+        return len(vulns), last_run
+    total_cves, last_run = await asyncio.to_thread(_get_cve_stats)
+    return {
+        "total_cves": total_cves,
+        "last_run": last_run,
+        "status": "ok" if last_run else "never_run",
+    }
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
