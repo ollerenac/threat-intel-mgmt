@@ -229,7 +229,9 @@ OLLAMA_MODEL = "llama3.3:70b"  # era llama3.2:3b
 |--------|------------|------|
 | `llama3.1:405b` | ~200 GB Q4 | Mejor modelo open-weights; calidad GPT-4 Turbo |
 
-**Opción especializada:** Fine-tuning de `llama3.1:8b` sobre corpus STIX 2.1 (MITRE y CISA publican corpus CTI públicos). Un modelo ajustado de 8B supera a modelos generalistas de 70B en la tarea específica de extracción CTI.
+**Fine-tuning sobre corpus STIX 2.1:** ajustar `llama3.1:8b` con pares {informe de amenazas → bundle STIX anotado}. MITRE y CISA publican corpus CTI públicos aptos para este propósito. Un modelo ajustado de 8B supera a generalistas de 70B en la tarea específica de extracción CTI.
+
+**Filigran Import Document AI on-prem:** `filigran/import-document-ai-webservice` es el modelo propietario de Filigran/OpenCTI diseñado específicamente para extracción STIX. Requiere credenciales de cuenta Filigran (registro Docker privado) y mínimo 8 GB VRAM GPU / 16 GB RAM CPU. La versión cloud (`importdoc.ariane.filigran.io`) no es compatible con el constraint de soberanía de datos de este proyecto — ningún IOC ni documento puede salir de la red local.
 
 ---
 
