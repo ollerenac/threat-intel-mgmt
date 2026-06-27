@@ -12,6 +12,7 @@ APScheduler threads are daemon threads and continue running while uvicorn
 blocks the main thread.
 """
 import logging
+import time
 
 import uvicorn
 from redis import from_url as redis_from_url
@@ -54,11 +55,31 @@ def build_enabled_feeds() -> list:
     ]
 
 
+def _build_pycti_with_retry(max_attempts: int = 10, delay: int = 10):
+    """
+    Retry build_pycti_client() until OpenCTI is reachable.
+
+    ponytail: simple loop — pycti raises ValueError if OpenCTI unreachable;
+    Docker network attachment can lag 5-15s after container start in a restart loop.
+    """
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return build_pycti_client()
+        except (ValueError, Exception) as exc:
+            if attempt == max_attempts:
+                raise
+            logger.warning(
+                "OpenCTI not reachable (attempt %d/%d): %s — retrying in %ds",
+                attempt, max_attempts, exc, delay,
+            )
+            time.sleep(delay)
+
+
 def main() -> None:
     logger.info("feed-orchestrator starting")
 
     redis_client = build_redis_client()
-    pycti_client = build_pycti_client()
+    pycti_client = _build_pycti_with_retry()
     feeds = build_enabled_feeds()
 
     # D-06: run all feeds immediately BEFORE starting scheduler

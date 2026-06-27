@@ -350,6 +350,13 @@ services:
         condition: service_healthy
       ollama:
         condition: service_healthy
+    healthcheck:
+      # ponytail: python stdlib probe — curl not available in python:3.12-slim
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     networks:
       - tim-network
     restart: unless-stopped
