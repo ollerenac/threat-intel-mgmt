@@ -40,6 +40,10 @@ QUALITY_WEIGHTS = {
     "malwarebazaar": 15, # automated with community validation
 }
 
+# ── Alerting ────────────────────────────────────────────────────────────────
+# Max reachable score with seen_in_feeds=1: feodo fresh = 65; otx fresh = 60.
+ALERT_THRESHOLD = int(os.environ.get("ALERT_THRESHOLD", "55"))
+
 # ── Key presence logging (never log key values) ─────────────────────────────
 logger.info("OPENCTI_TOKEN configured: %s", bool(OPENCTI_TOKEN))
 logger.info("OTX_API_KEY configured: %s", bool(OTX_API_KEY))

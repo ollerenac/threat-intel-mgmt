@@ -6,6 +6,9 @@ const BRIEFING_URL = '/api/briefings';
 export const getFeedsStatus = () =>
   fetch(`${FEED_URL}/feeds/status`).then(r => r.json());
 
+export const getAlerts = () =>
+  fetch(`${FEED_URL}/feeds/alerts`).then(r => r.json());
+
 export const getStats = () =>
   fetch(`${BRIEFING_URL}/stats`).then(r => r.json());
 

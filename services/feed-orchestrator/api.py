@@ -7,13 +7,14 @@ Endpoints:
 
 CORS: allow_origins=["http://localhost:3000"] per T-06-01-01 (explicit origin, never "*").
 """
+import json
 import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from redis import from_url as redis_from_url
 
-from config import REDIS_URL
+from config import ALERT_THRESHOLD, REDIS_URL
 from status import get_status
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,15 @@ def feeds_status():
             "status": h.get("status", "never_run"),
         })
     return {"feeds": feeds}
+
+
+@app.get("/feeds/alerts")
+def feeds_alerts():
+    """Return the 100 most recent high-confidence IOC alerts from Redis."""
+    r = redis_from_url(REDIS_URL, decode_responses=True)
+    raw = r.lrange("tim:alerts", 0, -1)
+    alerts = [json.loads(e) for e in raw]
+    return {"threshold": ALERT_THRESHOLD, "alerts": list(reversed(alerts))}
 
 
 @app.get("/health")

@@ -13,16 +13,34 @@ The run() method orchestrates the full feed cycle:
 
 All Redis writes use hset(mapping={...}) — NOT hmset() (removed in redis-py 4.x).
 """
+import json
 import logging
+import re
 import time
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import Any
 
+from config import ALERT_THRESHOLD
 from deduplicator import is_duplicate
 from opencti_client import create_indicator
 
 logger = logging.getLogger(__name__)
+
+_IOC_VALUE_RE = re.compile(r"= '([^']+)'")
+
+
+def _push_alert(redis_client: Any, pattern: str, confidence: int, feed: str, ioc_type: str) -> None:
+    m = _IOC_VALUE_RE.search(pattern)
+    entry = json.dumps({
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "value": m.group(1) if m else pattern,
+        "confidence": confidence,
+        "feed": feed,
+        "type": ioc_type,
+    })
+    redis_client.rpush("tim:alerts", entry)
+    redis_client.ltrim("tim:alerts", -100, -1)  # keep newest 100
 
 
 class BaseFeed(ABC):
@@ -159,4 +177,7 @@ class BaseFeed(ABC):
             )
             if result is not None:
                 count += 1
+                if confidence >= ALERT_THRESHOLD:
+                    _push_alert(redis_client, pattern, confidence, self.name,
+                                ind.get("observable_type", ""))
         return count
