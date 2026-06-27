@@ -87,6 +87,7 @@ def create_indicator(
                 x_opencti_score=confidence,  # A4: same value as confidence
                 objectLabel=labels,           # A2: verify param name in pycti source
                 indicator_types=["malicious-activity"],
+                x_opencti_create_observables=True,
                 update=True,                 # idempotent upsert — safety net beyond Redis dedup
             )
         except Exception as exc:
