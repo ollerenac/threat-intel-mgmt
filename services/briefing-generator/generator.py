@@ -78,7 +78,7 @@ def _collect_threat_data(client, period_hours: int) -> dict:
     actors     = _safe_list(client.threat_actor, first=10)
     malware    = _safe_list(client.malware, first=10)
     campaigns  = _safe_list(client.campaign, first=10)
-    patterns   = _safe_list(client.attack_pattern, first=10)
+    patterns   = [p for p in _safe_list(client.attack_pattern, first=50) if p.get("x_mitre_id")][:10]
 
     # D-04: sort IOCs by confidence score descending, take first 25
     indicators = sorted(indicators, key=lambda x: x.get("x_opencti_score", 0), reverse=True)[:25]
