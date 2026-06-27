@@ -47,7 +47,7 @@ class ThreatFoxFeed(BaseFeed):
         data = resp.json()
         if data.get("query_status") != "ok":
             raise ValueError(f"ThreatFox API error: {data.get('query_status')}")
-        result = data.get("data", [])
+        result = data.get("data") or []
         # T-02-05-04: warn on unexpectedly large datasets
         if len(result) > _LARGE_RESULT_WARN:
             logger.warning("[threatfox] large result set: %d rows", len(result))
@@ -82,7 +82,7 @@ class ThreatFoxFeed(BaseFeed):
             if parsed is None:
                 continue
             pattern, observable_type = parsed
-            labels = [ioc_dict.get("malware_printable", "")] + list(ioc_dict.get("tags", []))
+            labels = [ioc_dict.get("malware_printable", "")] + list(ioc_dict.get("tags") or [])
             labels = [l for l in labels if l]
             results.append({
                 "name": f"ThreatFox {ioc_type} {ioc_value[:32]}",

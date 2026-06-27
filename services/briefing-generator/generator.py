@@ -28,10 +28,14 @@ _ollama_client = ollama.Client(host=OLLAMA_URL, timeout=OLLAMA_TIMEOUT)
 briefings: dict[str, dict] = {}
 
 SYSTEM_PROMPT = """\
-You are a senior threat intelligence analyst. Write a 200-300 word executive summary \
-for C-suite leadership covering the threat landscape for the given period. Be factual, \
-concise, and avoid technical jargon. Highlight business risk and strategic implications. \
-Do not include lists, headers, or markdown — write in plain professional prose only."""
+You are a senior threat intelligence analyst. Write an executive summary for C-suite \
+leadership covering the threat landscape for the given period. Be factual and concise. \
+CRITICAL: Only report what is explicitly present in the data provided. If a field says \
+"none identified" or "0 identified", state that directly — do not invent threat actors, \
+malware families, campaigns, or techniques that are not listed. Scale the length to the \
+data: sparse data warrants a short summary. Avoid technical jargon. Highlight business \
+risk and strategic implications. Do not include lists, headers, or markdown — plain \
+professional prose only."""
 
 SECTOR_KEYWORDS = {"finance", "critical-infrastructure", "healthcare", "energy", "government"}
 
@@ -69,15 +73,17 @@ def _collect_threat_data(client, period_hours: int) -> dict:
             except Exception:
                 return []
 
-    indicators = _safe_list(client.indicator, filters=filters, first=10,
+    indicators = _safe_list(client.indicator, filters=filters, first=50,
                             orderBy="updated_at", orderMode="desc")
-    actors     = _safe_list(client.threat_actor, filters=filters, first=10)
-    malware    = _safe_list(client.malware, filters=filters, first=10)
-    campaigns  = _safe_list(client.campaign, filters=filters, first=10)
-    patterns   = _safe_list(client.attack_pattern, filters=filters, first=10)
+    # ponytail: reference entities (actors/malware/campaigns/techniques) are not updated_at-bumped
+    # when feeds push new IOCs — time filter always returns empty. Query unfiltered instead.
+    actors     = _safe_list(client.threat_actor, first=10)
+    malware    = _safe_list(client.malware, first=10)
+    campaigns  = _safe_list(client.campaign, first=10)
+    patterns   = _safe_list(client.attack_pattern, first=10)
 
-    # D-04: sort IOCs by confidence score descending, take first 10
-    indicators = sorted(indicators, key=lambda x: x.get("x_opencti_score", 0), reverse=True)[:10]
+    # D-04: sort IOCs by confidence score descending, take first 25
+    indicators = sorted(indicators, key=lambda x: x.get("x_opencti_score", 0), reverse=True)[:25]
     sectors = _extract_sectors(indicators)
 
     return {

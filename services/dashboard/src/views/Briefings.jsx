@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { listBriefings, postGenerate, getBriefing, pdfUrl } from '../api';
 
 export default function Briefings() {
@@ -6,11 +6,13 @@ export default function Briefings() {
   const [generating, setGenerating] = useState(false);
   const [periodHours, setPeriodHours] = useState(24);
   const [error, setError] = useState(null);
+  const pollRef = useRef(null);
 
   useEffect(() => {
     listBriefings()
       .then(setBriefings)
       .catch(() => setError('Could not load data — briefing-generator unreachable.'));
+    return () => clearInterval(pollRef.current);
   }, []);
 
   const handleGenerate = async () => {
@@ -18,12 +20,18 @@ export default function Briefings() {
     setError(null);
     try {
       const { briefing_id } = await postGenerate(periodHours);
-      const id = setInterval(async () => {
-        const b = await getBriefing(briefing_id);
-        if (b.status === 'done' || b.status === 'error') {
-          clearInterval(id); // stop polling on done or error
+      pollRef.current = setInterval(async () => {
+        try {
+          const b = await getBriefing(briefing_id);
+          if (b.status === 'done' || b.status === 'error') {
+            clearInterval(pollRef.current);
+            setGenerating(false);
+            listBriefings().then(setBriefings);
+          }
+        } catch {
+          clearInterval(pollRef.current);
           setGenerating(false);
-          listBriefings().then(setBriefings);
+          setError('Lost connection while waiting for briefing. Check status and retry.');
         }
       }, 3000);
     } catch {
