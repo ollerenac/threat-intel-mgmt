@@ -35,3 +35,4 @@ images/
 # Secrets
 *.key
 *.pem
+services/dashboard/.kibana.htpasswd

@@ -51,8 +51,7 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - xpack.security.enabled=false
-    ports:
-      - "127.0.0.1:5601:5601"
+    # no host port — access via soc-dashboard nginx on :5602 with basic auth
     mem_limit: 1g
     depends_on:
       elasticsearch:
@@ -440,8 +439,10 @@ services:
     ports:
       - "127.0.0.1:80:80"
       - "127.0.0.1:443:443"
+      - "127.0.0.1:5602:5602"
     volumes:
       - ./certs:/etc/nginx/certs:ro
+      - ./services/dashboard/.kibana.htpasswd:/etc/nginx/.kibana.htpasswd:ro
     mem_limit: 512m
     depends_on:
       feed-orchestrator:
