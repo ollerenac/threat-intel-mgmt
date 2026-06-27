@@ -9,6 +9,7 @@ volumes:
   miniodata:
   ollamadata:
   chromadata:
+  briefingsdata:
 
 # ─────────────────────────────────────────────
 # CAPA DE PLATAFORMA — OpenCTI + dependencias
@@ -344,6 +345,9 @@ services:
       - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
       - OLLAMA_URL=http://ollama:11434
       - OLLAMA_MODEL=llama3.2:3b
+      - DB_PATH=/data/briefings.db
+    volumes:
+      - briefingsdata:/data
     mem_limit: 1g
     depends_on:
       opencti:

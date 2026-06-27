@@ -18,6 +18,9 @@ OLLAMA_URL     = os.environ.get("OLLAMA_URL", "http://ollama:11434")
 OLLAMA_MODEL   = os.environ.get("OLLAMA_MODEL", "llama3.2:3b")
 OLLAMA_TIMEOUT = int(os.environ.get("OLLAMA_TIMEOUT", "60"))  # LLM prose generation: 30-45s on 4GB VRAM
 
+# ── Persistence ─────────────────────────────────────────────────────────────
+DB_PATH = os.environ.get("DB_PATH", "/data/briefings.db")
+
 # ── Key presence logging (never log key values) ─────────────────────────────
 logger.info("OPENCTI_TOKEN configured: %s", bool(OPENCTI_TOKEN))
 logger.info("OLLAMA_URL configured: %s", OLLAMA_URL)

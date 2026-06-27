@@ -8,12 +8,13 @@ Endpoints:
   GET  /briefings             — list all briefing summaries
   GET  /health                — liveness probe
 
-D-10: briefing state stored in generator.briefings (module-level dict, lost on restart).
+Briefing state persisted to SQLite via store.py (DB_PATH=/data/briefings.db, mounted volume).
 T-05-04-01: period_hours validated by Pydantic Field(ge=1, le=720) before any I/O.
 """
 import asyncio
 import logging
 import uuid
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException
@@ -21,12 +22,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
-from generator import briefings, run_generate
+import store
+from generator import run_generate
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="briefing-generator", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    store.init_db()
+    yield
+
+
+app = FastAPI(title="briefing-generator", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -43,30 +52,31 @@ class GenerateRequest(BaseModel):
 @app.post("/generate")
 async def generate(body: GenerateRequest, background_tasks: BackgroundTasks):
     briefing_id = str(uuid.uuid4())
-    # ponytail: init BEFORE add_task — task reads briefings[briefing_id] before this line otherwise
-    briefings[briefing_id] = {
+    # ponytail: upsert BEFORE add_task — background thread reads the row immediately
+    store.upsert(briefing_id, {
         "status": "generating",
         "text": None,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "period_hours": body.period_hours,
         "error": None,
-    }
+    })
     background_tasks.add_task(run_generate, briefing_id, body.period_hours)
     return {"briefing_id": briefing_id, "status": "generating"}
 
 
 @app.get("/briefings/{briefing_id}")
 async def get_briefing(briefing_id: str):
-    if briefing_id not in briefings:
+    entry = store.get(briefing_id)
+    if entry is None:
         raise HTTPException(status_code=404, detail="briefing not found")
-    return {"briefing_id": briefing_id, **briefings[briefing_id]}
+    return {"briefing_id": briefing_id, **entry}
 
 
 @app.get("/briefings/{briefing_id}/pdf")
 async def get_briefing_pdf(briefing_id: str):
-    if briefing_id not in briefings:
+    entry = store.get(briefing_id)
+    if entry is None:
         raise HTTPException(status_code=404, detail="briefing not found")
-    entry = briefings[briefing_id]
     if entry["status"] != "done":
         # Pitfall 5: never call render_pdf() when text is None
         raise HTTPException(status_code=404, detail="briefing not ready")
@@ -79,12 +89,12 @@ async def get_briefing_pdf(briefing_id: str):
 async def list_briefings():
     return [
         {
-            "briefing_id": bid,
-            "created_at": v["created_at"],
-            "period_hours": v["period_hours"],
-            "status": v["status"],
+            "briefing_id": r["id"],
+            "created_at": r["created_at"],
+            "period_hours": r["period_hours"],
+            "status": r["status"],
         }
-        for bid, v in briefings.items()
+        for r in store.list_all()
     ]
 
 

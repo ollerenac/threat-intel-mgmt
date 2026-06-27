@@ -18,14 +18,12 @@ from datetime import datetime, timezone, timedelta
 
 from config import OLLAMA_MODEL, OLLAMA_URL, OLLAMA_TIMEOUT
 from opencti_client import build_pycti_client
+import store
 
 logger = logging.getLogger(__name__)
 
 # Module-level singleton — timeout set for 30-45s LLM prose generation (Pitfall 3)
 _ollama_client = ollama.Client(host=OLLAMA_URL, timeout=OLLAMA_TIMEOUT)
-
-# Module-level state — lost on restart, acceptable for demo (D-10)
-briefings: dict[str, dict] = {}
 
 SYSTEM_PROMPT = """\
 You are a senior threat intelligence analyst. Write an executive summary for C-suite \
@@ -152,8 +150,7 @@ def _run_generate_sync(briefing_id: str, period_hours: int) -> None:
     data = _collect_threat_data(client, period_hours)
     stats_block = _build_stats_block(data, period_hours)
     text = _call_ollama(stats_block)
-    briefings[briefing_id]["text"] = text
-    briefings[briefing_id]["status"] = "done"
+    store.update_status(briefing_id, "done", text=text)
 
 
 async def run_generate(briefing_id: str, period_hours: int) -> None:
@@ -161,5 +158,4 @@ async def run_generate(briefing_id: str, period_hours: int) -> None:
         await asyncio.to_thread(_run_generate_sync, briefing_id, period_hours)
     except Exception as exc:
         logger.error("[generator] generation failed: %s", exc)
-        briefings[briefing_id]["status"] = "error"
-        briefings[briefing_id]["error"] = str(exc)
+        store.update_status(briefing_id, "error", error=str(exc))
