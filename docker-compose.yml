@@ -196,6 +196,54 @@ services:
       - tim-network
     restart: unless-stopped
 
+  connector-ipinfo:
+    image: opencti/connector-ipinfo:6.4.0
+    profiles: [platform]
+    environment:
+      - OPENCTI_URL=http://opencti:8080
+      - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
+      - CONNECTOR_ID=${CONNECTOR_IPINFO_ID}
+      - CONNECTOR_NAME=IpInfo
+      - CONNECTOR_SCOPE=IPv4-Addr,IPv6-Addr
+      - CONNECTOR_AUTO=true
+      - CONNECTOR_CONFIDENCE_LEVEL=75
+      - CONNECTOR_LOG_LEVEL=error
+      - IPINFO_TOKEN=${IPINFO_TOKEN}
+      - IPINFO_MAX_TLP=TLP:AMBER
+    mem_limit: 256m
+    depends_on:
+      opencti:
+        condition: service_healthy
+    networks:
+      - tim-network
+    restart: unless-stopped
+
+  connector-cve:
+    image: opencti/connector-cve:6.4.0
+    profiles: [platform]
+    environment:
+      - OPENCTI_URL=http://opencti:8080
+      - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
+      - CONNECTOR_ID=${CONNECTOR_CVE_ID}
+      - CONNECTOR_NAME=Common Vulnerabilities and Exposures
+      - CONNECTOR_SCOPE=vulnerability
+      - CONNECTOR_RUN_AND_TERMINATE=false
+      - CONNECTOR_LOG_LEVEL=error
+      - CVE_BASE_URL=https://services.nvd.nist.gov/rest/json/cves/2.0
+      - CVE_API_KEY=${CVE_NVD_API_KEY}
+      - CVE_INTERVAL=2
+      - CVE_MAX_DATE_RANGE=2
+      - CVE_MAINTAIN_DATA=true
+      - CVE_PULL_HISTORY=true
+      - CVE_HISTORY_START_YEAR=2023
+    mem_limit: 512m
+    depends_on:
+      opencti:
+        condition: service_healthy
+    networks:
+      - tim-network
+    restart: unless-stopped
+
 # ─────────────────────────────────────────────
 # CAPA AI — Ollama + ChromaDB
 # ─────────────────────────────────────────────

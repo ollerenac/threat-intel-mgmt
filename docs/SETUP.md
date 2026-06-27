@@ -97,7 +97,41 @@ docker compose --profile platform up -d
 
 ---
 
-## 4. Troubleshooting
+## 4. Optional: IpInfo Geolocation Token
+
+The `connector-ipinfo` service enriches IP observables with geolocation data, which
+populates the world map widget on the OpenCTI dashboard. It requires a free ipinfo.io
+account (50k lookups/month on the free tier).
+
+**Get a free token:**
+
+1. Sign up at https://ipinfo.io/signup
+2. Copy the token shown on your dashboard and add it to `.env`:
+
+```bash
+IPINFO_TOKEN=your_token_here
+```
+
+3. Restart the connector:
+
+```bash
+docker compose --profile platform up -d connector-ipinfo
+```
+
+The connector will automatically enrich IP observables as they are created or updated.
+Allow a few minutes for existing IPs to be processed and the world map to populate.
+
+**NVD API key (optional):** The `connector-cve` service syncs the full CVE database
+from NVD without a key, but NVD rate-limits unauthenticated requests. For faster initial
+sync, get a free API key at https://nvd.nist.gov/developers/request-an-api-key and set:
+
+```bash
+CVE_NVD_API_KEY=your_key_here
+```
+
+---
+
+## 5. Troubleshooting
 
 ### Issue A — Elasticsearch fails to start with memory lock error
 
