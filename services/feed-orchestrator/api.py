@@ -9,12 +9,17 @@ CORS: allow_origins=["http://localhost:3000"] per T-06-01-01 (explicit origin, n
 """
 import json
 import logging
+import uuid
 
-from fastapi import FastAPI
+import requests
+import stix2
+from dateutil.parser import parse as parse_dt
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from redis import from_url as redis_from_url
 
-from config import ALERT_THRESHOLD, REDIS_URL
+from config import ALERT_THRESHOLD, ES_URL, REDIS_URL
 from status import get_status
 
 logger = logging.getLogger(__name__)
@@ -55,6 +60,37 @@ def feeds_alerts():
     raw = r.lrange("tim:alerts", 0, -1)
     alerts = [json.loads(e) for e in raw]
     return {"threshold": ALERT_THRESHOLD, "alerts": list(reversed(alerts))}
+
+
+@app.get("/feeds/export/stix")
+def export_stix():
+    """Return a STIX 2.1 bundle of all high-confidence IOCs indexed in Elasticsearch."""
+    try:
+        resp = requests.get(
+            f"{ES_URL}/tim-iocs/_search",
+            json={"size": 1000, "sort": [{"ts": {"order": "desc"}}]},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        hits = resp.json().get("hits", {}).get("hits", [])
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"ES unavailable: {exc}")
+
+    indicators = []
+    for hit in hits:
+        src = hit["_source"]
+        indicators.append(stix2.Indicator(
+            id=src.get("stix_id", f"indicator--{uuid.uuid4()}"),
+            name=src["value"],
+            pattern=src["pattern"],
+            pattern_type="stix",
+            valid_from=parse_dt(src["ts"]),
+            confidence=src["confidence"],
+            labels=[src["feed"]],
+        ))
+
+    bundle = stix2.Bundle(*indicators, allow_custom=True)
+    return Response(content=bundle.serialize(), media_type="application/stix+json")
 
 
 @app.get("/health")

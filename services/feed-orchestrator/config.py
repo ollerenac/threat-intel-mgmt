@@ -40,6 +40,9 @@ QUALITY_WEIGHTS = {
     "malwarebazaar": 15, # automated with community validation
 }
 
+# ── SIEM / Elasticsearch ────────────────────────────────────────────────────
+ES_URL = os.environ.get("ES_URL", "http://elasticsearch:9200")
+
 # ── Alerting ────────────────────────────────────────────────────────────────
 # Max reachable score with seen_in_feeds=1: feodo fresh = 65; otx fresh = 60.
 ALERT_THRESHOLD = int(os.environ.get("ALERT_THRESHOLD", "55"))

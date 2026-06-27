@@ -17,11 +17,14 @@ import json
 import logging
 import re
 import time
+import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import Any
 
-from config import ALERT_THRESHOLD
+import requests
+
+from config import ALERT_THRESHOLD, ES_URL
 from deduplicator import is_duplicate
 from opencti_client import create_indicator
 
@@ -32,15 +35,22 @@ _IOC_VALUE_RE = re.compile(r"= '([^']+)'")
 
 def _push_alert(redis_client: Any, pattern: str, confidence: int, feed: str, ioc_type: str) -> None:
     m = _IOC_VALUE_RE.search(pattern)
-    entry = json.dumps({
+    stix_id = f"indicator--{uuid.uuid4()}"
+    doc = {
         "ts": datetime.now(timezone.utc).isoformat(),
         "value": m.group(1) if m else pattern,
         "confidence": confidence,
         "feed": feed,
         "type": ioc_type,
-    })
-    redis_client.rpush("tim:alerts", entry)
+        "pattern": pattern,
+        "stix_id": stix_id,
+    }
+    redis_client.rpush("tim:alerts", json.dumps(doc))
     redis_client.ltrim("tim:alerts", -100, -1)  # keep newest 100
+    try:
+        requests.post(f"{ES_URL}/tim-iocs/_doc/{stix_id}", json=doc, timeout=5)
+    except Exception as exc:
+        logger.warning("[alerts] ES index failed: %s", exc)
 
 
 class BaseFeed(ABC):

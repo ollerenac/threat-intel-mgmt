@@ -299,6 +299,7 @@ services:
       - OPENCTI_URL=http://opencti:8080
       - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
       - REDIS_URL=redis://redis:6379
+      - ES_URL=http://elasticsearch:9200
       - OTX_API_KEY=${OTX_API_KEY}
       - MALWAREBAZAAR_AUTH_KEY=${MALWAREBAZAAR_AUTH_KEY}
       - THREATFOX_AUTH_KEY=${THREATFOX_AUTH_KEY}
