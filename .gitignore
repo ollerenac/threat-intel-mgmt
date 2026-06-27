@@ -23,3 +23,15 @@ dist/
 .vscode/
 *.swp
 *.swo
+
+# Claude / GSD planning artifacts — not for repo consumers
+.claude/
+.planning/
+.continue-here*.md
+HANDOFF.json
+tokens.md
+images/
+
+# Secrets
+*.key
+*.pem
