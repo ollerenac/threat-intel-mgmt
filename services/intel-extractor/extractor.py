@@ -22,6 +22,7 @@ from typing import Optional
 
 import ollama
 
+import stats_store
 from config import OLLAMA_MODEL, OLLAMA_URL
 from opencti_client import (
     build_pycti_client,
@@ -342,6 +343,7 @@ def run_extraction(
 
     # Step 10: Update job state
     elapsed = time.monotonic() - start_time
+    stats_store.increment(docs=1, iocs=len(indicator_ids))
     jobs[job_id].update({
         "status": "complete",
         "iocs_extracted": len(indicator_ids),
