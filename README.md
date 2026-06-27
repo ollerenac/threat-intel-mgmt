@@ -1,58 +1,256 @@
-# TIM — Threat Intelligence Management System
+# TIM — Sistema de Gestión de Inteligencia de Amenazas
 
-A self-hosted, air-gapped threat intelligence platform. Ingest structured feeds and unstructured PDFs, correlate IOCs semantically, and generate analyst briefings — all without sending a single indicator off the machine.
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  Ingestion                                                       │
-│  URLhaus · OTX · Feodo · MalwareBazaar · ThreatFox              │
-│              │                                                   │
-│              ▼                                                   │
-│       feed-orchestrator (:8001)  ◄──  intel-extractor (:8001)  │
-│              │                              (PDF/report upload)  │
-│              ▼                                                   │
-│          OpenCTI (:8080)  ←  MITRE ATT&CK connector            │
-│              │                                                   │
-│              ▼                                                   │
-│       semantic-engine (:8002)  →  ChromaDB (vector store)       │
-│              │                                                   │
-│              ▼                                                   │
-│     briefing-generator (:8003)  →  Ollama (llama3.2:3b)        │
-│                                                                  │
-│          soc-dashboard (:3000)  — unified React UI              │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-**Key design choices:**
-- Ollama runs locally — no cloud LLM calls, ever
-- ChromaDB holds semantic embeddings for IOC correlation
-- OpenCTI stores the STIX 2.1 graph; MITRE ATT&CK imported automatically on first boot
-- `feed-orchestrator` and `intel-extractor` both bind `:8001` — they're in separate Docker Compose profiles and run independently, not simultaneously
+Plataforma de threat intelligence autohospedada y air-gapped. Ingiere feeds estructurados e informes PDF no estructurados, correlaciona IOCs semánticamente y genera briefings ejecutivos — sin enviar un solo indicador fuera de la máquina.
 
 ---
 
-## Prerequisites
+## ¿Qué es un TIM y qué cubre esta plataforma?
 
-| Requirement | Minimum | Tested on |
-|-------------|---------|-----------|
+Un **Threat Intelligence Management System (TIM)** centraliza, normaliza y analiza inteligencia sobre amenazas cibernéticas proveniente de múltiples fuentes. Esta plataforma cubre las cinco funciones nucleares de un TIM empresarial:
+
+| Función | Descripción | Implementación |
+|---------|-------------|----------------|
+| **Ingestión multi-feed** | Consumir feeds de IOCs de múltiples proveedores | 5 feeds automáticos + conector CVE NVD |
+| **Normalización y deduplicación** | Unificar formatos heterogéneos en un modelo común | feed-orchestrator: STIX 2.1 nativo; deduplicación por `(type, value)` |
+| **Correlación y enriquecimiento** | Relacionar IOCs con actores, campañas y técnicas ATT&CK | OpenCTI como knowledge graph; MITRE ATT&CK importado automáticamente |
+| **Búsqueda e investigación** | Consultar IOCs por valor exacto o por comportamiento | semantic-engine: búsqueda vectorial + ChromaDB; Threat Hunt en dashboard |
+| **Distribución y reporte** | Exportar inteligencia y comunicarla a stakeholders | STIX 2.1 export endpoint; TAXII 2.1 nativo; briefings PDF ejecutivos |
+
+---
+
+## Arquitectura
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        FUENTES DE INTELIGENCIA                          │
+│  URLhaus · OTX · Feodo · MalwareBazaar · ThreatFox · NVD CVE · PDFs   │
+└──────────────┬──────────────────────────────────────┬───────────────────┘
+               │ feeds automáticos                    │ extracción IA
+               ▼                                      ▼
+┌──────────────────────────┐          ┌───────────────────────────────┐
+│   feed-orchestrator      │          │   intel-extractor              │
+│   :8001                  │          │   llama3.2:3b via Ollama       │
+│   APScheduler + STIX 2.1 │          │   PDF / URL → IOCs + TTPs     │
+└──────────────┬───────────┘          └──────────────┬────────────────┘
+               │                                      │
+               └──────────────┬───────────────────────┘
+                              ▼
+          ┌───────────────────────────────────────────────┐
+          │                  OpenCTI 6.x                   │
+          │   Knowledge graph STIX 2.1 · TAXII 2.1        │
+          │   MITRE ATT&CK · Elasticsearch 8              │
+          │   Redis · RabbitMQ · MinIO                     │
+          └──────────┬────────────────────────────────────┘
+                     │
+          ┌──────────┴──────────────────────┐
+          ▼                                 ▼
+┌──────────────────────┐        ┌───────────────────────────┐
+│   semantic-engine    │        │   briefing-generator       │
+│   :8002              │        │   :8003                    │
+│   nomic-embed-text   │        │   llama3.2:3b via Ollama  │
+│   ChromaDB 23k+ IOCs │        │   resúmenes ejecutivos PDF │
+└──────────┬───────────┘        └──────────┬────────────────┘
+           └──────────────┬────────────────┘
+                          ▼
+         ┌────────────────────────────────────┐
+         │          SOC Dashboard              │
+         │          :443 (HTTPS)              │
+         │  Overview · Threat Hunt            │
+         │  Briefings · Alerts                │
+         └────────────────┬───────────────────┘
+                          │
+         ┌────────────────▼───────────────────┐
+         │   Kibana 8.15  :5602 (nginx auth)  │
+         │   Índice tim-iocs — SIEM view       │
+         └────────────────────────────────────┘
+```
+
+### Servicios
+
+| Servicio | Puerto | Rol |
+|----------|--------|-----|
+| **soc-dashboard** | `:443` | UI React unificada — 4 vistas |
+| **feed-orchestrator** | `127.0.0.1:8001` | Ingestión de 5 feeds + STIX export endpoint |
+| **intel-extractor** | `127.0.0.1:8001` | Extracción IA de PDFs/URLs (perfil separado) |
+| **semantic-engine** | `127.0.0.1:8002` | Búsqueda vectorial de IOCs |
+| **briefing-generator** | `127.0.0.1:8003` | Generación de briefings + PDF export |
+| **OpenCTI** | `127.0.0.1:8080` | Knowledge graph STIX 2.1 |
+| **Kibana** | `127.0.0.1:5602` | Visualización SIEM del índice tim-iocs |
+| **Ollama** | interno | Inferencia LLM local |
+| **ChromaDB** | interno | Vector store para búsqueda semántica |
+| **Elasticsearch 8** | interno | Storage de OpenCTI + índice tim-iocs |
+
+---
+
+## Funcionalidades
+
+### Ingestión automática de feeds
+
+Cinco feeds de threat intelligence actualizados automáticamente por APScheduler:
+
+| Feed | Tipo de IOCs | IOCs típicos por ciclo | Requiere clave |
+|------|-------------|------------------------|----------------|
+| URLhaus (Abuse.ch) | URLs maliciosas | ~2.500 | No |
+| AlienVault OTX | Multi-tipo | variable | Sí (gratuita) |
+| Feodo Tracker (Abuse.ch) | IPs C2 botnet | ~300 | No |
+| MalwareBazaar (Abuse.ch) | Hashes malware | variable | Sí (gratuita) |
+| ThreatFox (Abuse.ch) | Multi-tipo | ~3.500 | Sí (gratuita) |
+
+Todos los IOCs se normalizan a STIX 2.1 con puntuación de confianza calculada como:
+
+```
+confianza = min(100, feeds_que_lo_reportan × 25 + max(0, 10 − días_desde_primera_vista) + peso_calidad)
+```
+
+IOCs con confianza ≥ 55 se indexan adicionalmente en el índice Elasticsearch `tim-iocs` para consumo SIEM.
+
+### Extracción IA de documentos
+
+Sube un informe PDF o pasa una URL: `intel-extractor` usa `llama3.2:3b` para extraer:
+
+- IPs, dominios, hashes MD5/SHA1/SHA256, URLs, emails
+- Técnicas MITRE ATT&CK (lenguaje natural → código Txxxx con resolución via OpenCTI)
+- Familias de malware y actores de amenaza mencionados
+
+El resultado se escribe directamente en OpenCTI como objetos STIX 2.1 (`indicator`, `report`, `relationship`).
+
+```bash
+# Extraer IOCs de un PDF
+curl -F "file=@informe-amenaza.pdf" http://localhost:8001/extract
+
+# Extraer desde URL
+curl -X POST http://localhost:8001/extract -d '{"url": "https://ejemplo.com/report"}' -H "Content-Type: application/json"
+```
+
+### Búsqueda semántica
+
+El `semantic-engine` indexa más de 23.000 IOCs como vectores de 768 dimensiones con `nomic-embed-text`. No requiere coincidencia exacta de cadena:
+
+```bash
+# Buscar por comportamiento
+curl "http://localhost:8002/search?q=malware+con+DNS+tunneling+hacia+dominios+rusos&limit=10"
+
+# Pivoting por técnica
+curl "http://localhost:8002/search?q=cobalt+strike+beacon+C2&limit=5"
+```
+
+### Briefings ejecutivos
+
+Genera resúmenes en lenguaje natural para las últimas 24h, 72h o 7 días. Basados en datos reales de OpenCTI — el sistema rechaza fabricar información cuando los datos son escasos. Exportables a PDF desde el dashboard.
+
+### SIEM Export
+
+IOCs de alta confianza accesibles como bundle STIX 2.1 y en Elasticsearch:
+
+```bash
+# Bundle STIX 2.1 completo
+curl http://localhost:8001/feeds/export/stix | jq '.objects | length'
+
+# Ver IOCs en Kibana
+open http://localhost:5602  # usuario: analyst / contraseña en .env
+```
+
+### Kibana — Visualización SIEM
+
+Kibana 8.15 conectado al mismo Elasticsearch de OpenCTI, accesible en `http://localhost:5602` protegido por autenticación básica nginx. Permite crear data views sobre `tim-iocs` para dashboards de timeline, heatmaps por tipo de IOC y análisis de tendencias temporales.
+
+---
+
+## Diferenciación competitiva
+
+| | **TIM** (este proyecto) | MISP | OpenCTI solo | Recorded Future / Anomali |
+|--|--|--|--|--|
+| **Soberanía de datos** | ✅ 100% local, air-gapped | ✅ self-hosted | ✅ self-hosted | ❌ cloud / SaaS |
+| **Extracción IA de PDFs** | ✅ LLM local (Ollama) | ❌ manual | ❌ sin IA nativa | ✅ pero cloud |
+| **Búsqueda semántica** | ✅ ChromaDB + nomic-embed | ❌ solo exacta | ❌ sin semántica | ✅ pero cloud |
+| **Briefings ejecutivos** | ✅ LLM local → PDF | ❌ | ❌ | ✅ pero cloud |
+| **Knowledge graph STIX** | ✅ vía OpenCTI | ⚠️ básico | ✅ nativo | ✅ |
+| **MITRE ATT&CK nativo** | ✅ conector automático | ⚠️ manual | ✅ conector | ✅ |
+| **TAXII 2.1** | ✅ nativo | ✅ | ✅ | ✅ |
+| **SIEM export STIX 2.1** | ✅ endpoint + ES index | ⚠️ exportación manual | ⚠️ | ✅ |
+| **Coste de licencia** | ✅ gratuito | ✅ gratuito | ✅ gratuito | ❌ alto |
+| **Deploy en un comando** | ✅ `docker compose` | ⚠️ complejo | ⚠️ complejo | ❌ SaaS |
+
+**Frente a OpenCTI solo:** TIM añade la capa de IA (extracción, embeddings, briefings) y la UI analítica unificada encima del knowledge graph de OpenCTI. OpenCTI es el motor de datos; TIM es la plataforma completa de analista.
+
+**Frente a MISP:** MISP está optimizado para compartir IOCs entre organizaciones. TIM está optimizado para el ciclo analítico completo: ingerir → correlacionar → investigar → briefar. Ambos son complementarios; TIM puede exportar via TAXII 2.1 hacia MISP.
+
+**Frente a plataformas cloud:** ningún IOC, documento ni consulta sale de la red local. Apto para entornos con restricciones regulatorias en defensa, banca y salud.
+
+---
+
+## Hardware — Despliegue demo actual
+
+| Recurso | Disponible | Asignado a TIM |
+|---------|-----------|----------------|
+| CPU | 16 vCPUs | 12 |
+| RAM | 31 GB | ~14 GB activos |
+| Disco | 112 GB libres | 28 GB |
+| GPU | NVIDIA RTX 3050, 4 GB VRAM | 4 GB (Ollama exclusivo) |
+| SO | Ubuntu 22.04 LTS | — |
+| Runtime | Docker 29.5 + Compose v5 | — |
+
+Con 4 GB de VRAM, `llama3.2:3b` (~2 GB) y `nomic-embed-text` (~0.3 GB) no corren simultáneamente. Ollama carga y descarga modelos según demanda.
+
+---
+
+## Escalabilidad — Roadmap de modelos IA
+
+El único cambio de código para actualizar el modelo LLM es una línea en `config.py` del servicio correspondiente:
+
+```python
+OLLAMA_MODEL = "llama3.3:70b"  # era llama3.2:3b
+```
+
+`nomic-embed-text` (embeddings del semantic-engine) no requiere sustitución en ningún nivel de hardware.
+
+### Niveles de hardware recomendados
+
+**Nivel 1 — 16–24 GB VRAM** (RTX 3090/4090, A10, L4)
+
+| Modelo | VRAM aprox. | Ventaja principal |
+|--------|------------|-------------------|
+| `llama3.1:8b` | ~8 GB | Primera actualización recomendada — JSON estructurado mucho más fiable |
+| `mistral-nemo:12b` | ~14 GB | Excelente adherencia a JSON-schema; óptimo para intel-extractor |
+| `qwen2.5:14b` | ~16 GB | Mejor open-source en benchmarks de extracción estructurada |
+| `llama3.2:11b-vision` | ~12 GB | Comprensión de imágenes — útil para PDFs escaneados |
+
+**Nivel 2 — 40–80 GB VRAM** (A100 40/80 GB, 2× RTX 4090, A6000 48 GB)
+
+| Modelo | VRAM aprox. | Ventaja principal |
+|--------|------------|-------------------|
+| `qwen2.5:72b` | ~42 GB Q4 | **Recomendado para producción** — líder open-source en extracción JSON estructurada |
+| `llama3.3:70b` | ~40 GB Q4 | Calidad cercana a GPT-4; ideal para briefings ejecutivos |
+| `mixtral:8x7b` | ~28 GB Q4 | Alta velocidad por token; adecuado para documentos largos |
+
+**Nivel 3 — 160+ GB VRAM** (cluster multi-GPU H100/A100)
+
+| Modelo | VRAM aprox. | Nota |
+|--------|------------|------|
+| `llama3.1:405b` | ~200 GB Q4 | Mejor modelo open-weights; calidad GPT-4 Turbo |
+
+**Opción especializada:** Fine-tuning de `llama3.1:8b` sobre corpus STIX 2.1 (MITRE y CISA publican corpus CTI públicos). Un modelo ajustado de 8B supera a modelos generalistas de 70B en la tarea específica de extracción CTI.
+
+---
+
+## Prerrequisitos
+
+| Requisito | Mínimo | Probado en |
+|-----------|--------|-----------|
 | Docker Engine | 24.0 | 29.5.2 |
 | Docker Compose v2 | 2.0 | 5.1.4 |
-| NVIDIA GPU (CUDA) | 4 GB VRAM | RTX 3050 |
-| nvidia-container-toolkit | latest | see below |
-| Disk space | 28 GB | — |
+| GPU NVIDIA (CUDA) | 4 GB VRAM | RTX 3050 |
+| nvidia-container-toolkit | latest | Ubuntu 22.04 |
+| Espacio en disco | 28 GB | — |
 
-**Verify:**
+**Verificar entorno:**
 ```bash
 docker version --format '{{.Server.Version}}'
 docker compose version
 nvidia-smi --query-gpu=name,driver_version --format=csv,noheader
 ```
 
-**Install nvidia-container-toolkit (Ubuntu 22.04):**
+**Instalar nvidia-container-toolkit (Ubuntu 22.04):**
 ```bash
 curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey \
   | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
@@ -66,146 +264,83 @@ sudo systemctl restart docker
 
 ---
 
-## Quick Start
+## Inicio rápido
 
-### Step 1 — Generate `.env`
-
+### Paso 1 — Generar `.env`
 ```bash
 ./scripts/setup-env.sh
 ```
+Copia `.env.example` a `.env` y rellena UUIDs y contraseñas automáticamente. Idempotente.
 
-This copies `.env.example` to `.env` and fills in auto-generated UUIDs and passwords. Idempotent — safe to run again if `.env` already exists.
-
-### Step 2 — Add API keys
-
-Edit `.env` and fill in the three feed keys:
-
+### Paso 2 — Añadir API keys
+Editar `.env` con las claves de feed (todas gratuitas):
 ```
-OTX_API_KEY=          # https://otx.alienvault.com → API Keys
-MALWAREBAZAAR_AUTH_KEY=   # https://auth.abuse.ch → same key for both
-THREATFOX_AUTH_KEY=       # https://auth.abuse.ch
+OTX_API_KEY=              # https://otx.alienvault.com → API Keys
+MALWAREBAZAAR_AUTH_KEY=   # https://auth.abuse.ch
+THREATFOX_AUTH_KEY=       # https://auth.abuse.ch (misma clave)
 ```
+URLhaus y Feodo Tracker no requieren clave.
 
-URLhaus and Feodo Tracker require no key.
-
-### Step 3 — Start the platform
-
+### Paso 3 — Levantar la plataforma base
 ```bash
 docker compose --profile platform up -d
 ```
+Arranca: Elasticsearch, Redis, RabbitMQ, MinIO, OpenCTI, Worker, conector MITRE ATT&CK, Ollama, ChromaDB.
+El conector ATT&CK importa en segundo plano (~5–15 min según hardware).
 
-Starts: Elasticsearch, Redis, RabbitMQ, MinIO, OpenCTI, OpenCTI Worker, MITRE ATT&CK connector, Ollama, ChromaDB.
-
-The MITRE ATT&CK connector begins importing in the background (~5–15 min depending on hardware).
-
-### Step 4 — Pull Ollama models
-
+### Paso 4 — Descargar modelos Ollama (una sola vez, ~3 GB)
 ```bash
 ./scripts/init-models.sh
 ```
 
-Downloads `llama3.2:3b` (extraction + briefings) and `nomic-embed-text` (embeddings). Can run in parallel with Step 3's MITRE import.
-
-### Step 5 — Verify platform readiness
-
+### Paso 5 — Verificar disponibilidad de la plataforma
 ```bash
 ./scripts/verify-platform.sh
 ```
+Espera hasta que OpenCTI tenga 100+ objetos ATT&CK. Timeout de 15 min con mensaje accionable.
 
-Polls every 30 s until 100+ ATT&CK objects are present in OpenCTI. Times out at 15 min with an actionable message.
+### Paso 6 — Crear colección TAXII (manual, una sola vez)
+1. Abrir `http://localhost:8080` → iniciar sesión (`admin@opencti.io` / contraseña del `.env`)
+2. **Data → Data Sharing → TAXII Collections → +** → nombre `TIM` → guardar
 
-### Step 6 — Create TAXII collection (one-time, manual)
-
-The TAXII 2.1 endpoint won't serve data until a collection is created through the OpenCTI UI:
-
-1. Open `http://localhost:8080` → log in (default: `admin@opencti.io` / password from `.env`)
-2. Go to **Data → Data Sharing → TAXII Collections**
-3. Click **+** → name it `TIM` → save
-
-The feed-orchestrator and semantic engine use this collection to pull structured STIX bundles.
-
-### Step 7 — Start TIM services
-
+### Paso 7 — Levantar servicios TIM
 ```bash
 docker compose --profile feeds --profile semantic --profile briefings --profile dashboard up -d
 ```
 
-All four services start. The semantic engine begins indexing IOCs from OpenCTI on a 5-minute poll cycle.
-
-To also run the AI extraction service for uploading PDFs/threat reports (uses the same `:8001` port as feed-orchestrator — stop feeds first):
-
+**Para extracción IA de PDFs** (perfil separado; usa el mismo puerto `:8001` que feeds — detener feeds primero):
 ```bash
 docker compose --profile extract up -d
 ```
 
 ---
 
-## Port Map
+## Mapa de puertos
 
-| Service | URL | Notes |
-|---------|-----|-------|
-| SOC Dashboard | `http://localhost:3000` | Main UI |
-| OpenCTI | `http://localhost:8080` | Full threat graph |
-| feed-orchestrator | `http://localhost:8001` | Feed status + manual trigger |
-| intel-extractor | `http://localhost:8001` | PDF upload (separate profile) |
-| semantic-engine | `http://localhost:8002` | IOC semantic search API |
-| briefing-generator | `http://localhost:8003` | Briefing generation API |
-| RabbitMQ Management | `http://localhost:15672` | localhost only |
-| MinIO Console | `http://localhost:9001` | localhost only |
-
----
-
-## Features
-
-### SOC Dashboard (`localhost:3000`)
-
-**Overview tab** — live feed health, IOC counts by type, recent threat activity.
-
-**Threat Hunt tab** — semantic search across 20k+ IOCs. Type a domain, IP, hash, or natural-language description; returns ranked results with confidence scores from ChromaDB.
-
-**Briefings tab** — generate a threat intelligence briefing for the last 24 h, 72 h, or 7 days. Uses `llama3.2:3b` to summarize active threats, IOC patterns, and MITRE ATT&CK techniques observed. Grounded in real OpenCTI data — refuses to fabricate when data is sparse.
-
-### Feed Orchestrator (`localhost:8001/feeds/status`)
-
-Returns live status for all 5 feeds with last-run time and IOC counts. Trigger a manual run:
-
-```bash
-curl -X POST http://localhost:8001/feeds/run
-```
-
-### Intel Extractor (`localhost:8001`) — `extract` profile
-
-Upload a PDF threat report and extract structured IOCs directly into OpenCTI:
-
-```bash
-curl -F "file=@report.pdf" http://localhost:8001/extract
-```
-
-### Semantic Engine (`localhost:8002/search`)
-
-Direct semantic search API:
-
-```bash
-curl "http://localhost:8002/search?q=cobalt+strike+beacon&limit=10"
-```
+| Servicio | URL | Notas |
+|----------|-----|-------|
+| SOC Dashboard | `https://localhost:443` | UI principal |
+| Kibana | `http://localhost:5602` | Auth básica nginx (analyst / `.env`) |
+| OpenCTI | `http://localhost:8080` | Solo acceso local |
+| feed-orchestrator | `http://localhost:8001` | Solo acceso local |
+| semantic-engine | `http://localhost:8002` | Solo acceso local |
+| briefing-generator | `http://localhost:8003` | Solo acceso local |
+| RabbitMQ Management | `http://localhost:15672` | Solo acceso local |
+| MinIO Console | `http://localhost:9001` | Solo acceso local |
 
 ---
 
-## Troubleshooting
+## Resolución de problemas
 
-See [`docs/SETUP.md`](docs/SETUP.md) for:
-- Elasticsearch memory lock errors
-- MinIO healthcheck failures (`mc` binary missing)
-- MITRE ATT&CK import timeout
-- NVIDIA container toolkit setup issues
+Ver [`docs/SETUP.md`](docs/SETUP.md) para:
+- Errores de memory lock en Elasticsearch
+- Fallos de healthcheck de MinIO (binario `mc` faltante)
+- Timeout en importación MITRE ATT&CK
+- Problemas con nvidia-container-toolkit
 
 ---
 
-## Improvement Backlog
+## Documentación técnica
 
-| Item | Priority |
-|------|----------|
-| Briefing persistence (SQLite) | High |
-| Alerting on high-confidence IOC | High |
-| connector-mitre ATT&CK pattern gap | Medium |
-| SIEM export (CEF/STIX) | Low |
+- [`docs/plans/2026-06-23-tim-system-design.md`](docs/plans/2026-06-23-tim-system-design.md) — diseño completo: modelo de datos STIX, contratos de API, flujos end-to-end, roadmap de modelos IA, guión de demo
+- [`docs/SETUP.md`](docs/SETUP.md) — troubleshooting detallado y procedimientos de inicialización

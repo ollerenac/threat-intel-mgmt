@@ -592,7 +592,61 @@ Debe contener:
 
 ---
 
-## 10. Open Questions
+## 10. AI Model Upgrade Roadmap
+
+El único cambio de código requerido para actualizar el modelo de extracción o generación de briefings es una línea en `config.py` del servicio correspondiente:
+
+```python
+OLLAMA_MODEL = "llama3.3:70b"  # era llama3.2:3b
+```
+
+`nomic-embed-text` (semantic-engine) no requiere actualización — ya es near-optimal para embeddings de IOCs independientemente del hardware disponible.
+
+### Hardware actual (demo): RTX 3050 — 4 GB VRAM
+
+Modelos activos: `llama3.2:3b` (~2 GB VRAM) + `nomic-embed-text` (~0.3 GB). No corren simultáneamente; Ollama carga y descarga según demanda. Latencia de primera respuesta incluye tiempo de carga del modelo (~3–5 s).
+
+---
+
+### Nivel 1 — 16–24 GB VRAM (RTX 3090/4090, A10, L4)
+
+| Modelo | VRAM aprox. | Caso de uso prioritario |
+|--------|------------|------------------------|
+| `llama3.1:8b` | ~8 GB | Primera actualización recomendada — JSON estructurado significativamente más fiable |
+| `mistral-nemo:12b` | ~14 GB | Excelente adherencia a JSON-schema; óptimo para intel-extractor |
+| `qwen2.5:14b` | ~16 GB | Familia Qwen 2.5 lidera benchmarks de extracción estructurada open-source |
+| `llama3.2:11b-vision` | ~12 GB | Añade comprensión de imágenes — útil para PDFs escaneados |
+
+---
+
+### Nivel 2 — 40–80 GB VRAM (A100 40/80 GB, 2× RTX 4090, A6000 48 GB)
+
+| Modelo | VRAM aprox. | Caso de uso prioritario |
+|--------|------------|------------------------|
+| `qwen2.5:72b` | ~42 GB Q4 | **Recomendado para producción** — mejor open-source en extracción JSON estructurada según benchmarks |
+| `llama3.3:70b` | ~40 GB Q4 | Calidad cercana a GPT-4; ideal para briefings ejecutivos de alta calidad |
+| `mixtral:8x7b` | ~28 GB Q4 | Arquitectura MoE — alta velocidad por token; adecuado para documentos largos chunkeados |
+| `deepseek-r1:70b` | ~40 GB Q4 | Modelo de razonamiento; útil como capa de validación post-extracción |
+
+---
+
+### Nivel 3 — 160+ GB VRAM (cluster multi-GPU H100/A100)
+
+| Modelo | VRAM aprox. | Nota |
+|--------|------------|------|
+| `llama3.1:405b` | ~200 GB Q4 | Mejor modelo open-weights disponible; calidad GPT-4 Turbo |
+
+---
+
+### Opciones especializadas en ciberseguridad
+
+**Fine-tuning sobre corpus STIX 2.1:** ajustar `llama3.1:8b` con pares {informe de amenazas → bundle STIX anotado}. MITRE y CISA publican corpus CTI públicos aptos para este propósito. Un modelo fine-tuned de 8B supera a generalistas de 70B en la tarea específica de extracción CTI.
+
+**Filigran Import Document AI on-prem:** `filigran/import-document-ai-webservice` es el modelo propietario de Filigran/OpenCTI diseñado específicamente para extracción STIX. Requiere credenciales de cuenta Filigran (registro Docker privado) y mínimo 8 GB VRAM GPU / 16 GB RAM CPU. La versión cloud (`importdoc.ariane.filigran.io`) no es compatible con el constraint de soberanía de datos de este proyecto (ningún IOC o documento sale de la red local).
+
+---
+
+## 11. Open Questions
 
 - [ ] ¿Qué feeds gratuitos se priorizan para el demo?
 - [ ] ¿El dashboard custom reemplaza o complementa el UI nativo de OpenCTI?
