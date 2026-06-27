@@ -2,7 +2,7 @@ import time
 
 import requests
 from requests.adapters import HTTPAdapter
-from requests.exceptions import ChunkedEncodingError
+from requests.exceptions import ChunkedEncodingError, ConnectionError as RequestsConnectionError
 from urllib3.util import Retry
 
 from .endpoints import BASE_URL
@@ -37,19 +37,19 @@ class CVEClient:
         self.session.mount("http://", adapter)
         self.session.mount("https://", adapter)
 
-        # ponytail: retry on ChunkedEncodingError — NVD drops connections mid-stream
+        # ponytail: retry on connection/timeout errors — NVD drops or stalls large responses
         for attempt in range(5):
             try:
-                response = self.session.get(api_url, params=params, timeout=120)
+                response = self.session.get(api_url, params=params, timeout=180)
                 if response.status_code == 200:
                     time.sleep(6)
                     return response
                 raise Exception("[API] Attempting to retrieve data failed. Wait for connector to re-run...")
-            except ChunkedEncodingError:
+            except (ChunkedEncodingError, RequestsConnectionError):
                 if attempt == 4:
                     raise
-                wait = 15 * (attempt + 1)
-                self.helper.log_warning(f"[API] ChunkedEncodingError (attempt {attempt + 1}/5), retrying in {wait}s...")
+                wait = 20 * (attempt + 1)
+                self.helper.log_warning(f"[API] Network error (attempt {attempt + 1}/5), retrying in {wait}s...")
                 time.sleep(wait)
 
     def get_complete_collection(self, cve_params=None):
