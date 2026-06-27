@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: 1
 status: completed
-stopped_at: Phase 6 UI-SPEC approved
-last_updated: "2026-06-26T21:00:49.234Z"
+stopped_at: Post-v1.0 improvements — feeds fixed, briefing quality improved
+last_updated: "2026-06-27T02:22:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 6
@@ -16,8 +16,8 @@ progress:
 
 # STATE: TIM — Threat Intelligence Management System
 
-**Last updated:** 2026-06-26
-**Session:** Phase 5 Plan 04 complete — briefing-generator verified (AIBR-01–04, 5/5 tests pass)
+**Last updated:** 2026-06-27
+**Session:** Post-v1.0 fixes — all 5 feeds operational, briefing hallucinations eliminated (commit 1198d5c)
 
 ---
 
@@ -25,7 +25,7 @@ progress:
 
 **Core value:** An analyst can ingest any threat intelligence source — structured feed or unstructured PDF — and immediately search, correlate, and brief stakeholders on active threats, without a single IOC leaving the local network.
 
-**Current focus:** Phase 06 — soc-dashboard
+**Current focus:** Post-v1.0 improvements
 
 ---
 
@@ -33,10 +33,10 @@ progress:
 
 | Field | Value |
 |-------|-------|
-| Active phase | Phase 6: SOC Dashboard |
-| Current Plan | 1 |
-| Status | Phase 06 complete |
-| Phase progress | 5/6 phases complete (Phase 1 ✓, Phase 2 ✓, Phase 3 ✓, Phase 4 ✓, Phase 5 ✓) |
+| Active phase | — all phases complete |
+| Current Plan | — |
+| Status | TIM v1.0 complete + post-launch fixes |
+| Phase progress | 6/6 phases complete ✓ |
 
 **Progress bar:**
 
@@ -46,7 +46,7 @@ Phase 2 [██████████] 100% ✓ COMPLETE
 Phase 3 [██████████] 100% ✓ COMPLETE
 Phase 4 [██████████] 100% ✓ COMPLETE
 Phase 5 [██████████] 100% ✓ COMPLETE
-Phase 6 [          ] 0%
+Phase 6 [██████████] 100% ✓ COMPLETE
 ```
 
 ---
@@ -122,6 +122,26 @@ Phase 6 [          ] 0%
 - [x] Obtain AlienVault OTX free API key before Phase 2 (FEED-03) — stored in .env
 - [ ] Define seed data content for demo scenarios (post-implementation, Section 8 of design doc)
 
+### Post-v1.0 Fixes Shipped (2026-06-27, commit 1198d5c)
+
+- MalwareBazaar feed: `json=` → `data=` (API requires form-encoded, not JSON)
+- ThreatFox feed: null `tags` field crashes `list(None)` — fixed with `or []`
+- MalwareBazaar + ThreatFox auth keys added to `.env` — both feeds now active (3549 ThreatFox IOCs ingested on first run)
+- briefing-generator: removed `updated_at` time filter from actors/malware/campaigns/patterns — reference entities are not timestamp-bumped by feed ingestion; were always returning empty
+- briefing-generator: IOC fetch cap raised 10 → 25 (query 50, keep top 25 by confidence)
+- briefing-generator: added hallucination guard to system prompt — briefings now grounded in actual data
+- Briefings.jsx: fixed permanent `generating` lock caused by uncaught async error inside `setInterval`
+
+### Remaining Improvement Backlog
+
+| Item | Priority | Status |
+|------|----------|--------|
+| Briefing persistence (SQLite) | High | not started |
+| Alerting on high-confidence IOC | High | not started |
+| connector-mitre ATT&CK pattern gap | Medium | not started |
+| IOC enrichment (VirusTotal/Shodan) | Medium | not started — out of scope per data sovereignty constraint |
+| SIEM export (CEF/STIX) | Medium | not started |
+
 ### Blockers
 
 None.
@@ -130,18 +150,21 @@ None.
 
 ## Session Continuity
 
-**Resume file:** .planning/phases/06-soc-dashboard/06-UI-SPEC.md
+**Last session:** 2026-06-27T02:22:00Z
+**Stopped at:** Post-v1.0 feed fixes and briefing quality improvements committed (1198d5c)
 
-**Last session:** 2026-06-26T16:03:04.070Z
-**Stopped at:** Phase 6 UI-SPEC approved
+**Uncommitted files still pending:**
+- `docker-compose.yml` — profile/rebuild fix from Phase 6
+- `services/feed-orchestrator/main.py` — uvicorn/asyncio fix from Phase 6
 
-**To resume work:**
+**To resume work:** Pick from improvement backlog above. Suggested next: briefing persistence (SQLite) — lowest effort, highest demo stability impact.
 
-1. `/gsd-plan-phase 6` — SOC Dashboard (React + Vite, TanStack Query, 3 views: Overview / Threat Hunt / Briefings)
-
-**Design document:** `docs/plans/2026-06-23-tim-system-design.md` — authoritative source for component specs, API contracts, docker-compose structure, and port assignments.
-
-**Running platform:** briefing-generator live on port 8003 — POST /generate returns briefing_id immediately, GET /briefings/{id}/pdf returns valid PDF.
+**Running platform:**
+- feed-orchestrator: port 8001 — 5 feeds active (URLhaus, OTX, Feodo, MalwareBazaar, ThreatFox)
+- semantic-engine: port 8002 — 23k+ IOCs indexed in ChromaDB
+- briefing-generator: port 8003 — grounded briefings, no hallucination
+- soc-dashboard: port 3000 — React UI with Overview / Threat Hunt / Briefings views
+- OpenCTI: port 8080
 
 ---
 *State initialized: 2026-06-23 | Phase 1 closed: 2026-06-25 | Phase 5 closed: 2026-06-26*
