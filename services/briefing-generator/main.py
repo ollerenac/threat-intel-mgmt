@@ -111,7 +111,7 @@ async def stats():
     client = build_pycti_client()
     data = await asyncio.to_thread(_collect_threat_data, client, 24)
     techniques = [
-        {"id": p.get("x_mitre_id", ""), "name": p.get("name", ""), "count": 1}
+        {"id": p.get("x_mitre_id") or "", "name": p.get("name", ""), "count": 1}
         for p in data.get("attack_patterns", [])[:5]
     ]
     return {

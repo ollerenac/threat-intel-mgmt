@@ -65,8 +65,8 @@ export default function Overview() {
             <span style={{ fontSize: '12px', fontWeight: 600 }}>Top ATT&CK Techniques</span>
             <ol style={{ marginTop: '8px', paddingLeft: '20px' }}>
               {(stats.top_techniques || []).map(item => (
-                <li key={item.id} style={{ fontSize: '14px', marginBottom: '4px' }}>
-                  T{item.id} &mdash; {item.name} ({item.count})
+                <li key={item.id || item.name} style={{ fontSize: '14px', marginBottom: '4px' }}>
+                  {item.id || '—'} &mdash; {item.name} ({item.count})
                 </li>
               ))}
             </ol>
