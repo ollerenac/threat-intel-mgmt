@@ -219,7 +219,7 @@ services:
     restart: unless-stopped
 
   connector-cve:
-    image: opencti/connector-cve:6.4.0
+    build: ./services/connector-cve
     profiles: [platform]
     environment:
       - OPENCTI_URL=http://opencti:8080
