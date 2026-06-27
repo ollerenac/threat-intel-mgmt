@@ -126,7 +126,7 @@ services:
       - MINIO__SECRET_KEY=${MINIO_SECRET_KEY}
       - APP__TELEMETRY__METRICS__ENABLED=true
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     mem_limit: 2g
     depends_on:
       elasticsearch:
@@ -327,7 +327,7 @@ services:
     build: ./services/intel-extractor
     profiles: [extract]
     ports:
-      - "8001:8001"
+      - "127.0.0.1:8001:8001"
     environment:
       - OPENCTI_URL=http://opencti:8080
       - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
@@ -354,7 +354,7 @@ services:
     build: ./services/semantic-engine
     profiles: [semantic]
     ports:
-      - "8002:8002"
+      - "127.0.0.1:8002:8002"
     environment:
       - OPENCTI_URL=http://opencti:8080
       - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
@@ -387,7 +387,7 @@ services:
     build: ./services/briefing-generator
     profiles: [briefings]
     ports:
-      - "8003:8003"
+      - "127.0.0.1:8003:8003"
     environment:
       - OPENCTI_URL=http://opencti:8080
       - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
@@ -421,7 +421,10 @@ services:
     build: ./services/dashboard
     profiles: [dashboard]
     ports:
-      - "3000:80"
+      - "127.0.0.1:80:80"
+      - "127.0.0.1:443:443"
+    volumes:
+      - ./certs:/etc/nginx/certs:ro
     mem_limit: 512m
     depends_on:
       feed-orchestrator:
