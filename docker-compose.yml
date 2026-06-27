@@ -228,7 +228,7 @@ services:
       - CONNECTOR_NAME=Common Vulnerabilities and Exposures
       - CONNECTOR_SCOPE=vulnerability
       - CONNECTOR_RUN_AND_TERMINATE=false
-      - CONNECTOR_LOG_LEVEL=info
+      - CONNECTOR_LOG_LEVEL=error
       - CVE_BASE_URL=https://services.nvd.nist.gov/rest/json/cves
       - CVE_API_KEY=${CVE_NVD_API_KEY}
       - CVE_INTERVAL=2
