@@ -45,6 +45,22 @@ services:
       - tim-network
     restart: unless-stopped
 
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.0
+    profiles: [platform]
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - xpack.security.enabled=false
+    ports:
+      - "127.0.0.1:5601:5601"
+    mem_limit: 1g
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - tim-network
+    restart: unless-stopped
+
   redis:
     image: redis:7.2-alpine
     profiles: [platform]
