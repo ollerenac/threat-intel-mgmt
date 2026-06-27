@@ -39,6 +39,26 @@ app.add_middleware(
 )
 
 
+@app.get("/stats")
+async def stats():
+    """
+    Return ChromaDB index statistics (STATS-01).
+    Wrapped in asyncio.to_thread — ChromaDB I/O is blocking (D-04).
+    """
+    def _get_stats():
+        col = indexer.get_collection()
+        count = col.count()
+        last_sync = indexer.read_watermark(col)
+        return count, last_sync
+    count, last_run = await asyncio.to_thread(_get_stats)
+    return {
+        "total_indexed": max(0, count - 1),  # subtract 1 for WATERMARK_ID sentinel
+        "collection": indexer.COLLECTION_NAME,
+        "last_run": last_run,
+        "status": "ok" if last_run else "never_run",
+    }
+
+
 @app.get("/health")
 def health():
     """Return index progress immediately. Never awaits indexer state (D-05)."""
