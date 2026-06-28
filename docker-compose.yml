@@ -342,9 +342,9 @@ services:
 
   intel-extractor:
     build: ./services/intel-extractor
-    profiles: [extract]
+    profiles: [platform]
     ports:
-      - "127.0.0.1:8001:8001"
+      - "127.0.0.1:8004:8004"
     environment:
       - OPENCTI_URL=http://opencti:8080
       - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
@@ -364,7 +364,7 @@ services:
     restart: unless-stopped
     healthcheck:
       # ponytail: python stdlib probe — curl not available in python:3.12-slim
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8004/health')"]
       interval: 30s
       timeout: 10s
       retries: 3
