@@ -106,10 +106,12 @@ async def stats():
     Uses asyncio.to_thread to keep pycti I/O off the event loop (T-06-01-03).
     count=1 per technique — attack_patterns already ordered by pycti default.
     """
-    from opencti_client import build_pycti_client
-    from generator import _collect_threat_data
-    client = build_pycti_client()
-    data = await asyncio.to_thread(_collect_threat_data, client, 24)
+    def _get_stats():
+        from opencti_client import build_pycti_client
+        from generator import _collect_threat_data
+        return _collect_threat_data(build_pycti_client(), 24)
+
+    data = await asyncio.to_thread(_get_stats)
     techniques = [
         {"id": p.get("x_mitre_id") or "", "name": p.get("name", ""), "count": 1}
         for p in data.get("attack_patterns", [])[:5]

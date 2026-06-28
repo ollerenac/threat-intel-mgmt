@@ -43,13 +43,16 @@ def init_db() -> None:
 def increment(docs: int, iocs: int) -> None:
     """Atomically add docs and iocs to the running totals and stamp last_run."""
     with _conn() as con:
-        row = con.execute("SELECT total_docs, total_iocs FROM stats WHERE id = 1").fetchone()
-        prev_docs = row["total_docs"] if row else 0
-        prev_iocs = row["total_iocs"] if row else 0
         con.execute(
-            "INSERT OR REPLACE INTO stats (id, total_docs, total_iocs, last_run) "
-            "VALUES (1, ?, ?, ?)",
-            (prev_docs + docs, prev_iocs + iocs, datetime.now(timezone.utc).isoformat()),
+            """
+            INSERT INTO stats (id, total_docs, total_iocs, last_run)
+            VALUES (1, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+                total_docs = total_docs + excluded.total_docs,
+                total_iocs = total_iocs + excluded.total_iocs,
+                last_run   = excluded.last_run
+            """,
+            (docs, iocs, datetime.now(timezone.utc).isoformat()),
         )
 
 
