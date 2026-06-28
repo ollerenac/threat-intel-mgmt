@@ -132,12 +132,15 @@ async def cve_stats():
     def _get_cve_stats():
         from opencti_client import build_pycti_client
         client = build_pycti_client()
-        vulns = client.vulnerability.list(first=500, getAll=True) or []
-        last_run = None
-        if vulns:
-            dates = [v.get("updated_at") for v in vulns if v.get("updated_at")]
-            last_run = max(dates) if dates else None
-        return len(vulns), last_run
+        # first=1 + withPagination gives globalCount without fetching all objects (WR-01)
+        result = client.vulnerability.list(
+            first=1, getAll=False, withPagination=True,
+            orderBy="updated_at", orderMode="desc",
+        ) or {}
+        total = (result.get("pagination") or {}).get("globalCount", 0)
+        entities = result.get("entities") or []
+        last_run = entities[0].get("updated_at") if entities else None
+        return total, last_run
     total_cves, last_run = await asyncio.to_thread(_get_cve_stats)
     return {
         "total_cves": total_cves,
