@@ -54,14 +54,18 @@ Required JSON format:
   "iocs": [{"type": "<type>", "value": "<value>"}, ...],
   "techniques": [{"name": "<name>", "description": "<description>"}, ...],
   "malware_families": ["<name>", ...],
-  "threat_actors": ["<name>", ...]
+  "threat_actors": ["<name>", ...],
+  "targeted_sectors": ["<sector>", ...],
+  "victim_technologies": ["<product or system>", ...],
+  "campaign_summary": "<2-3 sentences: who did what, targeting what, and why it matters>"
 }
 
 IOC types: ip, domain, url, hash_md5, hash_sha1, hash_sha256, email
 
 Example input:
-"Actors distributed Emotet from 1.2.3.4 and evil.example.com using phishing lures. \
-The dropper had MD5 hash d41d8cd98f00b204e9800998ecf8427e and contacted http://c2.bad/beacon."
+"IRGC-affiliated actors exploited CVE-2023-1234 in Unitronics Vision PLCs at US water \
+facilities, downloading tools from 1.2.3.4 and evil.example.com. The dropper \
+(MD5 d41d8cd98f00b204e9800998ecf8427e) contacted http://c2.bad/beacon."
 
 Example output:
 {
@@ -71,12 +75,16 @@ Example output:
     {"type": "hash_md5", "value": "d41d8cd98f00b204e9800998ecf8427e"},
     {"type": "url",      "value": "http://c2.bad/beacon"}
   ],
-  "techniques": [{"name": "phishing", "description": "email-based delivery lure"}],
-  "malware_families": ["Emotet"],
-  "threat_actors": []
+  "techniques": [{"name": "exploitation of public-facing application", "description": "CVE-2023-1234 in Unitronics PLCs"}],
+  "malware_families": [],
+  "threat_actors": ["IRGC-affiliated"],
+  "targeted_sectors": ["water", "critical infrastructure"],
+  "victim_technologies": ["Unitronics Vision PLC"],
+  "campaign_summary": "IRGC-affiliated actors exploited a vulnerability in Unitronics Vision PLCs at US water facilities. Attackers downloaded tools from external infrastructure to establish persistence on OT systems."
 }
 
-Extract all IOCs you find. Return empty lists for categories with no matches.
+Extract all IOCs you find. Return empty lists for categories with no matches. \
+If campaign_summary cannot be determined, return an empty string.
 """
 
 # D-03 fallback: stripped-down plain-text prompt for when JSON parse fails
@@ -188,10 +196,13 @@ def call_llm(client: ollama.Client, model: str, text: str) -> dict:
         data = json.loads(response.message.content)
         # Validate expected keys exist; fill missing with empty list (Pitfall 2)
         return {
-            "iocs":             data.get("iocs", []),
-            "techniques":       data.get("techniques", []),
-            "malware_families": data.get("malware_families", []),
-            "threat_actors":    data.get("threat_actors", []),
+            "iocs":                data.get("iocs", []),
+            "techniques":          data.get("techniques", []),
+            "malware_families":    data.get("malware_families", []),
+            "threat_actors":       data.get("threat_actors", []),
+            "targeted_sectors":    data.get("targeted_sectors", []),
+            "victim_technologies": data.get("victim_technologies", []),
+            "campaign_summary":    data.get("campaign_summary", ""),
         }
     except (json.JSONDecodeError, KeyError) as exc:
         logger.warning("[extractor] LLM JSON parse failed (%s), trying fallback prompt", exc)
@@ -261,6 +272,9 @@ def run_extraction(
     # Step 4: LLM extract per chunk
     raw_iocs: list[dict] = []
     technique_keywords: set[str] = set()
+    targeted_sectors: set[str] = set()
+    victim_technologies: set[str] = set()
+    campaign_summary: str = ""
 
     for i, chunk in enumerate(chunks):
         result = call_llm(_ollama_client, OLLAMA_MODEL, chunk)
@@ -269,6 +283,11 @@ def run_extraction(
             name = t.get("name", "").strip()
             if name:
                 technique_keywords.add(name.lower())
+        targeted_sectors.update(s.lower() for s in result.get("targeted_sectors", []) if s)
+        victim_technologies.update(v for v in result.get("victim_technologies", []) if v)
+        # Take the first non-empty summary (executive summary is usually in the first chunk)
+        if not campaign_summary:
+            campaign_summary = result.get("campaign_summary", "").strip()
 
     logger.info(
         "[extractor] job %s: %d raw IOCs, %d technique keywords",
@@ -332,12 +351,17 @@ def run_extraction(
             create_relationship(oc_client, from_id=ind_id, to_id=ap_id)
 
     # Step 9: Create report (AFTER step 7 — Pitfall 1)
+    report_description = campaign_summary or f"Extracted by intel-extractor from {source_name}"
+    if victim_technologies:
+        report_description += f"\n\nSystems targeted: {', '.join(sorted(victim_technologies))}"
+    report_labels = sorted(targeted_sectors) if targeted_sectors else []
     report_result = create_report(
         client=oc_client,
         name=source_name,
         published=now_iso,
-        description=f"Extracted by intel-extractor from {source_name}",
+        description=report_description,
         indicator_ids=indicator_ids,
+        labels=report_labels,
     )
     report_id = report_result["id"] if report_result else None
 

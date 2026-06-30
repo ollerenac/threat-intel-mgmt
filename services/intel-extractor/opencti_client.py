@@ -137,6 +137,7 @@ def create_report(
     published: str,
     description: str,
     indicator_ids: list[str],
+    labels: list[str] = [],
 ) -> Optional[dict]:
     """
     Create a threat-report in OpenCTI with all indicator objects linked.
@@ -162,6 +163,7 @@ def create_report(
                 description=description,
                 objects=indicator_ids,
                 report_types=["threat-report"],
+                objectLabel=labels if labels else [],
                 update=True,
             )
         except Exception as exc:

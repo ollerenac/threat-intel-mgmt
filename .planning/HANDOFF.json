@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-28T02:30:24.510Z",
+  "timestamp": "2026-06-30T07:24:58.584Z",
   "phase": "07",
   "phase_name": "ingestion-telemetry-apis",
   "phase_dir": ".planning/phases/07-ingestion-telemetry-apis",
@@ -9,26 +9,32 @@
   "total_tasks": null,
   "status": "paused",
   "completed_tasks": [
-    {"id": 1, "name": "gsd-execute-phase 07 — verification + code review", "status": "done", "commit": "a2fa063"},
-    {"id": 2, "name": "Remove Phase 8 / MONITOR scope from REQUIREMENTS, ROADMAP, PROJECT.md", "status": "done", "commit": null},
-    {"id": 3, "name": "Move intel-extractor to platform profile, port 8004", "status": "done", "commit": null},
-    {"id": 4, "name": "Platform demo — extracted IOCs from CISA PLC advisory PDF", "status": "done", "commit": null}
+    {"id": 1, "name": "CR-01/CR-02/WR-01 stats fixes", "status": "done", "commit": "76493bd"},
+    {"id": 2, "name": "OpenCTI walkthrough: Remexi → APT39 → MechaFlounder (8 TTPs)", "status": "done", "commit": null},
+    {"id": 3, "name": "Repo hecho público: github.com/ollerenac/threat-intel-mgmt", "status": "done", "commit": null},
+    {"id": 4, "name": "Manual de usuario en español: docs/ con GitHub Pages Jekyll", "status": "done", "commit": "324af00"},
+    {"id": 5, "name": "CU-01 walkthrough APT39/Remexi/MechaFlounder en español", "status": "done", "commit": "324af00"},
+    {"id": 6, "name": "docs/index.md: nav por categorías (Casos de Uso / Guías / Referencia)", "status": "done", "commit": "174818a"},
+    {"id": 7, "name": "Design doc traducido al español (encabezados + secciones 1-2)", "status": "done", "commit": "2eab78d"}
   ],
   "remaining_tasks": [
-    {"id": 5, "name": "Commit docker-compose.yml + Dockerfile port/profile changes", "status": "not_started"},
-    {"id": 6, "name": "Continue platform demo — semantic search (port 8002)", "status": "not_started"},
-    {"id": 7, "name": "Continue platform demo — briefing generation (port 8003)", "status": "not_started"},
-    {"id": 8, "name": "Apply code review fixes CR-01 (stats_store race) and CR-02 (blocking pycti call)", "status": "not_started"}
+    {"id": 8, "name": "Traducir docs/SETUP.md al español (216 líneas, 100% inglés)", "status": "not_started"}
   ],
   "blockers": [],
   "async_jobs": [],
-  "human_actions_pending": [],
-  "decisions": [
-    {"decision": "intel-extractor moved from profile 'extract' to 'platform'", "rationale": "Ollama always runs anyway; separate profile added no value and caused depends_on collision", "phase": "07"},
-    {"decision": "intel-extractor port changed 8001 → 8004", "rationale": "feed-orchestrator holds 8001 under 'feeds' profile; both now run simultaneously", "phase": "07"},
-    {"decision": "Phase 8 Ingestion Monitor Tab removed from scope", "rationale": "User prefers platform demo over building monitor UI; MONITOR-01..05 requirements dropped", "phase": "07"}
+  "human_actions_pending": [
+    {
+      "action": "Habilitar GitHub Pages en el repo",
+      "detail": "github.com/ollerenac/threat-intel-mgmt → Settings → Pages → Branch: master / Folder: /docs → Save",
+      "blocker": false
+    }
   ],
-  "uncommitted_files": ["docker-compose.yml", "services/intel-extractor/Dockerfile"],
-  "next_action": "Commit docker-compose + Dockerfile changes, then continue platform demo with semantic search: curl -s -X POST http://localhost:8002/search -H 'Content-Type: application/json' -d '{\"query\": \"Iranian PLC infrastructure critical systems\", \"limit\": 5}'",
-  "context_notes": "Session was platform demo mode — no new dev phase. v1.1 is complete. User wants to learn the platform, not build more features."
+  "decisions": [
+    {"decision": "Manual de usuario en español en docs/ con Jekyll + GitHub Pages", "rationale": "docs/ ya existía en el repo; Jekyll renderiza Markdown automáticamente sin workflow adicional", "phase": "docs"},
+    {"decision": "Nav del índice por categorías: Casos de Uso / Guías / Referencia", "rationale": "Facilita escalado — cada sección crece independientemente", "phase": "docs"},
+    {"decision": "SETUP.md traducción postpuesta por límite de contexto (72%)", "rationale": "216 líneas de inglés — se hace en la próxima sesión como primera tarea", "phase": "docs"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "Traducir docs/SETUP.md al español. Es el único archivo restante en inglés en el site. Luego commit y push.",
+  "context_notes": "Sesión de walkthrough OpenCTI + docs site. Todo el site docs/ está en español excepto SETUP.md. Repo público en github.com/ollerenac/threat-intel-mgmt. GitHub Pages no activado aún (acción humana pendiente). Último commit: 2eab78d (design doc traducido). Contexto cerrado al 72% — se retoma con la traducción de SETUP.md."
 }
