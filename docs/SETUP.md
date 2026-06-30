@@ -1,23 +1,24 @@
-# TIM Platform — First-Run Setup Guide
+# Plataforma TIM — Guía de Configuración Inicial
 
-This document covers everything an operator needs to bring up the Threat Intelligence
-Management (TIM) platform from a clean Ubuntu 22.04 machine. Follow the sections in
-order on first run.
+Este documento cubre todo lo que un operador necesita para poner en marcha la plataforma de
+Gestión de Inteligencia de Amenazas (TIM) desde una máquina Ubuntu 22.04 limpia. Seguir las
+secciones en orden en la primera ejecución.
 
 ---
 
-## 1. Prerequisites
+## 1. Requisitos previos
 
-Before running any setup commands, verify the following are present:
+Antes de ejecutar cualquier comando de configuración, verificar que los siguientes componentes
+estén presentes:
 
-| Requirement | Minimum Version | Confirmed on Dev Machine |
-|-------------|----------------|--------------------------|
+| Requisito | Versión mínima | Confirmado en máquina de desarrollo |
+|-----------|---------------|--------------------------------------|
 | Docker Engine | 24.0 | 29.5.2 |
 | Docker Compose v2 | v2.0 | v5.1.4 |
-| NVIDIA GPU with driver | any CUDA-capable | RTX 3050, driver 580.159.03 |
-| nvidia-container-toolkit | latest | See Section 2 |
+| GPU NVIDIA con driver | cualquier CUDA | RTX 3050, driver 580.159.03 |
+| nvidia-container-toolkit | latest | Ver Sección 2 |
 
-**Check your versions:**
+**Verificar las versiones:**
 
 ```bash
 docker version --format '{{.Server.Version}}'
@@ -27,13 +28,12 @@ nvidia-smi --query-gpu=name,driver_version --format=csv,noheader
 
 ---
 
-## 2. NVIDIA Container Toolkit Installation (Ubuntu 22.04)
+## 2. Instalación del NVIDIA Container Toolkit (Ubuntu 22.04)
 
-The `ollama` service requires the NVIDIA Container Toolkit so Docker can pass the
-GPU through to the container. Without it, `docker compose --profile platform up -d`
-will fail on the ollama service.
+El servicio `ollama` requiere el NVIDIA Container Toolkit para que Docker pueda pasar la GPU
+al contenedor. Sin él, `docker compose --profile platform up -d` fallará en el servicio ollama.
 
-**Install nvidia-container-toolkit:**
+**Instalar nvidia-container-toolkit:**
 
 ```bash
 curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
@@ -43,87 +43,86 @@ sudo nvidia-ctk runtime configure --runtime=docker
 sudo systemctl restart docker
 ```
 
-**Verify the installation:**
+**Verificar la instalación:**
 
 ```bash
 docker run --rm --gpus all ubuntu nvidia-smi
 ```
 
-You should see the standard `nvidia-smi` table output inside the container. If the
-command fails, re-run `sudo nvidia-ctk runtime configure --runtime=docker` and
-restart Docker again.
+Debería aparecer la tabla estándar de `nvidia-smi` dentro del contenedor. Si el comando falla,
+volver a ejecutar `sudo nvidia-ctk runtime configure --runtime=docker` y reiniciar Docker.
 
 ---
 
-## 3. First-Run Sequence
+## 3. Secuencia de primera ejecución
 
-Run these four commands in order from the project root:
+Ejecutar estos cuatro comandos en orden desde la raíz del proyecto:
 
 ```bash
-# Step 1: Generate .env with UUIDs and passwords
+# Paso 1: Generar .env con UUIDs y contraseñas
 ./scripts/setup-env.sh
 
-# Step 2: Start all 8 platform services
+# Paso 2: Iniciar los 8 servicios de la plataforma
 docker compose --profile platform up -d
 
-# Step 3: Download Ollama models (llama3.2:3b + nomic-embed-text)
+# Paso 3: Descargar los modelos de Ollama (llama3.2:3b + nomic-embed-text)
 ./scripts/init-models.sh
 
-# Step 4: Poll until MITRE ATT&CK import is complete and TAXII is verified
+# Paso 4: Esperar hasta que la importación de MITRE ATT&CK finalice y verificar TAXII
 ./scripts/verify-platform.sh
 ```
 
-**What each step does:**
+**Qué hace cada paso:**
 
-- **Step 1 — `setup-env.sh`:** Copies `.env.example` to `.env` and replaces the four
-  placeholder values (`OPENCTI_ADMIN_TOKEN`, `CONNECTOR_MITRE_ID`, `RABBITMQ_PASSWORD`,
-  `MINIO_SECRET_KEY`) with auto-generated UUIDs and 24-character alphanumeric passwords.
-  Idempotent: running it a second time exits cleanly without overwriting `.env`.
+- **Paso 1 — `setup-env.sh`:** Copia `.env.example` a `.env` y reemplaza los cuatro valores
+  marcadores (`OPENCTI_ADMIN_TOKEN`, `CONNECTOR_MITRE_ID`, `RABBITMQ_PASSWORD`,
+  `MINIO_SECRET_KEY`) con UUIDs y contraseñas alfanuméricas de 24 caracteres generadas
+  automáticamente. Idempotente: una segunda ejecución termina sin sobrescribir `.env`.
 
-- **Step 2 — `docker compose up`:** Starts elasticsearch, redis, rabbitmq, minio,
-  opencti, connector-mitre, ollama, and chromadb. Health-gate dependency chains ensure
-  services start in the correct order. The MITRE ATT&CK connector begins importing in the
-  background once OpenCTI is healthy.
+- **Paso 2 — `docker compose up`:** Inicia elasticsearch, redis, rabbitmq, minio, opencti,
+  connector-mitre, ollama y chromadb. Las dependencias de salud garantizan el orden correcto
+  de inicio. El conector MITRE ATT&CK comienza a importar en segundo plano una vez que
+  OpenCTI está disponible.
 
-- **Step 3 — `init-models.sh`:** Waits for Ollama to become ready, then pulls
-  `llama3.2:3b` (extraction and briefings) and `nomic-embed-text` (embeddings). This
-  can run in parallel with the MITRE import.
+- **Paso 3 — `init-models.sh`:** Espera a que Ollama esté listo y descarga `llama3.2:3b`
+  (extracción e informes) y `nomic-embed-text` (embeddings). Puede ejecutarse en paralelo
+  con la importación de MITRE.
 
-- **Step 4 — `verify-platform.sh`:** Polls the OpenCTI GraphQL API every 30 seconds
-  until more than 100 ATT&CK attack-pattern objects are present (full import typically
-  delivers 600–900+ objects across Enterprise, Mobile, ICS, and CAPEC). Also verifies
-  the TAXII 2.1 endpoint returns HTTP 200. Times out after 15 minutes with an actionable
-  error message.
+- **Paso 4 — `verify-platform.sh`:** Consulta la API GraphQL de OpenCTI cada 30 segundos
+  hasta que haya más de 100 objetos ATT&CK de tipo attack-pattern (la importación completa
+  entrega 600–900+ objetos entre Enterprise, Mobile, ICS y CAPEC). También verifica que el
+  endpoint TAXII 2.1 devuelva HTTP 200. Termina con error descriptivo tras 15 minutos.
 
 ---
 
-## 4. Optional: IpInfo Geolocation Token
+## 4. Opcional: token de geolocalización IpInfo
 
-The `connector-ipinfo` service enriches IP observables with geolocation data, which
-populates the world map widget on the OpenCTI dashboard. It requires a free ipinfo.io
-account (50k lookups/month on the free tier).
+El servicio `connector-ipinfo` enriquece los observables IP con datos de geolocalización, lo
+que popula el widget de mapa mundial en el dashboard de OpenCTI. Requiere una cuenta gratuita
+en ipinfo.io (50 000 consultas/mes en el nivel gratuito).
 
-**Get a free token:**
+**Obtener un token gratuito:**
 
-1. Sign up at https://ipinfo.io/signup
-2. Copy the token shown on your dashboard and add it to `.env`:
+1. Registrarse en https://ipinfo.io/signup
+2. Copiar el token del dashboard y añadirlo a `.env`:
 
 ```bash
 IPINFO_TOKEN=your_token_here
 ```
 
-3. Restart the connector:
+3. Reiniciar el conector:
 
 ```bash
 docker compose --profile platform up -d connector-ipinfo
 ```
 
-The connector will automatically enrich IP observables as they are created or updated.
-Allow a few minutes for existing IPs to be processed and the world map to populate.
+El conector enriquecerá automáticamente los observables IP a medida que se creen o actualicen.
+Esperar unos minutos para que los IPs existentes sean procesados y el mapa mundial se complete.
 
-**NVD API key (optional):** The `connector-cve` service syncs the full CVE database
-from NVD without a key, but NVD rate-limits unauthenticated requests. For faster initial
-sync, get a free API key at https://nvd.nist.gov/developers/request-an-api-key and set:
+**Clave de API de NVD (opcional):** El servicio `connector-cve` sincroniza la base de datos
+completa de CVEs desde NVD sin necesidad de clave, pero NVD limita las solicitudes no
+autenticadas. Para una sincronización inicial más rápida, obtener una clave gratuita en
+https://nvd.nist.gov/developers/request-an-api-key y configurar:
 
 ```bash
 CVE_NVD_API_KEY=your_key_here
@@ -131,20 +130,20 @@ CVE_NVD_API_KEY=your_key_here
 
 ---
 
-## 5. Troubleshooting
+## 5. Solución de problemas
 
-### Issue A — Elasticsearch fails to start with memory lock error
+### Problema A — Elasticsearch falla al iniciar con error de bloqueo de memoria
 
-**Symptom:** Elasticsearch logs contain "unable to lock memory":
+**Síntoma:** Los logs de Elasticsearch contienen "unable to lock memory":
 
 ```bash
 docker compose --profile platform logs elasticsearch | grep -i "lock"
 ```
 
-**Cause:** The Docker daemon on Ubuntu 22.04 may not have `LimitMEMLOCK=infinity`
-set in its systemd unit, which prevents Elasticsearch from locking heap memory.
+**Causa:** El daemon Docker en Ubuntu 22.04 puede no tener `LimitMEMLOCK=infinity`
+configurado en su unidad systemd, lo que impide que Elasticsearch bloquee memoria del heap.
 
-**Fix:**
+**Solución:**
 
 ```bash
 sudo mkdir -p /etc/systemd/system/docker.service.d
@@ -152,7 +151,7 @@ printf '[Service]\nLimitMEMLOCK=infinity\n' | sudo tee /etc/systemd/system/docke
 sudo systemctl daemon-reload && sudo systemctl restart docker
 ```
 
-Then restart the platform:
+Luego reiniciar la plataforma:
 
 ```bash
 docker compose --profile platform up -d
@@ -160,25 +159,25 @@ docker compose --profile platform up -d
 
 ---
 
-### Issue B — MinIO healthcheck fails (mc command not in image)
+### Problema B — El healthcheck de MinIO falla (comando mc no disponible en la imagen)
 
-**Symptom:** `docker compose --profile platform ps` shows MinIO as `unhealthy`; as a
-result OpenCTI never starts (it depends on MinIO being healthy).
+**Síntoma:** `docker compose --profile platform ps` muestra MinIO como `unhealthy`; como
+consecuencia, OpenCTI nunca inicia (depende de que MinIO esté saludable).
 
-**Cause:** Some versions of the `minio/minio:latest` image do not include the `mc`
-client binary. The default healthcheck (`CMD mc ready local`) therefore always fails.
+**Causa:** Algunas versiones de la imagen `minio/minio:latest` no incluyen el cliente `mc`.
+El healthcheck por defecto (`CMD mc ready local`) falla siempre.
 
-**Fix:** Replace the MinIO healthcheck in `docker-compose.yml`:
+**Solución:** Reemplazar el healthcheck de MinIO en `docker-compose.yml`:
 
 ```yaml
-# Change this:
+# Cambiar esto:
 test: ["CMD", "mc", "ready", "local"]
 
-# To this:
+# Por esto:
 test: ["CMD-SHELL", "curl -f http://localhost:9000/minio/health/live || exit 1"]
 ```
 
-Then restart:
+Luego reiniciar:
 
 ```bash
 docker compose --profile platform up -d
@@ -186,30 +185,30 @@ docker compose --profile platform up -d
 
 ---
 
-### Issue C — verify-platform.sh times out (MITRE import still running)
+### Problema C — verify-platform.sh agota el tiempo de espera (importación MITRE en curso)
 
-**Symptom:** The script prints `ERROR: 15-minute timeout` before completing.
+**Síntoma:** El script imprime `ERROR: 15-minute timeout` antes de completarse.
 
-**Cause:** The MITRE ATT&CK import takes longer than 15 minutes on this machine, or
-the `connector-mitre` service failed to start / connect to OpenCTI.
+**Causa:** La importación de MITRE ATT&CK tarda más de 15 minutos en esta máquina, o el
+servicio `connector-mitre` no pudo iniciarse o conectarse a OpenCTI.
 
-**Fix:**
+**Solución:**
 
-1. Check whether the import is still progressing:
+1. Verificar si la importación sigue progresando:
    ```bash
    docker compose --profile platform logs connector-mitre
    ```
 
-2. If the connector is running and importing, simply re-run the verify script:
+2. Si el conector está ejecutándose e importando, simplemente volver a ejecutar el script:
    ```bash
    ./scripts/verify-platform.sh
    ```
 
-3. If `connector-mitre` is not starting, verify OpenCTI itself is healthy:
+3. Si `connector-mitre` no está iniciando, verificar que OpenCTI esté saludable:
    ```bash
    docker compose --profile platform ps
    ```
-   If OpenCTI shows as `unhealthy`, check its logs:
+   Si OpenCTI aparece como `unhealthy`, revisar sus logs:
    ```bash
    docker compose --profile platform logs opencti
    ```
