@@ -12,11 +12,14 @@ Esta documentación cubre casos de uso prácticos de la plataforma TIM: cómo na
 ---
 
 ## Casos de Uso
+- [APT39 — Recorrido Remexi y MechaFlounder](casos-de-uso/apt39-remexi-mechaFlounder.md)
 
-- [CU-01 — Recorrido APT39: Remexi y MechaFlounder](casos-de-uso/apt39-remexi-mechaFlounder.md)
-- [Manual de Usuario — TIM](index.md)
-- [TIM Platform — First-Run Setup Guide](SETUP.md)
-- [Threat Intelligence Management (TIM) System — Design Document](plans/2026-06-23-tim-system-design.md)
+## Guías
+- [Manual de Usuario](index.md)
+- [Instalación y Configuración](SETUP.md)
+
+## Referencia
+- [Documento de Diseño del Sistema](plans/2026-06-23-tim-system-design.md)
 
 ---
 
