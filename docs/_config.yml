@@ -1,0 +1,9 @@
+title: "TIM — Manual de Usuario"
+description: "Guía de uso de la plataforma de Gestión de Inteligencia de Amenazas"
+theme: minima
+lang: es
+
+nav:
+  - Inicio: index.md
+  - Casos de Uso:
+    - casos-de-uso/apt39-remexi-mechaFlounder.md
