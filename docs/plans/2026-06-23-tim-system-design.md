@@ -1,28 +1,28 @@
-# Threat Intelligence Management (TIM) System — Design Document
+# Sistema TIM — Documento de Diseño
 
-**Date:** 2026-06-23
-**Author:** Researcher
-**Status:** Draft — In Progress
-**Target:** SOC client demo + product proposal
-
----
-
-## 1. Executive Summary
-
-A local Threat Intelligence Management system that demonstrates both operational maturity and AI-augmented intelligence capabilities. The system combines OpenCTI (industry-standard knowledge graph platform) with custom AI services powered by local LLMs — eliminating data egress risk while providing capabilities most commercial TIM implementations lack.
-
-**Core differentiators:**
-- 100% local AI processing — no IOC sent to external APIs (VirusTotal, etc.)
-- IOC extraction from unstructured text (PDFs, blogs, advisories) via local LLM
-- Semantic similarity search via local embeddings — finds related threats without exact IOC match
-- Automated executive briefing generation from live intelligence data
-- Full data sovereignty — all processing on-premises
+**Fecha:** 2026-06-23
+**Autor:** Researcher
+**Estado:** Borrador — En Progreso
+**Objetivo:** Demo para cliente SOC + propuesta de producto
 
 ---
 
-## 2. Hardware Baseline
+## 1. Resumen Ejecutivo
 
-| Resource | Available | Allocated to TIM | Buffer |
+Sistema local de Gestión de Inteligencia de Amenazas que demuestra madurez operacional y capacidades de inteligencia aumentadas por IA. Combina OpenCTI (plataforma de knowledge graph estándar en la industria) con servicios AI propios sobre LLMs locales — eliminando el riesgo de fuga de datos y aportando capacidades que la mayoría de implementaciones TIM comerciales no ofrecen.
+
+**Diferenciadores clave:**
+- 100% procesamiento AI local — ningún IOC enviado a APIs externas (VirusTotal, etc.)
+- Extracción de IOCs de texto no estructurado (PDFs, blogs, advisories) via LLM local
+- Búsqueda por similitud semántica via embeddings locales — encuentra amenazas relacionadas sin coincidencia exacta de IOC
+- Generación automática de briefings ejecutivos desde datos de inteligencia en vivo
+- Soberanía total de datos — todo el procesamiento en local
+
+---
+
+## 2. Recursos de Hardware
+
+| Recurso | Disponible | Asignado a TIM | Margen |
 |---|---|---|---|
 | CPU | 16 vCPUs | 12 | 4 |
 | RAM | 31 GB | 14 GB | 17 GB |
@@ -33,9 +33,9 @@ A local Threat Intelligence Management system that demonstrates both operational
 
 ---
 
-## 3. Architecture Overview
+## 3. Visión General de la Arquitectura
 
-The system is organized into four decoupled layers:
+El sistema se organiza en cuatro capas desacopladas:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -90,9 +90,9 @@ The system is organized into four decoupled layers:
 
 ---
 
-## 4. Component Details
+## 4. Detalle de Componentes
 
-### 4.1 OpenCTI Platform Layer
+### 4.1 Capa de Plataforma — OpenCTI
 
 **Stack interno (5 servicios orquestados):**
 
@@ -138,7 +138,7 @@ opencti-platform:
 
 **Nota de arquitectura:** OpenCTI usa STIX 2.1 como modelo de datos nativo (no como formato de exportación). Todo objeto insertado via API es STIX internamente, por lo que el TAXII server lo sirve sin transformación.
 
-### 4.2 Feed Orchestrator (custom)
+### 4.2 Feed Orchestrator (servicio propio)
 
 **Responsabilidad:** Descargar inteligencia estructurada de fuentes externas, normalizarla a STIX 2.1 y entregarla a OpenCTI.
 
@@ -174,7 +174,7 @@ score = (
 - `stix2` — construcción de objetos STIX 2.1 válidos
 - Redis — caché de hashes vistos para deduplicación O(1)
 
-### 4.3 AI Layer
+### 4.3 Capa AI
 
 #### 4.3.1 intel-extractor
 
@@ -240,7 +240,7 @@ Scheduler / trigger → OpenCTI GraphQL → datos 24-72h → LLM llama3.2:3b →
 
 **Nota compartida — Ollama:** Los tres servicios comparten una instancia de Ollama. Los modelos se cargan/descargan de GPU según demanda. `llama3.2:3b` (~2GB VRAM) e `intel-extractor` / `briefing-generator` no corren simultáneamente con `nomic-embed-text` en condiciones normales — los 4GB de VRAM son suficientes.
 
-### 4.4 SOC Dashboard (custom)
+### 4.4 SOC Dashboard (servicio propio)
 
 **Responsabilidad:** Frontend orientado a la demo y al cliente — presenta los datos de OpenCTI y los servicios AI en vistas ejecutivas sin requerir conocimiento previo de la plataforma.
 
@@ -265,7 +265,7 @@ El dashboard no tiene base de datos propia — es capa de presentación pura.
 
 ---
 
-## 5. Data Model & Standards
+## 5. Modelo de Datos y Estándares
 
 ### 5.1 Objetos STIX 2.1 utilizados
 
@@ -347,7 +347,7 @@ OpenCTI pre-carga el framework ATT&CK completo al iniciar (vía conector oficial
 
 ---
 
-## 6. Integration Points
+## 6. Puntos de Integración
 
 ### 6.1 Puertos y accesibilidad
 
@@ -421,7 +421,7 @@ GET  /health                                    →  {status: "ok"}
 
 ---
 
-## 7. Deployment (Docker Compose)
+## 7. Despliegue (Docker Compose)
 
 ### 7.1 Estructura de directorios
 
@@ -579,9 +579,9 @@ Debe contener:
 
 ---
 
-## 9. Technology Stack Summary
+## 9. Resumen del Stack Tecnológico
 
-| Component | Technology | Role |
+| Componente | Tecnología | Rol |
 |---|---|---|
 | **OpenCTI** | OpenCTI v6 + ES 8 + Redis + RabbitMQ + MinIO | Knowledge graph central |
 | **feed-orchestrator** | Python + APScheduler | Ingesta y normalización STIX |
@@ -592,7 +592,7 @@ Debe contener:
 
 ---
 
-## 10. AI Model Upgrade Roadmap
+## 10. Hoja de Ruta de Actualización de Modelos AI
 
 El único cambio de código requerido para actualizar el modelo de extracción o generación de briefings es una línea en `config.py` del servicio correspondiente:
 
@@ -646,7 +646,7 @@ Modelos activos: `llama3.2:3b` (~2 GB VRAM) + `nomic-embed-text` (~0.3 GB). No c
 
 ---
 
-## 11. Open Questions
+## 11. Preguntas Abiertas
 
 - [ ] ¿Qué feeds gratuitos se priorizan para el demo?
 - [ ] ¿El dashboard custom reemplaza o complementa el UI nativo de OpenCTI?
