@@ -212,3 +212,36 @@ servicio `connector-mitre` no pudo iniciarse o conectarse a OpenCTI.
    ```bash
    docker compose --profile platform logs opencti
    ```
+
+---
+
+## 6. Operación diaria — encender y apagar
+
+### Encender la plataforma
+
+Desde la raíz del proyecto:
+
+```bash
+docker compose --profile platform --profile feeds up -d
+```
+
+Esto inicia los 17 servicios (plataforma + feeds). En arranques posteriores a la primera
+configuración no es necesario volver a ejecutar los scripts de la Sección 3.
+
+**Verificar que todo está corriendo:**
+
+```bash
+docker compose ps
+```
+
+Todos los servicios deben mostrar `Up` o `Up (healthy)` en la columna de estado. Los feeds
+comienzan a consultar fuentes de inteligencia automáticamente en los primeros 5 minutos.
+
+### Apagar la plataforma
+
+```bash
+docker compose --profile platform --profile feeds down
+```
+
+Los datos **no se pierden**: IOCs, reportes de OpenCTI, briefings y modelos de Ollama
+permanecen en los volúmenes de Docker y están disponibles al volver a encender.
