@@ -360,7 +360,7 @@ def run_extraction(
         name=source_name,
         published=now_iso,
         description=report_description,
-        indicator_ids=indicator_ids,
+        indicator_ids=indicator_ids + matched_techniques,
         labels=report_labels,
     )
     report_id = report_result["id"] if report_result else None

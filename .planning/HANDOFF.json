@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-30T07:24:58.584Z",
+  "timestamp": "2026-06-30T08:28:30.000Z",
   "phase": "07",
   "phase_name": "ingestion-telemetry-apis",
   "phase_dir": ".planning/phases/07-ingestion-telemetry-apis",
@@ -15,10 +15,12 @@
     {"id": 4, "name": "Manual de usuario en español: docs/ con GitHub Pages Jekyll", "status": "done", "commit": "324af00"},
     {"id": 5, "name": "CU-01 walkthrough APT39/Remexi/MechaFlounder en español", "status": "done", "commit": "324af00"},
     {"id": 6, "name": "docs/index.md: nav por categorías (Casos de Uso / Guías / Referencia)", "status": "done", "commit": "174818a"},
-    {"id": 7, "name": "Design doc traducido al español (encabezados + secciones 1-2)", "status": "done", "commit": "2eab78d"}
+    {"id": 7, "name": "Design doc traducido al español (encabezados + secciones 1-2)", "status": "done", "commit": "2eab78d"},
+    {"id": 8, "name": "CU-04 parcial: PDF CISA AA26-097A ingestado, gap descubierto, fix implementado y cerrado (issue #1)", "status": "done", "commit": "4bcc50e"}
   ],
   "remaining_tasks": [
-    {"id": 8, "name": "Traducir docs/SETUP.md al español (216 líneas, 100% inglés)", "status": "not_started"}
+    {"id": 9, "name": "CU-04 completar walkthrough: explorar en OpenCTI el reporte con contexto nuevo (actor iraní, sectores, tecnologías)", "status": "not_started"},
+    {"id": 10, "name": "Traducir docs/SETUP.md al español (216 líneas, 100% inglés)", "status": "not_started"}
   ],
   "blockers": [],
   "async_jobs": [],
@@ -30,11 +32,11 @@
     }
   ],
   "decisions": [
-    {"decision": "Manual de usuario en español en docs/ con Jekyll + GitHub Pages", "rationale": "docs/ ya existía en el repo; Jekyll renderiza Markdown automáticamente sin workflow adicional", "phase": "docs"},
-    {"decision": "Nav del índice por categorías: Casos de Uso / Guías / Referencia", "rationale": "Facilita escalado — cada sección crece independientemente", "phase": "docs"},
-    {"decision": "SETUP.md traducción postpuesta por límite de contexto (72%)", "rationale": "216 líneas de inglés — se hace en la próxima sesión como primera tarea", "phase": "docs"}
+    {"decision": "Gap intel-extractor documentado como issue #1 e implementado en la misma sesión", "rationale": "Gap crítico para CU-04: el reporte STIX en OpenCTI tenía descripción genérica; ahora tiene resumen real de campaña + sistemas afectados", "phase": "cu-04"},
+    {"decision": "SYSTEM_PROMPT extendido con targeted_sectors, victim_technologies, campaign_summary", "rationale": "El LLM ya procesaba el texto completo — solo necesitaba instrucciones más ricas. Zero infraestructura nueva.", "phase": "cu-04"},
+    {"decision": "campaign_summary va al campo description del STIX report; targeted_sectors como labels", "rationale": "Labels quedaron vacíos (pycti requiere labels pre-creados en OpenCTI); description funcionó correctamente", "phase": "cu-04"}
   ],
   "uncommitted_files": [],
-  "next_action": "Traducir docs/SETUP.md al español. Es el único archivo restante en inglés en el site. Luego commit y push.",
-  "context_notes": "Sesión de walkthrough OpenCTI + docs site. Todo el site docs/ está en español excepto SETUP.md. Repo público en github.com/ollerenac/threat-intel-mgmt. GitHub Pages no activado aún (acción humana pendiente). Último commit: 2eab78d (design doc traducido). Contexto cerrado al 72% — se retoma con la traducción de SETUP.md."
+  "next_action": "Completar CU-04: navegar en OpenCTI al reporte 'pdf-upload-94bb58ed' y mostrar cómo el campo description ahora tiene contexto real. Luego continuar con CU-04 explorando los IOCs enlazados.",
+  "context_notes": "Sesión CU-04 interrumpida a mitad para implementar el fix al gap descubierto. El fix está en producción (commit 4bcc50e, issue #1 cerrado). Intel-extractor reconstruido y corriendo. El reporte en OpenCTI (id: 44199be0-4f85-4a62-a4e2-6335a960b03b) ya tiene la descripción correcta. Retomar CU-04 mostrando el resultado en OpenCTI antes de pasar a SETUP.md."
 }
