@@ -4,9 +4,10 @@ import Overview from './views/Overview';
 import ThreatHunt from './views/ThreatHunt';
 import Briefings from './views/Briefings';
 import Alerts from './views/Alerts';
+import IngestMonitor from './views/IngestMonitor';
 
-const TABS = ['Overview', 'Threat Hunt', 'Briefings', 'Alerts'];
-const VIEWS = { Overview, 'Threat Hunt': ThreatHunt, Briefings, Alerts };
+const TABS = ['Overview', 'Threat Hunt', 'Briefings', 'Alerts', 'Ingestion Monitor'];
+const VIEWS = { Overview, 'Threat Hunt': ThreatHunt, Briefings, Alerts, 'Ingestion Monitor': IngestMonitor };
 
 export default function App() {
   const [tab, setTab] = useState('Overview');

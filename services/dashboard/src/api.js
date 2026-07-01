@@ -2,6 +2,7 @@
 const FEED_URL     = '/api/feeds';
 const SEARCH_URL   = '/api/semantic';
 const BRIEFING_URL = '/api/briefings';
+const EXTRACTOR_URL = '/api/extractor';
 
 export const getFeedsStatus = () =>
   fetch(`${FEED_URL}/feeds/status`).then(r => r.json());
@@ -32,3 +33,18 @@ export const listBriefings = () =>
 
 // Returns URL string — not a fetch call; used as <a href={pdfUrl(id)} download>
 export const pdfUrl = (id) => `${BRIEFING_URL}/briefings/${id}/pdf`;
+
+export const getFeedsRecent = (limit = 200) =>
+  fetch(`${FEED_URL}/feeds/recent?limit=${limit}`).then(r => r.json());
+
+export const getRecentDocs = () =>
+  fetch(`${EXTRACTOR_URL}/recent`).then(r => r.json());
+
+export const getExtractorStats = () =>
+  fetch(`${EXTRACTOR_URL}/stats`).then(r => r.json());
+
+export const getSemanticStats = () =>
+  fetch(`${SEARCH_URL}/stats`).then(r => r.json());
+
+export const getCVEStats = () =>
+  fetch(`${BRIEFING_URL}/cve/stats`).then(r => r.json());
