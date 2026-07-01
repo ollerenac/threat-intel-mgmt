@@ -13,6 +13,7 @@ D-03: On json.JSONDecodeError from LLM, retry with plain-text fallback prompt
 T-03-04-01: LLM output parsed in try/except with .get() for all key access.
 T-03-04-04: IOC counts and types logged; individual IOC values NOT logged at INFO.
 """
+import collections
 import json
 import logging
 import re
@@ -40,6 +41,9 @@ _ollama_client = ollama.Client(host=OLLAMA_URL)
 
 # Module-level job state store — lost on restart, acceptable for demo scope (D-06)
 jobs: dict[str, dict] = {}
+
+# Module-level document history — lost on restart, acceptable for demo scope (D-06)
+recent_docs: collections.deque = collections.deque(maxlen=50)
 
 # ── Prompts ──────────────────────────────────────────────────────────────────
 
@@ -263,6 +267,12 @@ def run_extraction(
     except ValueError as exc:
         jobs[job_id]["status"] = "failed"
         jobs[job_id]["error"] = str(exc)
+        recent_docs.appendleft({
+            "filename": source_name,
+            "ingested_at": datetime.now(timezone.utc).isoformat(),
+            "ioc_count": 0,
+            "status": "error: " + str(exc),
+        })
         return
 
     # Step 3: Chunk
@@ -311,6 +321,12 @@ def run_extraction(
     except Exception as exc:
         jobs[job_id]["status"] = "failed"
         jobs[job_id]["error"] = f"OpenCTI client init failed: {exc}"
+        recent_docs.appendleft({
+            "filename": source_name,
+            "ingested_at": datetime.now(timezone.utc).isoformat(),
+            "ioc_count": 0,
+            "status": "error: OpenCTI client init failed: " + str(exc),
+        })
         return
 
     now_iso = datetime.now(timezone.utc).isoformat()
@@ -374,6 +390,12 @@ def run_extraction(
         "techniques_found": len(matched_techniques),
         "report_id": report_id,
         "processing_time_s": round(elapsed, 2),
+    })
+    recent_docs.appendleft({
+        "filename": source_name,
+        "ingested_at": datetime.now(timezone.utc).isoformat(),
+        "ioc_count": len(indicator_ids),
+        "status": "complete",
     })
     logger.info(
         "[extractor] job %s complete in %.1fs: %d IOCs, %d techniques, report %s",
