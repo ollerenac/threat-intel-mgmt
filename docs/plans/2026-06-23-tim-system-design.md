@@ -156,7 +156,6 @@ Downloader (APScheduler) → Normalizer → Deduplicator + Scorer → OpenCTI Cl
 | ThreatFox | JSON API | Cada 2h | IOCs de malware recientes con contexto |
 | Feodo Tracker | CSV | Cada 4h | IPs de servidores C2 de botnets |
 | AlienVault OTX | JSON API | Cada 6h | Pulsos con contexto de actores/campañas |
-| CIRCL MISP | MISP format | Cada 12h | Eventos curados, alta calidad |
 
 **Confidence scoring:**
 ```python
@@ -360,10 +359,10 @@ OpenCTI pre-carga el framework ATT&CK completo al iniciar (vía conector oficial
 | MinIO | 9000 / 9001 | Interno / browser (consola) |
 | Ollama | 11434 | Solo interno (servicios AI) |
 | ChromaDB | 8000 | Solo interno (semantic-engine) |
-| intel-extractor | 8001 | Browser + servicios internos |
+| intel-extractor | 8004 | Browser + servicios internos |
 | semantic-engine | 8002 | Browser + servicios internos |
 | briefing-generator | 8003 | Browser + servicios internos |
-| SOC Dashboard | 3000 | Browser |
+| SOC Dashboard | 443 (HTTPS, nginx) | Browser |
 
 Todos los servicios viven en red Docker `tim-network`. Solo los puertos de browser se exponen al host.
 
@@ -466,7 +465,7 @@ cp .env.example .env
 # editar .env: generar UUIDs para OPENCTI_ADMIN_TOKEN y CONNECTOR_MITRE_ID
 
 # 2. Levantar el stack completo
-docker compose up -d
+docker compose --profile platform --profile feeds --profile semantic --profile briefings --profile dashboard up -d
 
 # 3. Descargar modelos Ollama (una sola vez, ~3 GB)
 ./scripts/init-models.sh
@@ -495,8 +494,10 @@ OTX_API_KEY=                    # opcional — AlienVault OTX gratuito
 | URL | Servicio |
 |---|---|
 | http://localhost:8080 | OpenCTI (plataforma principal) |
-| http://localhost:3000 | SOC Dashboard (custom) |
-| http://localhost:8001 | intel-extractor API |
+| https://localhost:443 | SOC Dashboard (custom, nginx HTTPS) |
+| http://localhost:5602 | Kibana (nginx auth básica) |
+| http://localhost:8001 | feed-orchestrator API |
+| http://localhost:8004 | intel-extractor API |
 | http://localhost:8002 | semantic-engine API |
 | http://localhost:8003 | briefing-generator API |
 | http://localhost:15672 | RabbitMQ management UI |

@@ -23,23 +23,23 @@ Un **Threat Intelligence Management System (TIM)** centraliza, normaliza y anali
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                        FUENTES DE INTELIGENCIA                          │
-│  URLhaus · OTX · Feodo · MalwareBazaar · ThreatFox · NVD CVE · PDFs   │
+│     URLhaus · OTX · Feodo · MalwareBazaar · ThreatFox · PDFs          │
 └──────────────┬──────────────────────────────────────┬───────────────────┘
                │ feeds automáticos                    │ extracción IA
                ▼                                      ▼
 ┌──────────────────────────┐          ┌───────────────────────────────┐
 │   feed-orchestrator      │          │   intel-extractor              │
-│   :8001                  │          │   llama3.2:3b via Ollama       │
-│   APScheduler + STIX 2.1 │          │   PDF / URL → IOCs + TTPs     │
-└──────────────┬───────────┘          └──────────────┬────────────────┘
-               │                                      │
+│   :8001                  │          │   :8004                        │
+│   APScheduler + STIX 2.1 │          │   llama3.2:3b via Ollama       │
+└──────────────┬───────────┘          │   PDF / URL → IOCs + TTPs     │
+               │                      └──────────────┬────────────────┘
                └──────────────┬───────────────────────┘
                               ▼
           ┌───────────────────────────────────────────────┐
           │                  OpenCTI 6.x                   │
           │   Knowledge graph STIX 2.1 · TAXII 2.1        │
-          │   MITRE ATT&CK · Elasticsearch 8              │
-          │   Redis · RabbitMQ · MinIO                     │
+          │   MITRE ATT&CK · NVD CVE (conectores internos)│
+          │   Elasticsearch 8 · Redis · RabbitMQ · MinIO  │
           └──────────┬────────────────────────────────────┘
                      │
           ┌──────────┴──────────────────────┐
@@ -71,7 +71,7 @@ Un **Threat Intelligence Management System (TIM)** centraliza, normaliza y anali
 |----------|--------|-----|
 | **soc-dashboard** | `:443` | UI React unificada — 4 vistas |
 | **feed-orchestrator** | `127.0.0.1:8001` | Ingestión de 5 feeds + STIX export endpoint |
-| **intel-extractor** | `127.0.0.1:8001` | Extracción IA de PDFs/URLs (perfil separado) |
+| **intel-extractor** | `127.0.0.1:8004` | Extracción IA de PDFs/URLs (llama3.2:3b) |
 | **semantic-engine** | `127.0.0.1:8002` | Búsqueda vectorial de IOCs |
 | **briefing-generator** | `127.0.0.1:8003` | Generación de briefings + PDF export |
 | **OpenCTI** | `127.0.0.1:8080` | Knowledge graph STIX 2.1 |
@@ -116,10 +116,10 @@ El resultado se escribe directamente en OpenCTI como objetos STIX 2.1 (`indicato
 
 ```bash
 # Extraer IOCs de un PDF
-curl -F "file=@informe-amenaza.pdf" http://localhost:8001/extract
+curl -F "file=@informe-amenaza.pdf" http://localhost:8004/extract
 
 # Extraer desde URL
-curl -X POST http://localhost:8001/extract -d '{"url": "https://ejemplo.com/report"}' -H "Content-Type: application/json"
+curl -X POST http://localhost:8004/extract -d '{"url": "https://ejemplo.com/report"}' -H "Content-Type: application/json"
 ```
 
 ### Búsqueda semántica
@@ -310,10 +310,7 @@ Espera hasta que OpenCTI tenga 100+ objetos ATT&CK. Timeout de 15 min con mensaj
 docker compose --profile feeds --profile semantic --profile briefings --profile dashboard up -d
 ```
 
-**Para extracción IA de PDFs** (perfil separado; usa el mismo puerto `:8001` que feeds — detener feeds primero):
-```bash
-docker compose --profile extract up -d
-```
+`intel-extractor` (`:8004`) arranca con `--profile platform` en el Paso 3 junto al resto de la plataforma.
 
 ---
 
@@ -325,6 +322,7 @@ docker compose --profile extract up -d
 | Kibana | `http://localhost:5602` | Auth básica nginx (analyst / `.env`) |
 | OpenCTI | `http://localhost:8080` | Solo acceso local |
 | feed-orchestrator | `http://localhost:8001` | Solo acceso local |
+| intel-extractor | `http://localhost:8004` | Solo acceso local |
 | semantic-engine | `http://localhost:8002` | Solo acceso local |
 | briefing-generator | `http://localhost:8003` | Solo acceso local |
 | RabbitMQ Management | `http://localhost:15672` | Solo acceso local |

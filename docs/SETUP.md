@@ -222,10 +222,10 @@ servicio `connector-mitre` no pudo iniciarse o conectarse a OpenCTI.
 Desde la raíz del proyecto:
 
 ```bash
-docker compose --profile platform --profile feeds up -d
+docker compose --profile platform --profile feeds --profile semantic --profile briefings --profile dashboard up -d
 ```
 
-Esto inicia los 17 servicios (plataforma + feeds). En arranques posteriores a la primera
+Esto inicia los 17 servicios (plataforma + feeds + semantic-engine + briefing-generator + dashboard). En arranques posteriores a la primera
 configuración no es necesario volver a ejecutar los scripts de la Sección 3.
 
 **Verificar que todo está corriendo:**
