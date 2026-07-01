@@ -39,7 +39,7 @@ app = FastAPI(title="briefing-generator", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "https://localhost"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
