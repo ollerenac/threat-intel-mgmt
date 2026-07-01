@@ -42,6 +42,39 @@ GROUP_TARGETING = {
     "Volt Typhoon": (["Government Administration", "Defense", "Energy", "Transportation"], ["United States of America", "Guam"]),
 }
 
+# ISO3 codes required by OpenCTI's LocationMiniMapTargets — map polygons match
+# feature.properties.ISO3 against x_opencti_aliases (HomeDashboard "Targeted countries")
+COUNTRY_ISO3 = {
+    "United States of America": "USA",
+    "Ukraine": "UKR",
+    "Germany": "DEU",
+    "France": "FRA",
+    "South Korea": "KOR",
+    "Japan": "JPN",
+    "Netherlands": "NLD",
+    "Saudi Arabia": "SAU",
+    "Iraq": "IRQ",
+    "Iran": "IRN",
+    "United Kingdom": "GBR",
+    "Turkey": "TUR",
+    "Guam": "GUM",
+}
+
+# Documented actor → exploited CVE pairs (CISA/NSA advisories, vendor reporting).
+# HomeDashboard "Most active vulnerabilities" counts `targets` rels toType Vulnerability.
+GROUP_CVES = {
+    "APT28": ["CVE-2023-23397"],
+    "APT29": ["CVE-2019-19781", "CVE-2019-11510", "CVE-2018-13379"],
+    "Lazarus Group": ["CVE-2021-44228", "CVE-2017-0144"],
+    "APT41": ["CVE-2019-19781", "CVE-2021-44228", "CVE-2020-10189"],
+    "Sandworm Team": ["CVE-2019-10149"],
+    "Kimsuky": ["CVE-2017-11882"],
+    "OilRig": ["CVE-2017-11882"],
+    "MuddyWater": ["CVE-2020-0688", "CVE-2017-11882"],
+    "Volt Typhoon": ["CVE-2021-40539"],
+    "Scattered Spider": ["CVE-2015-2291"],
+}
+
 SECTOR_NAMES = [
     "Government Administration",
     "Defense",
@@ -91,6 +124,19 @@ def main():
     country_ids = {c["name"]: c["id"] for c in countries_raw}
     print(f"  Found {len(country_ids)} countries")
 
+    # Create referenced countries missing from OpenCTI (ipinfo only creates seen ones)
+    for name, iso3 in COUNTRY_ISO3.items():
+        if name in country_ids:
+            continue
+        obj = api.location.create(
+            type="Country",
+            name=name,
+            x_opencti_aliases=[iso3],
+        )
+        country_ids[name] = obj["id"]
+        countries_raw.append({"name": name, "id": obj["id"], "x_opencti_aliases": [iso3]})
+        print(f"  [created country] {name} ({iso3})")
+
     # --- Fetch Intrusion Sets ---
     print("Fetching intrusion sets from OpenCTI...")
     intrusion_sets = api.intrusion_set.list(getAll=True)
@@ -137,7 +183,46 @@ def main():
                 created += 1
                 print(f"  [rel] {group_name} → targets → {country_name}")
 
-    print(f"\nDone. Created {created} relationships. Skipped {skipped} groups (not in OpenCTI).")
+    # --- Add ISO3 aliases to countries (map widget polygon matching) ---
+    print("Patching country ISO3 aliases...")
+    for name, iso3 in COUNTRY_ISO3.items():
+        if name not in country_ids:
+            continue
+        country = next(c for c in countries_raw if c["name"] == name)
+        aliases = country.get("x_opencti_aliases") or []
+        if iso3 in aliases:
+            print(f"  [ok] {name} already has {iso3}")
+            continue
+        api.stix_domain_object.update_field(
+            id=country_ids[name],
+            input={"key": "x_opencti_aliases", "value": aliases + [iso3]},
+        )
+        print(f"  [patched] {name} += {iso3}")
+
+    # --- Create actor → targets → CVE relationships (vulnerabilities widget) ---
+    print("Creating CVE targeting relationships...")
+    cve_created = 0
+    for group_name, cves in GROUP_CVES.items():
+        if group_name not in group_ids:
+            continue
+        for cve in cves:
+            vulns = api.vulnerability.list(
+                filters={"mode": "and", "filters": [{"key": "name", "values": [cve]}], "filterGroups": []}
+            )
+            if not vulns:
+                print(f"  [cve not found] {cve}")
+                continue
+            rel = api.stix_core_relationship.create(
+                fromId=group_ids[group_name],
+                toId=vulns[0]["id"],
+                relationship_type="targets",
+                description=f"{group_name} has exploited {cve} in the wild (documented).",
+            )
+            if rel:
+                cve_created += 1
+                print(f"  [rel] {group_name} → targets → {cve}")
+
+    print(f"\nDone. Created {created} sector/country + {cve_created} CVE relationships. Skipped {skipped} groups.")
     print("Refresh OpenCTI dashboard — widgets should now show data.")
 
 
