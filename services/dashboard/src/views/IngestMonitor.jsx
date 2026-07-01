@@ -32,16 +32,18 @@ export default function IngestMonitor() {
   const iocTopRef = useRef(null);
 
   useEffect(() => {
+    // ponytail: per-fetch isolation — one down service doesn't freeze all dashboard state
+    const safe = p => p.catch(() => null);
     const load = () =>
       Promise.all([
-        getFeedsStatus().then(d   => setFeedsData(d)),
-        getSemanticStats().then(d => setSemanticData(d)),
-        getExtractorStats().then(d=> setExtractorData(d)),
-        getCVEStats().then(d      => setCveData(d)),
-        getFeedsRecent(200).then(d=> setIocs(d.iocs || [])),
-        getRecentDocs().then(d    => setDocs(d.docs || [])),
-        getCollectorStatus().then(d => setCollectorData(d)),
-      ]).catch(() => setError('Pipeline unreachable — retry in 30s.'));
+        safe(getFeedsStatus()).then(d    => d && setFeedsData(d)),
+        safe(getSemanticStats()).then(d  => d && setSemanticData(d)),
+        safe(getExtractorStats()).then(d => d && setExtractorData(d)),
+        safe(getCVEStats()).then(d       => d && setCveData(d)),
+        safe(getFeedsRecent(200)).then(d => d && setIocs(d.iocs || [])),
+        safe(getRecentDocs()).then(d     => d && setDocs(d.docs || [])),
+        safe(getCollectorStatus()).then(d => d && setCollectorData(d)),
+      ]);
 
     load();
     const id = setInterval(load, 30_000);
