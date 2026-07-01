@@ -9,3 +9,5 @@ python-multipart
 beautifulsoup4
 pytest
 pytest-mock
+feedparser==6.0.11
+PyYAML>=6.0

@@ -1,0 +1,13 @@
+sources:
+  - name: CISA Advisories
+    type: rss
+    url: https://www.cisa.gov/cybersecurity-advisories/advisories.xml
+    poll_interval_hours: 24
+  - name: NCSC UK
+    type: rss
+    url: https://www.ncsc.gov.uk/api/1/services/v1/all-rss-feed.xml
+    poll_interval_hours: 24
+  - name: CERT-EU
+    type: rss
+    url: https://cert.europa.eu/publications/security-advisories/rss.xml
+    poll_interval_hours: 24
