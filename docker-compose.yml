@@ -260,6 +260,35 @@ services:
       - tim-network
     restart: unless-stopped
 
+  connector-cisa-kev:
+    image: opencti/connector-cisa-known-exploited-vulnerabilities:6.4.0
+    profiles: [platform]
+    environment:
+      - OPENCTI_URL=http://opencti:8080
+      - OPENCTI_TOKEN=${OPENCTI_ADMIN_TOKEN}
+      - CONNECTOR_ID=${CONNECTOR_CISA_KEV_ID}
+      - CONNECTOR_NAME=CISA Known Exploited Vulnerabilities
+      - CONNECTOR_SCOPE=vulnerability
+      - CONNECTOR_LOG_LEVEL=error
+      - CONNECTOR_RUN_AND_TERMINATE=false
+      - CISA_CATALOG_URL=https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+      - CISA_CREATE_INFRASTRUCTURES=false
+      - CISA_TLP=TLP:CLEAR
+      - CISA_INTERVAL=7
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'python.*cisa' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    depends_on:
+      opencti:
+        condition: service_healthy
+    networks:
+      - tim-network
+    restart: unless-stopped
+
 # ─────────────────────────────────────────────
 # CAPA AI — Ollama + ChromaDB
 # ─────────────────────────────────────────────

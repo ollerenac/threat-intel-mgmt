@@ -1,42 +1,36 @@
 {
   "version": "1.0",
-  "timestamp": "2026-06-30T08:28:30.000Z",
-  "phase": "07",
-  "phase_name": "ingestion-telemetry-apis",
-  "phase_dir": ".planning/phases/07-ingestion-telemetry-apis",
+  "timestamp": "2026-07-01T22:06:07.686Z",
+  "phase": null,
+  "phase_name": null,
+  "phase_dir": null,
   "plan": null,
   "task": null,
   "total_tasks": null,
   "status": "paused",
   "completed_tasks": [
-    {"id": 1, "name": "CR-01/CR-02/WR-01 stats fixes", "status": "done", "commit": "76493bd"},
-    {"id": 2, "name": "OpenCTI walkthrough: Remexi → APT39 → MechaFlounder (8 TTPs)", "status": "done", "commit": null},
-    {"id": 3, "name": "Repo hecho público: github.com/ollerenac/threat-intel-mgmt", "status": "done", "commit": null},
-    {"id": 4, "name": "Manual de usuario en español: docs/ con GitHub Pages Jekyll", "status": "done", "commit": "324af00"},
-    {"id": 5, "name": "CU-01 walkthrough APT39/Remexi/MechaFlounder en español", "status": "done", "commit": "324af00"},
-    {"id": 6, "name": "docs/index.md: nav por categorías (Casos de Uso / Guías / Referencia)", "status": "done", "commit": "174818a"},
-    {"id": 7, "name": "Design doc traducido al español (encabezados + secciones 1-2)", "status": "done", "commit": "2eab78d"},
-    {"id": 8, "name": "CU-04 parcial: PDF CISA AA26-097A ingestado, gap descubierto, fix implementado y cerrado (issue #1)", "status": "done", "commit": "4bcc50e"}
+    {"id": "phase-09", "name": "Phase 9 doc-collector — fully executed, verified, marked complete", "status": "done", "commit": "c0ecc4c"},
+    {"id": "opencti-diagnosis", "name": "Diagnosed 3 empty OpenCTI dashboard widgets (no code changes made)", "status": "done"}
   ],
   "remaining_tasks": [
-    {"id": 9, "name": "CU-04 completar walkthrough: explorar en OpenCTI el reporte con contexto nuevo (actor iraní, sectores, tecnologías)", "status": "not_started"},
-    {"id": 10, "name": "Traducir docs/SETUP.md al español (216 líneas, 100% inglés)", "status": "not_started"}
+    {
+      "id": "opencti-fix",
+      "name": "Fix empty OpenCTI widgets: Most Targeted Victims, Most Active Vulnerabilities, Targeted Countries",
+      "status": "not_started",
+      "notes": "Root cause diagnosed — see context_notes. Three distinct fixes available."
+    }
   ],
   "blockers": [],
   "async_jobs": [],
   "human_actions_pending": [
     {
-      "action": "Habilitar GitHub Pages en el repo",
-      "detail": "github.com/ollerenac/threat-intel-mgmt → Settings → Pages → Branch: master / Folder: /docs → Save",
-      "blocker": false
+      "action": "Decide which OpenCTI widget fix(es) to implement: (1) CISA KEV connector for vulnerabilities, (2) STIX bundle with targets relationships for victims/countries, (3) both",
+      "context": "All three widgets are empty due to missing relationship objects, not missing entities. Decision gates which fix to implement.",
+      "blocking": true
     }
   ],
-  "decisions": [
-    {"decision": "Gap intel-extractor documentado como issue #1 e implementado en la misma sesión", "rationale": "Gap crítico para CU-04: el reporte STIX en OpenCTI tenía descripción genérica; ahora tiene resumen real de campaña + sistemas afectados", "phase": "cu-04"},
-    {"decision": "SYSTEM_PROMPT extendido con targeted_sectors, victim_technologies, campaign_summary", "rationale": "El LLM ya procesaba el texto completo — solo necesitaba instrucciones más ricas. Zero infraestructura nueva.", "phase": "cu-04"},
-    {"decision": "campaign_summary va al campo description del STIX report; targeted_sectors como labels", "rationale": "Labels quedaron vacíos (pycti requiere labels pre-creados en OpenCTI); description funcionó correctamente", "phase": "cu-04"}
-  ],
+  "decisions": [],
   "uncommitted_files": [],
-  "next_action": "Completar CU-04: navegar en OpenCTI al reporte 'pdf-upload-94bb58ed' y mostrar cómo el campo description ahora tiene contexto real. Luego continuar con CU-04 explorando los IOCs enlazados.",
-  "context_notes": "Sesión CU-04 interrumpida a mitad para implementar el fix al gap descubierto. El fix está en producción (commit 4bcc50e, issue #1 cerrado). Intel-extractor reconstruido y corriendo. El reporte en OpenCTI (id: 44199be0-4f85-4a62-a4e2-6335a960b03b) ya tiene la descripción correcta. Retomar CU-04 mostrando el resultado en OpenCTI antes de pasar a SETUP.md."
+  "next_action": "Resume OpenCTI dashboard widget investigation. All 9 TIM phases complete. Implement fix for empty widgets — recommended starting point is CISA KEV connector (docker-compose.yml addition).",
+  "context_notes": "OpenCTI dashboard diagnosis complete (2026-07-01). Three widgets empty: (1) Most Targeted Victims — only 1 Identity object (MITRE Corp itself), 0 'targets' relationships; (2) Most Active Vulnerabilities — 77,002 CVEs present but 0 'exploits' relationships linking threat actors to CVEs; (3) Targeted Countries — 57 Country objects present but 0 'targets' relationships. Root cause: connector-mitre imports ATT&CK taxonomy only (no victim/geo relationships); connector-cve imports CVE objects only (no exploitation relationships). Fix options: (A) Add CISA KEV connector → creates exploits rels for ~1000 actively exploited CVEs; (B) Import STIX bundle with targets relationships for victims and countries; (C) Manually create Sector objects + relationships in OpenCTI UI. No code was written this session."
 }
