@@ -27,7 +27,6 @@ export default function IngestMonitor() {
   const [cveData,      setCveData]      = useState(null);
   const [iocs,         setIocs]         = useState([]);
   const [docs,         setDocs]         = useState([]);
-  const [error,        setError]        = useState(null);
   const [collectorData,setCollectorData]= useState(null);
   const iocTopRef = useRef(null);
 
@@ -92,11 +91,7 @@ export default function IngestMonitor() {
     <div className="card">
       <h2 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '16px' }}>Ingestion Monitor</h2>
 
-      {error && (
-        <p style={{ color: 'var(--color-destructive)', fontSize: '14px', marginBottom: '16px' }}>
-          {error}
-        </p>
-      )}
+
 
       {/* Pipeline health strip */}
       <div style={{ display: 'flex', gap: '24px', marginBottom: '24px', flexWrap: 'wrap' }}>
