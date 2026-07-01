@@ -6,6 +6,7 @@ import {
   getCVEStats,
   getFeedsRecent,
   getRecentDocs,
+  getCollectorStatus,
 } from '../api';
 
 function pillStatus(data, key) {
@@ -27,6 +28,7 @@ export default function IngestMonitor() {
   const [iocs,         setIocs]         = useState([]);
   const [docs,         setDocs]         = useState([]);
   const [error,        setError]        = useState(null);
+  const [collectorData,setCollectorData]= useState(null);
   const iocTopRef = useRef(null);
 
   useEffect(() => {
@@ -38,6 +40,7 @@ export default function IngestMonitor() {
         getCVEStats().then(d      => setCveData(d)),
         getFeedsRecent(200).then(d=> setIocs(d.iocs || [])),
         getRecentDocs().then(d    => setDocs(d.docs || [])),
+        getCollectorStatus().then(d => setCollectorData(d)),
       ]).catch(() => setError('Pipeline unreachable — retry in 30s.'));
 
     load();
@@ -61,12 +64,26 @@ export default function IngestMonitor() {
   // OpenCTI status derived from feed success (OpenCTI /health returns 401)
   const openctiStatus = feeds.some(f => f.status === 'ok') ? 'status-ok' : 'status-never_run';
 
+  // D-10: dynamic staleness — custom helper required; /collector/status has no 'status' key
+  function collectorPillCls(data) {
+    if (!data || !data.last_run) return 'status-never_run';
+    const minHours = Math.min(...(data.sources || []).map(s => s.poll_interval_hours ?? 24));
+    const ageHours = (Date.now() - new Date(data.last_run).getTime()) / 3_600_000;
+    if (ageHours > minHours * 2) return 'status-never_run';
+    if (ageHours > minHours * 1.5) return 'status-stale';
+    return 'status-ok';
+  }
+
+  // D-09: sum new_found across all sources for the pill label
+  const totalNew = (collectorData?.sources || []).reduce((s, x) => s + (x.new_found || 0), 0);
+
   const pills = [
     { label: 'Feeds',          cls: feedsStatus },
     { label: 'OpenCTI',        cls: openctiStatus }, // derived from feed success (OpenCTI /health returns 401)
     { label: 'Semantic Index', cls: pillStatus(semanticData,  'status') },
     { label: 'Extractor',      cls: pillStatus(extractorData, 'status') },
     { label: 'CVE',            cls: pillStatus(cveData,       'status') },
+    { label: collectorData ? `Collector (${totalNew} new)` : 'Collector (–)', cls: collectorPillCls(collectorData) },
   ];
 
   return (

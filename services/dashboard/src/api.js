@@ -48,3 +48,6 @@ export const getSemanticStats = () =>
 
 export const getCVEStats = () =>
   fetch(`${BRIEFING_URL}/cve/stats`).then(r => r.json());
+
+export const getCollectorStatus = () =>
+  fetch(`${EXTRACTOR_URL}/collector/status`).then(r => r.json());
