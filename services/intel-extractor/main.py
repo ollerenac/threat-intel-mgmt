@@ -29,8 +29,10 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     stats_store.init_db()
-    asyncio.create_task(collector.run_collector_loop())
+    task = asyncio.create_task(collector.run_collector_loop())
     yield
+    task.cancel()
+    await asyncio.gather(task, return_exceptions=True)
 
 
 app = FastAPI(title="intel-extractor", version="1.0.0", lifespan=lifespan)
