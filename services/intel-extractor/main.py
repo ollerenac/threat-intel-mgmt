@@ -9,6 +9,7 @@ Endpoints:
 D-06: job state stored in extractor.jobs (module-level dict, lost on restart).
 T-03-05-01: file upload limited to 50 MB; returns 413 if exceeded.
 """
+import asyncio
 import logging
 import uuid
 from contextlib import asynccontextmanager
@@ -17,6 +18,7 @@ from typing import Optional
 from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
+import collector
 import stats_store
 from extractor import jobs, recent_docs, run_extraction
 
@@ -27,6 +29,7 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     stats_store.init_db()
+    asyncio.create_task(collector.run_collector_loop())
     yield
 
 
