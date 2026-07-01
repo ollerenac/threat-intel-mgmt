@@ -1,10 +1,8 @@
 ---
 layout: page
-title: "CU-01 — Recorrido APT39: Remexi y MechaFlounder"
+title: "Caso de Uso: APT39"
 description: "Cómo navegar desde un malware hasta su actor, explorar el arsenal completo y comparar TTPs entre dos implantes del mismo grupo iraní APT39."
 ---
-
-# CU-01 — Recorrido APT39: Remexi y MechaFlounder
 
 **Objetivo:** Navegar OpenCTI desde un malware conocido hasta su actor amenaza, explorar el arsenal completo del grupo y comparar las técnicas ATT&CK entre dos implantes del mismo actor.
 

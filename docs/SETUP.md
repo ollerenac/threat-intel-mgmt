@@ -1,4 +1,7 @@
-# Plataforma TIM — Guía de Configuración Inicial
+---
+layout: page
+title: "Instalación"
+---
 
 Este documento cubre todo lo que un operador necesita para poner en marcha la plataforma de
 Gestión de Inteligencia de Amenazas (TIM) desde una máquina Ubuntu 22.04 limpia. Seguir las

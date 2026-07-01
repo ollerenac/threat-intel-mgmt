@@ -1,6 +1,6 @@
 ---
 layout: home
-title: Manual de Usuario — TIM
+title: Inicio
 ---
 
 # TIM — Manual de Usuario

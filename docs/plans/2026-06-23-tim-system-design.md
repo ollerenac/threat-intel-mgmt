@@ -1,4 +1,7 @@
-# Sistema TIM — Documento de Diseño
+---
+layout: page
+title: "Sistema TIM — Documento de Diseño"
+---
 
 **Fecha:** 2026-06-23
 **Autor:** Researcher

@@ -3,7 +3,8 @@ description: "Guía de uso de la plataforma de Gestión de Inteligencia de Amena
 theme: minima
 lang: es
 
-nav:
-  - Inicio: index.md
-  - Casos de Uso:
-    - casos-de-uso/apt39-remexi-mechaFlounder.md
+# minima solo muestra en el header las páginas listadas aquí (orden respetado)
+header_pages:
+  - index.md
+  - SETUP.md
+  - casos-de-uso/apt39-remexi-mechaFlounder.md
