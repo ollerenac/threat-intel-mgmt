@@ -108,16 +108,31 @@ async def stats():
     """
     def _get_stats():
         from opencti_client import build_pycti_client
-        from generator import _collect_threat_data
-        return _collect_threat_data(build_pycti_client(), 24)
+        from generator import _collect_threat_data, _make_updated_at_filter
+        client = build_pycti_client()
+        data = _collect_threat_data(client, 24)
+        # Real 24h count via globalCount (WR-01 pattern) — data["indicators"] is the
+        # briefing input list, capped at 25 by D-04, so len() flatlines at 25.
+        try:
+            result = client.indicator.list(
+                first=1, getAll=False, withPagination=True,
+                filters=_make_updated_at_filter(24),
+                orderBy="updated_at", orderMode="desc",
+            ) or {}
+            count = (result.get("pagination") or {}).get("globalCount")
+        except Exception:
+            count = None
+        if count is None:
+            count = len(data.get("indicators", []))
+        return data, count
 
-    data = await asyncio.to_thread(_get_stats)
+    data, ioc_count = await asyncio.to_thread(_get_stats)
     techniques = [
         {"id": p.get("x_mitre_id") or "", "name": p.get("name", ""), "count": 1}
         for p in data.get("attack_patterns", [])[:5]
     ]
     return {
-        "ioc_count_24h": len(data.get("indicators", [])),
+        "ioc_count_24h": ioc_count,
         "top_techniques": techniques,
     }
 
