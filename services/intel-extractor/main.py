@@ -15,9 +15,10 @@ from contextlib import asynccontextmanager
 from typing import Optional
 
 from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 
 import stats_store
-from extractor import jobs, run_extraction
+from extractor import jobs, recent_docs, run_extraction
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,6 +31,13 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="intel-extractor", version="1.0.0", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "https://localhost"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 _MAX_UPLOAD_BYTES = 50_000_000  # T-03-05-01: 50 MB cap
 
@@ -73,6 +81,11 @@ async def get_job(job_id: str):
     if job_id not in jobs:
         raise HTTPException(status_code=404, detail="job not found")
     return {"job_id": job_id, **jobs[job_id]}
+
+
+@app.get("/recent")
+async def recent():
+    return {"docs": list(recent_docs)}
 
 
 @app.get("/stats")
