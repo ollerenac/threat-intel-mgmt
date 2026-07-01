@@ -103,6 +103,11 @@ async def stats():
     }
 
 
+@app.get("/collector/status")
+async def collector_status():
+    return collector.get_status()
+
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
