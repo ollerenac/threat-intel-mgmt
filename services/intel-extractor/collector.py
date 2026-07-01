@@ -91,6 +91,8 @@ def _poll_source(source: dict, state: dict) -> list[tuple]:
         return []
 
     if not _is_source_due(name, state, source.get("poll_interval_hours", 24)):
+        # Reset new_found so the pill shows 0 between polls, not a stale count
+        _collector_state["sources_meta"].setdefault(name, {})["new_found"] = 0
         return []
 
     if name not in _collector_state["sources_meta"]:
