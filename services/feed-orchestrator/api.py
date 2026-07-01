@@ -2,13 +2,15 @@
 api.py — FastAPI application for feed-orchestrator HTTP endpoints.
 
 Endpoints:
-  GET /feeds/status — per-feed run history from Redis (DASH-01)
-  GET /health       — liveness probe
+  GET /feeds/status  — per-feed run history from Redis (DASH-01)
+  GET /feeds/recent  — last N IOCs from ES tim-iocs index (MON-01)
+  GET /health        — liveness probe
 
-CORS: allow_origins=["http://localhost:3000"] per T-06-01-01 (explicit origin, never "*").
+CORS: allow_origins includes https://localhost (dashboard :443) per T-06-01-01.
 """
 import json
 import logging
+import re
 import uuid
 
 import requests
@@ -28,13 +30,41 @@ app = FastAPI(title="feed-orchestrator", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "https://localhost"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Confirmed .name attribute values from each feed class (build_enabled_feeds order)
 FEED_NAMES = ["urlhaus", "malwarebazaar", "threatfox", "feodo", "otx"]
+
+# T-08-02: compiled once at module level; never raises on malformed/null input
+_STIX_TYPE_RE = re.compile(r"^\[([a-z0-9-]+):")
+
+_STIX_TYPE_MAP = {
+    "ipv4-addr": "IPv4",
+    "domain-name": "Domain",
+    "url": "URL",
+    "email-addr": "Email",
+}
+
+
+def _parse_type_from_pattern(pattern: str) -> str:
+    """Map a STIX pattern string to a human-readable IOC type label.
+
+    T-08-02 guard: never raises — malformed or empty patterns return 'Unknown'.
+    """
+    m = _STIX_TYPE_RE.match(pattern or "")
+    if not m:
+        return "Unknown"
+    sco = m.group(1)
+    if sco == "file":
+        if "SHA-256" in pattern:
+            return "SHA-256"
+        if "SHA-1" in pattern:
+            return "SHA-1"
+        return "MD5"
+    return _STIX_TYPE_MAP.get(sco, sco)
 
 
 @app.get("/feeds/status")
@@ -60,6 +90,38 @@ def feeds_alerts():
     raw = r.lrange("tim:alerts", 0, -1)
     alerts = [json.loads(e) for e in raw]
     return {"threshold": ALERT_THRESHOLD, "alerts": list(reversed(alerts))}
+
+
+@app.get("/feeds/recent")
+def feeds_recent(limit: int = 200):
+    """Return the most recent IOCs from ES tim-iocs index (MON-01).
+
+    T-08-01: limit capped at 500 server-side — client cannot force a 99999-size ES request.
+    """
+    capped = min(limit, 500)
+    try:
+        resp = requests.get(
+            f"{ES_URL}/tim-iocs/_search",
+            json={"size": capped, "sort": [{"ts": {"order": "desc"}}]},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        hits = resp.json().get("hits", {}).get("hits", [])
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"ES unavailable: {exc}")
+
+    return {
+        "iocs": [
+            {
+                "ts": h["_source"]["ts"],
+                "value": h["_source"]["value"],
+                "type": _parse_type_from_pattern(h["_source"].get("pattern", "")),
+                "feed": h["_source"]["feed"],
+                "confidence": h["_source"]["confidence"],
+            }
+            for h in hits
+        ]
+    }
 
 
 @app.get("/feeds/export/stix")
