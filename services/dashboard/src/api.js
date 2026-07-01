@@ -4,50 +4,53 @@ const SEARCH_URL   = '/api/semantic';
 const BRIEFING_URL = '/api/briefings';
 const EXTRACTOR_URL = '/api/extractor';
 
+// r.ok guard — throws on non-2xx so callers see a rejection instead of a malformed object
+const j = r => { if (!r.ok) throw new Error(r.status); return r.json(); };
+
 export const getFeedsStatus = () =>
-  fetch(`${FEED_URL}/feeds/status`).then(r => r.json());
+  fetch(`${FEED_URL}/feeds/status`).then(j);
 
 export const getAlerts = () =>
-  fetch(`${FEED_URL}/feeds/alerts`).then(r => r.json());
+  fetch(`${FEED_URL}/feeds/alerts`).then(j);
 
 export const getStats = () =>
-  fetch(`${BRIEFING_URL}/stats`).then(r => r.json());
+  fetch(`${BRIEFING_URL}/stats`).then(j);
 
 // GET with query params — semantic-engine/main.py line 41 confirms @app.get("/search"), NOT POST
 export const searchIOCs = (query, n = 10) =>
   fetch(`${SEARCH_URL}/search?q=${encodeURIComponent(query)}&n_results=${n}`)
-    .then(r => r.json());
+    .then(j);
 
 export const postGenerate = (periodHours) =>
   fetch(`${BRIEFING_URL}/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ period_hours: periodHours }),
-  }).then(r => r.json());
+  }).then(j);
 
 export const getBriefing = (id) =>
-  fetch(`${BRIEFING_URL}/briefings/${id}`).then(r => r.json());
+  fetch(`${BRIEFING_URL}/briefings/${id}`).then(j);
 
 export const listBriefings = () =>
-  fetch(`${BRIEFING_URL}/briefings`).then(r => r.json());
+  fetch(`${BRIEFING_URL}/briefings`).then(j);
 
 // Returns URL string — not a fetch call; used as <a href={pdfUrl(id)} download>
 export const pdfUrl = (id) => `${BRIEFING_URL}/briefings/${id}/pdf`;
 
 export const getFeedsRecent = (limit = 200) =>
-  fetch(`${FEED_URL}/feeds/recent?limit=${limit}`).then(r => r.json());
+  fetch(`${FEED_URL}/feeds/recent?limit=${limit}`).then(j);
 
 export const getRecentDocs = () =>
-  fetch(`${EXTRACTOR_URL}/recent`).then(r => r.json());
+  fetch(`${EXTRACTOR_URL}/recent`).then(j);
 
 export const getExtractorStats = () =>
-  fetch(`${EXTRACTOR_URL}/stats`).then(r => r.json());
+  fetch(`${EXTRACTOR_URL}/stats`).then(j);
 
 export const getSemanticStats = () =>
-  fetch(`${SEARCH_URL}/stats`).then(r => r.json());
+  fetch(`${SEARCH_URL}/stats`).then(j);
 
 export const getCVEStats = () =>
-  fetch(`${BRIEFING_URL}/cve/stats`).then(r => r.json());
+  fetch(`${BRIEFING_URL}/cve/stats`).then(j);
 
 export const getCollectorStatus = () =>
-  fetch(`${EXTRACTOR_URL}/collector/status`).then(r => r.json());
+  fetch(`${EXTRACTOR_URL}/collector/status`).then(j);
