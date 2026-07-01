@@ -37,6 +37,9 @@ _collector_state: dict = {
     "last_run": None,
 }
 
+# Keeps strong references to extraction tasks so the GC can't collect them mid-flight
+_background_tasks: set = set()
+
 
 # ── Synchronous helpers (called from within asyncio.to_thread) ────────────────
 
@@ -203,7 +206,9 @@ async def run_collector_loop() -> None:
             for mode, content, url in pending:
                 job_id = str(uuid.uuid4())
                 jobs[job_id] = {"status": "queued", "iocs_extracted": 0, "techniques_found": 0, "report_id": None, "error": None, "processing_time_s": None}  # noqa: E501
-                asyncio.create_task(asyncio.to_thread(run_extraction, job_id, mode, content, url))
+                t = asyncio.create_task(asyncio.to_thread(run_extraction, job_id, mode, content, url))
+                _background_tasks.add(t)
+                t.add_done_callback(_background_tasks.discard)
         except Exception as exc:
             logger.warning("[collector] poll cycle error: %s", exc)
         await asyncio.sleep(3600)  # hourly wakeup; each source checks its own interval
