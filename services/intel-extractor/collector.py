@@ -48,16 +48,22 @@ def _load_sources() -> list[dict]:
 
 
 def _load_state() -> dict:
-    """Load persisted URL registry from disk. Returns empty registry when file absent."""
+    """Load persisted URL registry from disk. Returns empty registry when file absent or corrupt."""
     if not STATE_PATH.exists():
         return {"processed_urls": [], "sources": {}}
-    with open(STATE_PATH) as f:
-        return json.load(f)
+    try:
+        with open(STATE_PATH) as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        logger.warning("[collector] state file corrupt or unreadable — resetting (URLs will be re-checked)")
+        return {"processed_urls": [], "sources": {}}
 
 
 def _save_state(state: dict) -> None:
-    """Persist URL registry to disk."""
-    STATE_PATH.write_text(json.dumps(state, indent=2))
+    """Persist URL registry to disk atomically (write-then-replace prevents corrupt state on SIGKILL)."""
+    tmp = STATE_PATH.with_suffix(".tmp")
+    tmp.write_text(json.dumps(state, indent=2))
+    tmp.replace(STATE_PATH)  # atomic on POSIX — both paths are under /data
 
 
 def _is_source_due(name: str, state: dict, interval_hours: int) -> bool:
