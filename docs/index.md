@@ -30,5 +30,7 @@ Esta documentación cubre casos de uso prácticos de la plataforma TIM: cómo na
 | Dashboard | `https://localhost` | Panel principal SOC |
 | OpenCTI | `http://localhost:8080` | Plataforma de inteligencia |
 | Kibana | `http://localhost:5602` | Visualización de IOCs en Elasticsearch |
+| Orquestador de feeds | `http://localhost:8001` | Ingesta de 5 fuentes de inteligencia |
 | Búsqueda semántica | `http://localhost:8002` | Motor de búsqueda por embeddings |
 | Generador de briefings | `http://localhost:8003` | Briefings en PDF con LLM local |
+| Extractor de documentos | `http://localhost:8004` | Extracción de IOCs desde PDFs con LLM |

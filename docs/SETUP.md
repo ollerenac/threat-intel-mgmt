@@ -65,7 +65,7 @@ Ejecutar estos cuatro comandos en orden desde la raíz del proyecto:
 # Paso 1: Generar .env con UUIDs y contraseñas
 ./scripts/setup-env.sh
 
-# Paso 2: Iniciar los 8 servicios de la plataforma
+# Paso 2: Iniciar los 14 servicios de la plataforma
 docker compose --profile platform up -d
 
 # Paso 3: Descargar los modelos de Ollama (llama3.2:3b + nomic-embed-text)
@@ -77,15 +77,18 @@ docker compose --profile platform up -d
 
 **Qué hace cada paso:**
 
-- **Paso 1 — `setup-env.sh`:** Copia `.env.example` a `.env` y reemplaza los cuatro valores
-  marcadores (`OPENCTI_ADMIN_TOKEN`, `CONNECTOR_MITRE_ID`, `RABBITMQ_PASSWORD`,
-  `MINIO_SECRET_KEY`) con UUIDs y contraseñas alfanuméricas de 24 caracteres generadas
-  automáticamente. Idempotente: una segunda ejecución termina sin sobrescribir `.env`.
+- **Paso 1 — `setup-env.sh`:** Copia `.env.example` a `.env` y genera automáticamente los
+  valores marcadores: `OPENCTI_ADMIN_TOKEN` y los cuatro IDs de conector
+  (`CONNECTOR_MITRE_ID`, `CONNECTOR_IPINFO_ID`, `CONNECTOR_CVE_ID`,
+  `CONNECTOR_CISA_KEV_ID`) como UUIDs, más `RABBITMQ_PASSWORD` y `MINIO_SECRET_KEY` como
+  contraseñas alfanuméricas de 24 caracteres. Idempotente: una segunda ejecución termina
+  sin sobrescribir `.env`.
 
-- **Paso 2 — `docker compose up`:** Inicia elasticsearch, redis, rabbitmq, minio, opencti,
-  connector-mitre, ollama y chromadb. Las dependencias de salud garantizan el orden correcto
-  de inicio. El conector MITRE ATT&CK comienza a importar en segundo plano una vez que
-  OpenCTI está disponible.
+- **Paso 2 — `docker compose up`:** Inicia elasticsearch, kibana, redis, rabbitmq, minio,
+  opencti, worker, los cuatro conectores (connector-mitre, connector-ipinfo, connector-cve,
+  connector-cisa-kev), ollama, chromadb e intel-extractor. Las dependencias de salud
+  garantizan el orden correcto de inicio. El conector MITRE ATT&CK comienza a importar en
+  segundo plano una vez que OpenCTI está disponible.
 
 - **Paso 3 — `init-models.sh`:** Espera a que Ollama esté listo y descarga `llama3.2:3b`
   (extracción e informes) y `nomic-embed-text` (embeddings). Puede ejecutarse en paralelo
@@ -98,7 +101,9 @@ docker compose --profile platform up -d
 
 ---
 
-## 4. Opcional: token de geolocalización IpInfo
+## 4. Opcional: claves de API externas
+
+### Token de geolocalización IpInfo
 
 El servicio `connector-ipinfo` enriquece los observables IP con datos de geolocalización, lo
 que popula el widget de mapa mundial en el dashboard de OpenCTI. Requiere una cuenta gratuita
@@ -131,9 +136,38 @@ https://nvd.nist.gov/developers/request-an-api-key y configurar:
 CVE_NVD_API_KEY=your_key_here
 ```
 
+**Claves de los feeds de inteligencia (perfil `feeds`):** El servicio `feed-orchestrator`
+consulta cinco fuentes; tres requieren clave gratuita en `.env`:
+
+```bash
+OTX_API_KEY=...              # https://otx.alienvault.com — API key en el perfil de usuario
+MALWAREBAZAAR_AUTH_KEY=...   # https://auth.abuse.ch — misma cuenta sirve para ambos
+THREATFOX_AUTH_KEY=...
+```
+
+Feodo Tracker y URLhaus no requieren clave. Sin estas claves, los feeds correspondientes
+fallan silenciosamente y solo ingieren las fuentes abiertas.
+
 ---
 
-## 5. Solución de problemas
+## 5. Opcional: poblar los widgets del dashboard de OpenCTI
+
+Los widgets *Most Targeted Victims*, *Most Active Vulnerabilities* y *Targeted Countries*
+del dashboard de OpenCTI cuentan relaciones STIX `targets`, que ningún conector crea por
+sí solo. Tras la importación inicial de MITRE, ejecutar una vez:
+
+```bash
+python3 scripts/seed_targeting_relationships.py
+```
+
+El script crea los sectores (Identity), los países faltantes con su código ISO3 (requerido
+por el widget de mapa) y las relaciones `targets` documentadas entre grupos ATT&CK,
+sectores, países y CVEs explotados. Es idempotente: re-ejecutarlo no duplica datos.
+Requiere `pycti` y `python-dotenv` en el host (`pip install pycti python-dotenv`).
+
+---
+
+## 6. Solución de problemas
 
 ### Problema A — Elasticsearch falla al iniciar con error de bloqueo de memoria
 
@@ -218,7 +252,7 @@ servicio `connector-mitre` no pudo iniciarse o conectarse a OpenCTI.
 
 ---
 
-## 6. Operación diaria — encender y apagar
+## 7. Operación diaria — encender y apagar
 
 ### Encender la plataforma
 
@@ -228,8 +262,9 @@ Desde la raíz del proyecto:
 docker compose --profile platform --profile feeds --profile semantic --profile briefings --profile dashboard up -d
 ```
 
-Esto inicia los 17 servicios (plataforma + feeds + semantic-engine + briefing-generator + dashboard). En arranques posteriores a la primera
-configuración no es necesario volver a ejecutar los scripts de la Sección 3.
+Esto inicia los 18 servicios (14 de plataforma + feed-orchestrator + semantic-engine +
+briefing-generator + soc-dashboard). En arranques posteriores a la primera configuración
+no es necesario volver a ejecutar los scripts de la Sección 3.
 
 **Verificar que todo está corriendo:**
 
@@ -243,8 +278,11 @@ comienzan a consultar fuentes de inteligencia automáticamente en los primeros 5
 ### Apagar la plataforma
 
 ```bash
-docker compose --profile platform --profile feeds down
+docker compose --profile platform --profile feeds --profile semantic --profile briefings --profile dashboard down
 ```
+
+Los cinco perfiles deben listarse — `down` solo detiene los servicios de los perfiles
+indicados; omitir uno deja sus contenedores corriendo.
 
 Los datos **no se pierden**: IOCs, reportes de OpenCTI, briefings y modelos de Ollama
 permanecen en los volúmenes de Docker y están disponibles al volver a encender.
